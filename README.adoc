@@ -1,0 +1,15 @@
+A very tiny and woefully incomplete version of dc.  Currently understands:
+
+* positive and negative integers
+* basic arithmetic
+* p (print)
+* q (quit)
+
+Goals:
+
+* library
+* GNU features
+* OpenBSD features
+* maybe conversion to other formats
+
+License: MIT
