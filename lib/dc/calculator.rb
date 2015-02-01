@@ -18,7 +18,7 @@ module DC
     def binop(op)
       top = @stack.pop
       second = @stack.pop
-      @stack.push(top.send(op, second))
+      @stack.push(second.send(op, top))
     end
 
     def push(val)
