@@ -58,6 +58,7 @@ module DC
           val = -val if !!$~[1]
           push(val)
         elsif line.sub!(/^\s+/, '')
+        elsif line.sub!(/^#[^\n]+/, '')
         elsif line.sub!(%r(^[-+*/%drpz]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
