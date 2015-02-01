@@ -1,5 +1,7 @@
 module DC
   class Calculator
+    attr_reader :stack, :registers
+
     def initialize(input = $stdin, output = $stdout)
       @stack = []
       @registers = []

@@ -18,4 +18,9 @@ describe DC::Calculator do
     @calc.parse('1 3d *+p')
     expect(@output.string).to eq "10\n"
   end
+
+  it "should expose the stack through #stack" do
+    @calc.parse('1 3d')
+    expect(@calc.stack).to eq [3, 3, 1]
+  end
 end

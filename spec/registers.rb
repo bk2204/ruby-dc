@@ -32,4 +32,10 @@ describe DC::Calculator do
     @calc.parse('2 Sa 3 Sb Lap')
     expect(@output.string).to eq "2\n"
   end
+
+  it "should expose registers through #registers" do
+    @calc.parse('2 Sa 4 Sa 3 Sb 9 Sb')
+    expect(@calc.registers['a'.ord]).to eq [4, 2]
+    expect(@calc.registers['b'.ord]).to eq [9, 3]
+  end
 end
