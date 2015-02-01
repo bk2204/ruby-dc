@@ -19,6 +19,11 @@ describe DC::Calculator do
     expect(@output.string).to eq "10\n"
   end
 
+  it "should swap the top two values with r" do
+    @calc.parse('1 2 3r')
+    expect(@calc.stack).to eq [2, 3, 1]
+  end
+
   it "should expose the stack through #stack" do
     @calc.parse('1 3d')
     expect(@calc.stack).to eq [3, 3, 1]
