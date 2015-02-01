@@ -14,6 +14,8 @@ module DC
         binop op
       when op == :p
         @output.puts @stack[0].to_i
+      when op == :d
+        @stack.unshift @stack[0]
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
       end
@@ -50,7 +52,7 @@ module DC
           val = -val if !!$~[1]
           push(val)
         elsif line.sub!(/^\s+/, '')
-        elsif line.sub!(%r(^[-+*/%p]), '')
+        elsif line.sub!(%r(^[-+*/%dp]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
