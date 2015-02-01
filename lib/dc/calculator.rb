@@ -8,6 +8,8 @@ module DC
       256.times { @registers.push [] }
       @input = input
       @output = output
+      @string_depth = 0
+      @string = nil
     end
 
     def dispatch(op, arg = nil)
@@ -15,7 +17,7 @@ module DC
       when [:+, :-, :*, :/, :%].include?(op)
         binop op
       when op == :p
-        @output.puts @stack[0].to_i
+        @output.puts @stack[0].is_a?(String) ? @stack[0] : @stack[0].to_i
       when op == :d
         @stack.unshift @stack[0]
       when op == :r
@@ -50,10 +52,28 @@ module DC
       @stack.unshift(val)
     end
 
+    def parse_string(s)
+      offset = 0
+      @string ||= ''
+      s.scan(/([^\[\]]*)([\[\]])/) do |code, delim|
+        @string_depth += (delim == ']' ? -1 : 1)
+        offset += code.length + delim.length
+        if @string_depth == 0
+          push(@string[1..-1] + code)
+          @string = nil
+          return s[offset..-1]
+        end
+        @string << code << delim
+      end
+      return ''
+    end
+
     def parse(line)
       line.force_encoding('BINARY')
       while !line.empty?
-        if line.sub!(/^(_)?(\d+(?:\.\d+)?)/, '')
+        if @string_depth > 0
+          line = parse_string(line)
+        elsif line.sub!(/^(_)?(\d+(?:\.\d+)?)/, '')
           val = Rational($~[2])
           val = -val if !!$~[1]
           push(val)
@@ -63,6 +83,8 @@ module DC
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
+        elsif line.start_with? '['
+          line = parse_string(line)
         elsif line[0] == 'q'
           raise SystemExit
         else
