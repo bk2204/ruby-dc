@@ -1,4 +1,25 @@
 module DC
+  class CalculatorError < StandardError
+    attr_reader :name
+  end
+
+  class InvalidCommandError < CalculatorError
+    attr_reader :command
+
+    def initialize(command)
+      @name = :command
+      @command = command
+      super("Invalid command '#{command}'")
+    end
+  end
+
+  class UnbalancedBracketsError < CalculatorError
+    def initialize
+      @name = :unbalanced
+      super("Unbalanced brackets")
+    end
+  end
+
   class Calculator
     attr_reader :stack, :registers
 
@@ -85,10 +106,12 @@ module DC
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.start_with? '['
           line = parse_string(line)
+        elsif line.start_with? ']'
+          raise UnbalancedBracketsError
         elsif line[0] == 'q'
           raise SystemExit
         else
-          fail "trap: invalid command #{line[0]}"
+          raise InvalidCommandError(line[0])
         end
       end
     end
