@@ -1,7 +1,9 @@
 module DC
   class Calculator
-    def initialize
+    def initialize(input = $stdin, output = $stdout)
       @stack = []
+      @input = input
+      @output = output
     end
 
     def dispatch(op)
@@ -9,7 +11,7 @@ module DC
       when [:+, :-, :*, :/, :%].include?(op)
         binop op
       when op == :p
-        puts @stack[-1].to_i
+        @output.puts @stack[-1].to_i
       end
     end
 
