@@ -24,6 +24,16 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [2, 3, 1]
   end
 
+  it "should push the current stack depth with z" do
+    @calc.parse('zzzzz')
+    expect(@calc.stack).to eq [4, 3, 2, 1, 0]
+  end
+
+  it "should calculate correct stack depth at various points" do
+    @calc.parse('3 5 z *- z')
+    expect(@calc.stack).to eq [1, -7]
+  end
+
   it "should expose the stack through #stack" do
     @calc.parse('1 3d')
     expect(@calc.stack).to eq [3, 3, 1]
