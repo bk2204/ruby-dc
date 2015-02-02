@@ -45,6 +45,8 @@ module DC
         @stack[0], @stack[1] = @stack[1], @stack[0]
       when op == :z
         @stack.unshift @stack.length
+      when op == :x
+        parse(@stack.shift) if @stack[0].is_a? String
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
       end
@@ -100,7 +102,7 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%drpz]), '')
+        elsif line.sub!(%r(^[-+*/%drpzx]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)

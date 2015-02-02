@@ -30,6 +30,11 @@ describe DC::Calculator do
     expect(@output.string).to eq "hello[goodbye]\n"
   end
 
+  it "should execute strings with x" do
+    @calc.parse('[4 5*]x')
+    expect(@calc.stack).to eq [20]
+  end
+
   it "should raise an exception for unbalanced brackets" do
     expect { @calc.parse('[hello]]p') }
       .to raise_exception(DC::UnbalancedBracketsError)
