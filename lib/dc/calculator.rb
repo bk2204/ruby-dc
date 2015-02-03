@@ -49,7 +49,18 @@ module DC
         parse(@stack.shift) if @stack[0].is_a? String
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
+      when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
+        cmpop op, arg
       end
+    end
+
+    def cmpop(op, reg)
+      syms = { :'=' => :==, :'!>' => :<=, :'!<' => :>= }
+      op = syms[op] || op
+      top = @stack.shift
+      second = @stack.shift
+      return unless second.send(op, top)
+      parse(@registers[reg][0])
     end
 
     def regop(op, reg)
@@ -105,6 +116,8 @@ module DC
         elsif line.sub!(%r(^[-+*/%drpzx]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
+          dispatch($~[1].to_sym, $~[2].ord)
+        elsif line.sub!(/^(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.start_with? '['
           line = parse_string(line)
