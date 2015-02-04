@@ -58,4 +58,14 @@ describe DC::Calculator do
     @calc.parse('7 [20]sa 1 1 =a')
     expect(@calc.stack).to eq [20, 7]
   end
+
+  it "should think 1 != 2" do
+    @calc.parse('7 [20]sa 1 2 !=a')
+    expect(@calc.stack).to eq [20, 7]
+  end
+
+  it "should not think 1 != 1" do
+    @calc.parse('7 [20]sa 1 1 !=a')
+    expect(@calc.stack).to eq [7]
+  end
 end
