@@ -13,63 +13,25 @@ describe DC::Calculator do
     @falseval = [7]
   end
 
-  it "should not think 1 > 2" do
-    @calc.parse("#{@macro} 1 2 >a")
-    expect(@calc.stack).to eq @falseval
-  end
+  [
+    [1, 2, '>', false],
+    [1, 1, '>', false],
+    [2, 1, '>', true],
+    [1, 2, '<', true],
+    [1, 1, '<', false],
+    [2, 1, '<', false],
+    [1, 2, '=', false],
+    [1, 1, '=', true],
+    [2, 1, '=', false]
+  ].each do |a, b, op, val|
+    it "should think #{a} #{op} #{b} is #{val}" do
+      @calc.parse("#{@macro} #{a} #{b} #{op}a")
+      expect(@calc.stack).to eq (val ? @trueval : @falseval)
+    end
 
-  it "should think 2 > 1" do
-    @calc.parse("#{@macro} 2 1 >a")
-    expect(@calc.stack).to eq @trueval
-  end
-
-  it "should not think 1 !> 2" do
-    @calc.parse("#{@macro} 1 2 !>a")
-    expect(@calc.stack).to eq @trueval
-  end
-
-  it "should think 2 !> 1" do
-    @calc.parse("#{@macro} 2 1 !>a")
-    expect(@calc.stack).to eq @falseval
-  end
-
-  it "should think 1 < 2" do
-    @calc.parse("#{@macro} 1 2 <a")
-    expect(@calc.stack).to eq @trueval
-  end
-
-  it "should not think 2 < 1" do
-    @calc.parse("#{@macro} 2 1 <a")
-    expect(@calc.stack).to eq @falseval
-  end
-
-  it "should not think 1 !< 2" do
-    @calc.parse("#{@macro} 1 2 !<a")
-    expect(@calc.stack).to eq @falseval
-  end
-
-  it "should think 2 !< 1" do
-    @calc.parse("#{@macro} 2 1 !<a")
-    expect(@calc.stack).to eq @trueval
-  end
-
-  it "should not think 1 = 2" do
-    @calc.parse("#{@macro} 1 2 =a")
-    expect(@calc.stack).to eq @falseval
-  end
-
-  it "should think 1 = 1" do
-    @calc.parse("#{@macro} 1 1 =a")
-    expect(@calc.stack).to eq @trueval
-  end
-
-  it "should think 1 != 2" do
-    @calc.parse("#{@macro} 1 2 !=a")
-    expect(@calc.stack).to eq @trueval
-  end
-
-  it "should not think 1 != 1" do
-    @calc.parse("#{@macro} 1 1 !=a")
-    expect(@calc.stack).to eq @falseval
+    it "should think #{a} !#{op} #{b} is #{!val}" do
+      @calc.parse("#{@macro} #{a} #{b} !#{op}a")
+      expect(@calc.stack).to eq (val ? @falseval : @trueval)
+    end
   end
 end
