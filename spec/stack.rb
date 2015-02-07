@@ -38,4 +38,28 @@ describe DC::Calculator do
     @calc.parse('1 3d')
     expect(@calc.stack).to eq [3, 3, 1]
   end
+
+  it "should print the top of stack with a newline with p (number)" do
+    @calc.parse('1p')
+    expect(@output.string).to eq "1\n"
+    expect(@calc.stack).to eq [1]
+  end
+
+  it "should print the top of stack with a newline with p (string)" do
+    @calc.parse('[foo]p')
+    expect(@output.string).to eq "foo\n"
+    expect(@calc.stack).to eq ['foo']
+  end
+
+  it "should pop and print the top of stack with n (number)" do
+    @calc.parse('1n')
+    expect(@output.string).to eq '1'
+    expect(@calc.stack).to eq []
+  end
+
+  it "should pop and print the top of stack with n (string)" do
+    @calc.parse('[foo]n')
+    expect(@output.string).to eq 'foo'
+    expect(@calc.stack).to eq []
+  end
 end

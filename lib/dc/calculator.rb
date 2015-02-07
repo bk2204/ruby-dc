@@ -37,8 +37,8 @@ module DC
       case
       when [:+, :-, :*, :/, :%].include?(op)
         binop op
-      when op == :p
-        @output.puts @stack[0].is_a?(String) ? @stack[0] : @stack[0].to_i
+      when [:p, :n].include?(op)
+        printop(op)
       when op == :d
         @stack.unshift @stack[0]
       when op == :r
@@ -51,6 +51,16 @@ module DC
         regop op, arg
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
         cmpop op, arg
+      end
+    end
+
+    def printop(op)
+      case op
+      when :p
+        @output.puts @stack[0].is_a?(String) ? @stack[0] : @stack[0].to_i
+      when :n
+        val = @stack.shift
+        @output.print val.is_a?(String) ? val : val.to_i
       end
     end
 
@@ -113,7 +123,7 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%drpzx]), '')
+        elsif line.sub!(%r(^[-+*/%drnpzx]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
