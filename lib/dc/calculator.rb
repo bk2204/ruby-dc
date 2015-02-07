@@ -126,7 +126,7 @@ module DC
         elsif line[0] == 'q'
           raise SystemExit
         else
-          raise InvalidCommandError(line[0])
+          raise InvalidCommandError, line[0]
         end
       end
     end
