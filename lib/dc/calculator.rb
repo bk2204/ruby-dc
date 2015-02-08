@@ -37,7 +37,7 @@ module DC
       case
       when [:+, :-, :*, :/, :%].include?(op)
         binop op
-      when [:p, :n].include?(op)
+      when [:p, :n, :f].include?(op)
         printop(op)
       when op == :d
         @stack.unshift @stack[0]
@@ -61,6 +61,10 @@ module DC
       when :n
         val = @stack.shift
         @output.print val.is_a?(String) ? val : val.to_i
+      when :f
+        @stack.each do |item|
+          @output.puts item.is_a?(String) ? item : item.to_i
+        end
       end
     end
 
@@ -123,7 +127,7 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%drnpzx]), '')
+        elsif line.sub!(%r(^[-+*/%drnpzxf]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)

@@ -62,4 +62,10 @@ describe DC::Calculator do
     expect(@output.string).to eq 'foo'
     expect(@calc.stack).to eq []
   end
+
+  it "should print the entire stack without altering anything with f" do
+    @calc.parse('1 2 [foo] 3f')
+    expect(@output.string).to eq "3\nfoo\n2\n1\n"
+    expect(@calc.stack).to eq [3, 'foo', 2, 1]
+  end
 end
