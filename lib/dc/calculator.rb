@@ -25,8 +25,7 @@ module DC
 
     def initialize(input = $stdin, output = $stdout)
       @stack = []
-      @registers = []
-      256.times { @registers.push [] }
+      @registers = Hash.new { |hash, key| hash[key] = [] }
       @input = input
       @output = output
       @string_depth = 0
