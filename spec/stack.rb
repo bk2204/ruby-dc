@@ -3,10 +3,14 @@ require 'stringio'
 require_relative '../lib/dc/calculator'
 
 describe DC::Calculator do
-  before :each do
+  def calc(options = {})
     @output = StringIO.new('', 'w')
     @input = StringIO.new('', 'r')
-    @calc = DC::Calculator.new(@input, @output)
+    DC::Calculator.new(@input, @output, options)
+  end
+
+  before :each do
+    @calc = calc
   end
 
   it "should duplicate the top number on stack with d" do
@@ -19,9 +23,16 @@ describe DC::Calculator do
     expect(@output.string).to eq "10\n"
   end
 
-  it "should swap the top two values with r" do
-    @calc.parse('1 2 3r')
-    expect(@calc.stack).to eq [2, 3, 1]
+  it "should swap the top two values with r with extensions enabled" do
+    [:gnu, :freebsd].each do |ext|
+      c = calc(ext => true)
+      c.parse('1 2 3r')
+      expect(c.stack).to eq [2, 3, 1]
+    end
+  end
+
+  it "should raise for r without extensions enabled" do
+    expect { @calc.parse('1 2 3r') }.to raise_exception(DC::UnsupportedExtensionError)
   end
 
   it "should push the current stack depth with z" do

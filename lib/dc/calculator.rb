@@ -1,3 +1,5 @@
+require 'set'
+
 module DC
   class CalculatorError < StandardError
     attr_reader :name
@@ -13,6 +15,17 @@ module DC
     end
   end
 
+  class UnsupportedExtensionError < CalculatorError
+    attr_reader :command, :standard
+
+    def initialize(command, standard)
+      @name = :extension
+      @command = command
+      @standard = standard
+      super("Unsupported extension '#{command}': standards #{standard} not enabled")
+    end
+  end
+
   class UnbalancedBracketsError < CalculatorError
     def initialize
       @name = :unbalanced
@@ -23,13 +36,27 @@ module DC
   class Calculator
     attr_reader :stack, :registers
 
-    def initialize(input = $stdin, output = $stdout)
+    def initialize(input = $stdin, output = $stdout, options = {})
       @stack = []
       @registers = Hash.new { |hash, key| hash[key] = [] }
       @input = input
       @output = output
       @string_depth = 0
       @string = nil
+      @extensions = Set.new
+      [:gnu, :freebsd].each do |ext|
+        @extensions.add ext if options[ext] || options[:all]
+      end
+    end
+
+    def extension?(option)
+      option = [option] unless option.is_a? Enumerable
+      s = Set.new option
+      @extensions.intersect? s
+    end
+
+    def extensions
+      @extensions.keys.sort
     end
 
     def dispatch(op, arg = nil)
@@ -126,12 +153,17 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%drnpzxf]), '')
+        elsif line.sub!(%r(^[-+*/%dnpzxf]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
+        elsif line.sub!(/^([r])/, '')
+          op = $~[0].to_sym
+          exts = [:gnu, :freebsd]
+          raise UnsupportedExtensionError.new(op, exts) unless extension? exts
+          dispatch(op)
         elsif line.start_with? '['
           line = parse_string(line)
         elsif line.start_with? ']'
