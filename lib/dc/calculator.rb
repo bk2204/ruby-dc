@@ -153,13 +153,13 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dnpzxf]), '')
+        elsif line.sub!(%r(^[-+*/%dpzxf]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/^([r])/, '')
+        elsif line.sub!(/^([nr])/, '')
           op = $~[0].to_sym
           exts = [:gnu, :freebsd]
           raise UnsupportedExtensionError.new(op, exts) unless extension? exts
