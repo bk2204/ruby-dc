@@ -80,6 +80,11 @@ module DC
       end
     end
 
+    def dispatch_extension(op, exts)
+      raise UnsupportedExtensionError.new(op, exts) unless extension? exts
+      dispatch(op)
+    end
+
     def printop(op)
       case op
       when :p
@@ -160,10 +165,7 @@ module DC
         elsif line.sub!(/^(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^([nr])/, '')
-          op = $~[0].to_sym
-          exts = [:gnu, :freebsd]
-          raise UnsupportedExtensionError.new(op, exts) unless extension? exts
-          dispatch(op)
+          dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
         elsif line.start_with? '['
           line = parse_string(line)
         elsif line.start_with? ']'
