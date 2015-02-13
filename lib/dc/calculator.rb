@@ -80,7 +80,7 @@ module DC
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/^([nr])/, '')
+        elsif line.sub!(/^([nra])/, '')
           dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
         elsif line.start_with? '['
           line = parse_string(line)
@@ -110,6 +110,8 @@ module DC
         @stack.unshift @stack.length
       when op == :x
         parse(@stack.shift) if @stack[0].is_a? String
+      when op == :a
+        stringify
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
@@ -120,6 +122,21 @@ module DC
     def dispatch_extension(op, exts)
       raise UnsupportedExtensionError.new(op, exts) unless extension? exts
       dispatch(op)
+    end
+
+    def convert_string(s)
+      # FreeBSD uses C-style strings (boo!)
+      s == "\x00" && extension?(:freebsd) && !extension?(:gnu) ? '' : s
+    end
+
+    def stringify
+      val = @stack.shift
+      if val.is_a? String
+        val = val.empty ? '' : val[0]
+      else
+        val = convert_string((val.to_i % 256).chr)
+      end
+      push(val)
     end
 
     def printop(op)

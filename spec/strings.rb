@@ -3,10 +3,14 @@ require 'stringio'
 require_relative '../lib/dc/calculator'
 
 describe DC::Calculator do
-  before :each do
-    @output = StringIO.new('', 'w+')
+  def calc(options = {})
+    @output = StringIO.new('', 'w')
     @input = StringIO.new('', 'r')
-    @calc = DC::Calculator.new(@input, @output)
+    DC::Calculator.new(@input, @output, options)
+  end
+
+  before :each do
+    @calc = calc
   end
 
   it "should parse strings in brackets" do
@@ -38,5 +42,28 @@ describe DC::Calculator do
   it "should raise an exception for unbalanced brackets" do
     expect { @calc.parse('[hello]]p') }
       .to raise_exception(DC::UnbalancedBracketsError)
+  end
+
+  it "should compute (n % 256).chr for a (number, GNU)" do
+    # GNU overrides FreeBSD in this case, because the behavior is more
+    # consistent.
+    [:gnu, :all].each do |ext|
+      (0..1000).each do |n|
+        c = calc(ext => true)
+        c.parse("#{n}a")
+        expect(c.stack).to eq [(n % 256).chr]
+      end
+    end
+  end
+
+  it "should compute (n % 256).chr for a (number, FreeBSD)" do
+    [:freebsd].each do |ext|
+      (0..1000).each do |n|
+        c = calc(ext => true)
+        c.parse("#{n}a")
+        val = n % 256
+        expect(c.stack).to eq [val == 0 ? '' : val.chr]
+      end
+    end
   end
 end
