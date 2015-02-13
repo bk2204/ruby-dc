@@ -59,6 +59,43 @@ module DC
       @extensions.keys.sort
     end
 
+    def push(val)
+      @stack.unshift(val)
+    end
+
+    def parse(line)
+      line.force_encoding('BINARY')
+      while !line.empty?
+        if @string_depth > 0
+          line = parse_string(line)
+        elsif line.sub!(/^(_)?(\d+(?:\.\d+)?)/, '')
+          val = Rational($~[2])
+          val = -val if !!$~[1]
+          push(val)
+        elsif line.sub!(/^\s+/, '')
+        elsif line.sub!(/^#[^\n]+/, '')
+        elsif line.sub!(%r(^[-+*/%dpzxf]), '')
+          dispatch($~[0].to_sym)
+        elsif line.sub!(/^([SsLl])(.)/, '')
+          dispatch($~[1].to_sym, $~[2].ord)
+        elsif line.sub!(/^(!?[<>=])(.)/, '')
+          dispatch($~[1].to_sym, $~[2].ord)
+        elsif line.sub!(/^([nr])/, '')
+          dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
+        elsif line.start_with? '['
+          line = parse_string(line)
+        elsif line.start_with? ']'
+          raise UnbalancedBracketsError
+        elsif line[0] == 'q'
+          raise SystemExit
+        else
+          raise InvalidCommandError, line[0]
+        end
+      end
+    end
+
+    protected
+
     def dispatch(op, arg = nil)
       case
       when [:+, :-, :*, :/, :%].include?(op)
@@ -127,10 +164,6 @@ module DC
       @stack.unshift(second.send(op, top))
     end
 
-    def push(val)
-      @stack.unshift(val)
-    end
-
     def parse_string(s)
       offset = 0
       @string ||= ''
@@ -145,37 +178,6 @@ module DC
         @string << code << delim
       end
       return ''
-    end
-
-    def parse(line)
-      line.force_encoding('BINARY')
-      while !line.empty?
-        if @string_depth > 0
-          line = parse_string(line)
-        elsif line.sub!(/^(_)?(\d+(?:\.\d+)?)/, '')
-          val = Rational($~[2])
-          val = -val if !!$~[1]
-          push(val)
-        elsif line.sub!(/^\s+/, '')
-        elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzxf]), '')
-          dispatch($~[0].to_sym)
-        elsif line.sub!(/^([SsLl])(.)/, '')
-          dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/^(!?[<>=])(.)/, '')
-          dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/^([nr])/, '')
-          dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
-        elsif line.start_with? '['
-          line = parse_string(line)
-        elsif line.start_with? ']'
-          raise UnbalancedBracketsError
-        elsif line[0] == 'q'
-          raise SystemExit
-        else
-          raise InvalidCommandError, line[0]
-        end
-      end
     end
   end
 end
