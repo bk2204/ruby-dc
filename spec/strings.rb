@@ -81,7 +81,7 @@ describe DC::Calculator do
     end
   end
 
-  it "should do nothing with an empty string a (string)" do
+  it "should do nothing with an empty string for a (string)" do
     # GNU overrides FreeBSD in this case, because the behavior is more
     # consistent.
     [:gnu, :freebsd, :all].each do |ext|
