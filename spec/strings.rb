@@ -80,4 +80,14 @@ describe DC::Calculator do
       end
     end
   end
+
+  it "should do nothing with an empty string a (string)" do
+    # GNU overrides FreeBSD in this case, because the behavior is more
+    # consistent.
+    [:gnu, :freebsd, :all].each do |ext|
+      c = calc(ext => true)
+      c.parse("[]a")
+      expect(c.stack).to eq ['']
+    end
+  end
 end
