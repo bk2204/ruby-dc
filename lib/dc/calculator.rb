@@ -132,7 +132,7 @@ module DC
     def stringify
       val = @stack.shift
       if val.is_a? String
-        val = val.empty ? '' : val[0]
+        val = val.empty? ? '' : val[0]
       else
         val = convert_string((val.to_i % 256).chr)
       end

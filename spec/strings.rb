@@ -66,4 +66,18 @@ describe DC::Calculator do
       end
     end
   end
+
+  it "should take the first character for a (string)" do
+    # GNU overrides FreeBSD in this case, because the behavior is more
+    # consistent.
+    [:gnu, :freebsd, :all].each do |ext|
+      (1..255).each do |n|
+        char = n.chr
+        next if "[]".include? char
+        c = calc(ext => true)
+        c.parse("[#{char}ob]a")
+        expect(c.stack).to eq [char]
+      end
+    end
+  end
 end
