@@ -90,4 +90,8 @@ describe DC::Calculator do
       expect(c.stack).to eq ['']
     end
   end
+
+  it "should raise for a without extensions enabled" do
+    expect { @calc.parse('1a') }.to raise_exception(DC::UnsupportedExtensionError)
+  end
 end
