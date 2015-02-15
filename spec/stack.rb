@@ -84,6 +84,23 @@ describe DC::Calculator do
     expect { @calc.parse('1n') }.to raise_exception(DC::UnsupportedExtensionError)
   end
 
+  it "should pop top of stack with R" do
+    [:freebsd, :all].each do |ext|
+      c = calc(ext => true)
+      c.parse('1 2 3R')
+      expect(c.stack).to eq [2, 1]
+    end
+  end
+
+  it "should raise for R with only GNU extensions enabled" do
+    c = calc(gnu: true)
+    expect { c.parse('1R') }.to raise_exception(DC::UnsupportedExtensionError)
+  end
+
+  it "should raise for R without extensions enabled" do
+    expect { @calc.parse('1R') }.to raise_exception(DC::UnsupportedExtensionError)
+  end
+
   it "should print the entire stack without altering anything with f" do
     @calc.parse('1 2 [foo] 3f')
     expect(@output.string).to eq "3\nfoo\n2\n1\n"
