@@ -82,7 +82,7 @@ module DC
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^([nra])/, '')
           dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
-        elsif line.sub!(/^([R])/, '')
+        elsif line.sub!(/^([RG({])/, '')
           dispatch_extension($~[0].to_sym, [:freebsd])
         elsif line.start_with? '['
           line = parse_string(line)
@@ -120,6 +120,8 @@ module DC
         regop op, arg
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
         cmpop op, arg
+      when [:G, :'(', :'{'].include?(op)
+        extcmpop op, arg
       end
     end
 
@@ -164,6 +166,14 @@ module DC
       second = @stack.shift
       return unless second.send(op, top)
       parse(@registers[reg][0])
+    end
+
+    def extcmpop(op, reg)
+      syms = { :G => :==, :"(" => :<, :"{" => :<= }
+      op = syms[op]
+      top = @stack.shift
+      second = @stack.shift
+      push(top.send(op, second) ? 1 : 0)
     end
 
     def regop(op, reg)
