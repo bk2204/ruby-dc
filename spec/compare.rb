@@ -52,4 +52,12 @@ describe DC::Calculator do
       expect(@extcalc.stack).to eq [val]
     end
   end
+
+  it "should negate top of stack for N" do
+    @extcalc.parse("1 N")
+    expect(@extcalc.stack).to eq [0]
+
+    @extcalc.parse("R 0 N")
+    expect(@extcalc.stack).to eq [1]
+  end
 end

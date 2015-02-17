@@ -82,7 +82,7 @@ module DC
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^([nra])/, '')
           dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
-        elsif line.sub!(/^([RG({])/, '')
+        elsif line.sub!(/^([NRG({])/, '')
           dispatch_extension($~[0].to_sym, [:freebsd])
         elsif line.start_with? '['
           line = parse_string(line)
@@ -114,6 +114,8 @@ module DC
         parse(@stack.shift) if @stack[0].is_a? String
       when op == :a
         stringify
+      when op == :N
+        @stack.unshift(@stack.shift == 0 ? 1 : 0)
       when op == :R
         @stack.shift
       when [:L, :S, :l, :s].include?(op)
