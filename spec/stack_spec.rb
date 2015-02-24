@@ -106,4 +106,14 @@ describe DC::Calculator do
     expect(@output.string).to eq "3\nfoo\n2\n1\n"
     expect(@calc.stack).to eq [3, 'foo', 2, 1]
   end
+
+  it "should load the default input base with I" do
+    @calc.parse('I')
+    expect(@calc.stack).to eq [10]
+  end
+
+  it "should load the default output base with O" do
+    @calc.parse('O')
+    expect(@calc.stack).to eq [10]
+  end
 end

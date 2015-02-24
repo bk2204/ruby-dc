@@ -43,6 +43,7 @@ module DC
       @output = output
       @string_depth = 0
       @string = nil
+      @ibase = @obase = 10
       @extensions = Set.new
       [:gnu, :freebsd].each do |ext|
         @extensions.add ext if options[ext] || options[:all]
@@ -74,7 +75,7 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzxf]), '')
+        elsif line.sub!(%r(^[-+*/%dpzxfIO]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
@@ -104,6 +105,10 @@ module DC
         binop op
       when [:p, :n, :f].include?(op)
         printop(op)
+      when op == :I
+        @stack.unshift @ibase
+      when op == :O
+        @stack.unshift @obase
       when op == :d
         @stack.unshift @stack[0]
       when op == :r
