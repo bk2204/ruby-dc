@@ -116,4 +116,9 @@ describe DC::Calculator do
     @calc.parse('O')
     expect(@calc.stack).to eq [10]
   end
+
+  it "should load the default scale with K" do
+    @calc.parse('K')
+    expect(@calc.stack).to eq [0]
+  end
 end
