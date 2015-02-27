@@ -33,6 +33,65 @@ module DC
     end
   end
 
+  class Numeric
+    include Comparable
+
+    attr_accessor :value, :scale
+
+    def initialize(value, scale, calc_scale)
+      @value = Rational(value)
+      @scale = scale
+      @k = calc_scale
+    end
+
+    def -@
+      Numeric.new(-@value, @scale, @k)
+    end
+
+    def +(other)
+      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      Numeric.new(@value + other.value, [@scale, other.scale].max, @k)
+    end
+
+    def -(other)
+      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      Numeric.new(@value - other.value, [@scale, other.scale].max, @k)
+    end
+
+    def *(other)
+      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      scale = [@scale + other.scale, [@scale, other.scale, @k].max].min
+      Numeric.new(@value * other.value, scale, @k)
+    end
+
+    def /(other)
+      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      Numeric.new(@value / other.value, @k, @k)
+    end
+
+    def %(other)
+      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      Numeric.new(@value % other.value, @k, @k)
+    end
+
+    def method_missing(symbol, *args)
+      @value.send(symbol, *args)
+    end
+
+    def <=>(other)
+      return @value <=> other unless other.is_a? Numeric
+      @value <=> other.value
+    end
+
+    def to_r
+      @value
+    end
+
+    def to_i
+      @value.to_i
+    end
+  end
+
   class Calculator
     attr_reader :stack, :registers
 
@@ -71,7 +130,7 @@ module DC
         if @string_depth > 0
           line = parse_string(line)
         elsif line.sub!(/^(_)?(\d+(?:\.\d+)?)/, '')
-          val = Rational($~[2])
+          val = Numeric.new($~[2], @scale, @scale)
           val = -val if !!$~[1]
           push(val)
         elsif line.sub!(/^\s+/, '')
@@ -107,23 +166,23 @@ module DC
       when [:p, :n, :f].include?(op)
         printop(op)
       when op == :I
-        @stack.unshift @ibase
+        @stack.unshift Numeric.new(@ibase, 0, @scale)
       when op == :O
-        @stack.unshift @obase
+        @stack.unshift Numeric.new(@obase, 0, @scale)
       when op == :K
-        @stack.unshift @scale
+        @stack.unshift Numeric.new(@scale, 0, @scale)
       when op == :d
         @stack.unshift @stack[0]
       when op == :r
         @stack[0], @stack[1] = @stack[1], @stack[0]
       when op == :z
-        @stack.unshift @stack.length
+        @stack.unshift Numeric.new(@stack.length, 0, @scale)
       when op == :x
         parse(@stack.shift) if @stack[0].is_a? String
       when op == :a
         stringify
       when op == :N
-        @stack.unshift(@stack.shift == 0 ? 1 : 0)
+        @stack.unshift(Numeric.new(@stack.shift == 0 ? 1 : 0, 0, @scale))
       when op == :R
         @stack.shift
       when [:L, :S, :l, :s].include?(op)
@@ -183,7 +242,7 @@ module DC
       op = syms[op]
       top = @stack.shift
       second = @stack.shift
-      push(top.send(op, second) ? 1 : 0)
+      push(Numeric.new(top.send(op, second) ? 1 : 0, 0, @scale))
     end
 
     def regop(op, reg)
@@ -202,7 +261,7 @@ module DC
     def binop(op)
       top = @stack.shift
       second = @stack.shift
-      @stack.unshift(second.send(op, top))
+      @stack.unshift(Numeric.new(second.send(op, top), @scale, @scale))
     end
 
     def parse_string(s)
