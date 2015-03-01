@@ -61,17 +61,20 @@ module DC
     def *(other)
       other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
       scale = [@scale + other.scale, [@scale, other.scale, @k].max].min
-      Numeric.new(@value * other.value, scale, @k)
+      v = (@value * other.value).truncate(scale)
+      Numeric.new(v, scale, @k)
     end
 
     def /(other)
       other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
-      Numeric.new(@value / other.value, @k, @k)
+      v = (@value / other.value).truncate(@k)
+      Numeric.new(v, @k, @k)
     end
 
     def %(other)
       other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
-      Numeric.new(@value % other.value, @k, @k)
+      v = (@value % other.value).truncate(@k)
+      Numeric.new(v, @k, @k)
     end
 
     def method_missing(symbol, *args)
@@ -89,6 +92,10 @@ module DC
 
     def to_i
       @value.to_i
+    end
+
+    def to_f
+      @value.to_f
     end
   end
 
@@ -129,8 +136,8 @@ module DC
       while !line.empty?
         if @string_depth > 0
           line = parse_string(line)
-        elsif line.sub!(/^(_)?(\d+(?:\.\d+)?)/, '')
-          val = Numeric.new($~[2], @scale, @scale)
+        elsif line.sub!(/^(_)?(\d+(?:\.(\d+))?)/, '')
+          val = Numeric.new($~[2], $~[3].to_s.length, @scale)
           val = -val if !!$~[1]
           push(val)
         elsif line.sub!(/^\s+/, '')
