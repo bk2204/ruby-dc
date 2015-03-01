@@ -121,4 +121,9 @@ describe DC::Calculator do
     @calc.parse('K')
     expect(@calc.stack).to eq [0]
   end
+
+  it "should store the scale with k" do
+    @calc.parse('4k K')
+    expect(@calc.stack).to eq [4]
+  end
 end

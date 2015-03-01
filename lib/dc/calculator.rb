@@ -135,7 +135,7 @@ module DC
           push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzxfIOK]), '')
+        elsif line.sub!(%r(^[-+*/%dpzxfIOkK]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
@@ -171,6 +171,8 @@ module DC
         @stack.unshift Numeric.new(@obase, 0, @scale)
       when op == :K
         @stack.unshift Numeric.new(@scale, 0, @scale)
+      when op == :k
+        @scale = @stack.shift.to_i
       when op == :d
         @stack.unshift @stack[0]
       when op == :r
