@@ -44,4 +44,9 @@ describe DC::Calculator do
     @calc.parse('2.3 5.12* 4k 2.3 5.12*')
     expect(@calc.stack).to eq [11.776, 11.77]
   end
+
+  it 'should compute division with the correct precision' do
+    @calc.parse('3 2/ 1k 3 2/')
+    expect(@calc.stack).to eq [1.5, 1]
+  end
 end
