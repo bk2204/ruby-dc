@@ -140,6 +140,10 @@ module DC
           val = Numeric.new($~[2], $~[3].to_s.length, @scale)
           val = -val if !!$~[1]
           push(val)
+        elsif line.sub!(/^(_)?(\.(\d+))/, '')
+          val = Numeric.new($~[2], $~[3].to_s.length, @scale)
+          val = -val if !!$~[1]
+          push(val)
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
         elsif line.sub!(%r(^[-+*/%dpzxfIOkK]), '')

@@ -49,4 +49,9 @@ describe DC::Calculator do
     @calc.parse('3 2/ 1k 3 2/')
     expect(@calc.stack).to eq [1.5, 1]
   end
+
+  it 'should parse terms starting with a leading dot' do
+    @calc.parse('.65 .25+')
+    expect(@calc.stack).to eq [0.9]
+  end
 end
