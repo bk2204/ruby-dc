@@ -40,6 +40,16 @@ describe DC::Calculator do
     end
   end
 
+  it 'should compute addition with the correct precision' do
+    @calc.parse('2.3 5.12+')
+    expect(@calc.stack).to eq [7.42]
+  end
+
+  it 'should compute subtraction with the correct precision' do
+    @calc.parse('2.3 5.12-')
+    expect(@calc.stack).to eq [-2.82]
+  end
+
   it 'should compute multiplication with the correct precision' do
     @calc.parse('2.3 5.12* 4k 2.3 5.12*')
     expect(@calc.stack).to eq [11.776, 11.77]
