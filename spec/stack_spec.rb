@@ -126,4 +126,9 @@ describe DC::Calculator do
     @calc.parse('4k K')
     expect(@calc.stack).to eq [4]
   end
+
+  it "should store the scale of the top of stack with X" do
+    @calc.parse('0X 1.234X')
+    expect(@calc.stack).to eq [3, 0]
+  end
 end
