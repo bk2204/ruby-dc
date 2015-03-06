@@ -1,6 +1,4 @@
-require 'stringio'
-
-require_relative '../lib/dc/calculator'
+require_relative 'spec_helper'
 
 describe DC::Calculator do
   def calc(options = {})
