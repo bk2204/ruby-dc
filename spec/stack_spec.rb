@@ -60,6 +60,12 @@ describe DC::Calculator do
     expect(@calc.stack).to eq ['foo']
   end
 
+  it "should print fractions properly with p" do
+    @calc.parse('1.64p')
+    expect(@output.string).to eq "1.64\n"
+    expect(@calc.stack).to eq [1.64]
+  end
+
   it "should pop and print the top of stack with n (number)" do
     [:gnu, :freebsd].each do |ext|
       c = calc(ext => true)
@@ -75,6 +81,14 @@ describe DC::Calculator do
       c.parse('[foo]n')
       expect(@output.string).to eq 'foo'
       expect(c.stack).to eq []
+    end
+  end
+
+  it "should print fractions properly with n" do
+    [:gnu, :freebsd, :all].each do |ext|
+      c = calc(ext => true)
+      c.parse('1.64n')
+      expect(@output.string).to eq '1.64'
     end
   end
 
@@ -103,6 +117,12 @@ describe DC::Calculator do
     @calc.parse('1 2 [foo] 3f')
     expect(@output.string).to eq "3\nfoo\n2\n1\n"
     expect(@calc.stack).to eq [3, 'foo', 2, 1]
+  end
+
+  it "should print fractions properly with f" do
+    @calc.parse('4 2.53 1.64 17f')
+    expect(@output.string).to eq "17\n1.64\n2.53\n4\n"
+    expect(@calc.stack).to eq [17, 1.64, 2.53, 4]
   end
 
   it "should load the default input base with I" do

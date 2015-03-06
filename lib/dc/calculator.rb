@@ -97,6 +97,10 @@ module DC
     def to_f
       @value.to_f
     end
+
+    def to_s
+      format("%.#{@scale}f", @value)
+    end
   end
 
   class Calculator
@@ -233,13 +237,13 @@ module DC
     def printop(op)
       case op
       when :p
-        @output.puts @stack[0].is_a?(String) ? @stack[0] : @stack[0].to_i
+        @output.puts @stack[0]
       when :n
         val = @stack.shift
-        @output.print val.is_a?(String) ? val : val.to_i
+        @output.print val
       when :f
         @stack.each do |item|
-          @output.puts item.is_a?(String) ? item : item.to_i
+          @output.puts item
         end
       end
     end
