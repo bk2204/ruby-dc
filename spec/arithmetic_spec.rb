@@ -63,4 +63,17 @@ describe DC::Calculator do
     @calc.parse('.65 .25+')
     expect(@calc.stack).to eq [0.9]
   end
+
+  it 'should always parse hex values regardless of the base' do
+    @calc.parse('F 1+i FE Ci FE Ai FE')
+    expect(@calc.stack).to eq [164, 194, 254]
+  end
+
+  it 'should always parse hex values in fractions regardless of the base' do
+    # We use 1* here because we internally hold more precision until a
+    # multiplication, division, remainder, or output forces us to convert it.
+    @calc.parse('F 1+i .FE 1* Ci .FE 1* Ai .FE 1*f')
+    expect(@calc.stack).to eq [1.64, 1.34, 0.99]
+    expect(@output.string).to eq "1.64\n1.34\n0.99\n"
+  end
 end

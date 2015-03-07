@@ -140,17 +140,13 @@ module DC
       while !line.empty?
         if @string_depth > 0
           line = parse_string(line)
-        elsif line.sub!(/^(_)?(\d+(?:\.(\d+))?)/, '')
-          val = Numeric.new($~[2], $~[3].to_s.length, @scale)
-          val = -val if !!$~[1]
-          push(val)
-        elsif line.sub!(/^(_)?(\.(\d+))/, '')
-          val = Numeric.new($~[2], $~[3].to_s.length, @scale)
-          val = -val if !!$~[1]
-          push(val)
+        elsif line.sub!(/^(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
+          push(number($~[2], $~[1]))
+        elsif line.sub!(/^(_)?(\.([\dA-F]+))/, '')
+          push(number($~[2], $~[1]))
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzXxfIOkK]), '')
+        elsif line.sub!(%r(^[-+*/%dpzXxfiIOkK]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
@@ -174,6 +170,34 @@ module DC
 
     protected
 
+    def number(s, negative=false)
+      int, frac = s.split('.')
+      value = integer(int)
+      frac_digits = frac.to_s.length
+      value += Rational(integer(frac), @ibase ** frac_digits) if frac
+      # For ease of internal conversion and compatibility with the GNU
+      # implementation, the scale is always computed in base 10.  Also for GNU
+      # compatibility, we always compute the number of fractional digits as the
+      # number entered.
+      val = Numeric.new(value, frac_digits, @scale)
+      negative ? -val : val
+    end
+
+    # dc has an odd way of parsing integers. It allows input using any
+    # characters that are valid in hexadecimal, but maintains place value using
+    # the input base.  Thus in base 16, FE is 254; in base 12, it's 194
+    # (15 * 12 + 14); and in base 10, it's 164 (15 * 10 + 14).  Yes, this is
+    # bizarre, but people rely on being able to say Ai to reset the input base
+    # to 10 regardless of its current state.
+    def integer(s)
+      value = 0
+      s.each_char { |c|
+        value *= @ibase
+        value += c.to_i(16)
+      }
+      value
+    end
+
     def dispatch(op, arg = nil)
       case
       when [:+, :-, :*, :/, :%].include?(op)
@@ -186,6 +210,8 @@ module DC
         @stack.unshift Numeric.new(@obase, 0, @scale)
       when op == :K
         @stack.unshift Numeric.new(@scale, 0, @scale)
+      when op == :i
+        @ibase = @stack.shift.to_i
       when op == :k
         @scale = @stack.shift.to_i
       when op == :d
