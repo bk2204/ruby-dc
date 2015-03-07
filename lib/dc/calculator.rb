@@ -281,7 +281,7 @@ module DC
     def binop(op)
       top = @stack.shift
       second = @stack.shift
-      @stack.unshift(Numeric.new(second.send(op, top), @scale, @scale))
+      @stack.unshift(second.send(op, top))
     end
 
     def parse_string(s)
