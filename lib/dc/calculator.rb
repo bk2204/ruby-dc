@@ -128,7 +128,7 @@ module DC
     end
 
     def extensions
-      @extensions.keys.sort
+      @extensions.sort
     end
 
     def push(val)
