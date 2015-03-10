@@ -10,19 +10,23 @@ module DC
 
     def initialize(command)
       @name = :command
-      @command = command
-      super("Invalid command '#{command}'")
+      if command.is_a? Symbol
+        @command = command
+        super("Invalid command '#{command}'")
+      else
+        super(command)
+      end
     end
   end
 
-  class UnsupportedExtensionError < CalculatorError
+  class UnsupportedExtensionError < InvalidCommandError
     attr_reader :command, :standard
 
     def initialize(command, standard)
+      super("Unsupported extension '#{command}': standards #{standard} not enabled")
       @name = :extension
       @command = command
       @standard = standard
-      super("Unsupported extension '#{command}': standards #{standard} not enabled")
     end
   end
 
