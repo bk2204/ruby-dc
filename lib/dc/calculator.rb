@@ -105,6 +105,11 @@ module DC
     def to_s
       format("%.#{@scale}f", @value)
     end
+
+    # Number of digits.
+    def length
+      to_s.sub(/^0\./, '.').gsub('.', '').length
+    end
   end
 
   class Calculator
@@ -150,7 +155,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzXxfiIOkK]), '')
+        elsif line.sub!(%r(^[-+*/%dpzZXxfiIOkK]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
@@ -224,6 +229,8 @@ module DC
         @stack[0], @stack[1] = @stack[1], @stack[0]
       when op == :z
         @stack.unshift Numeric.new(@stack.length, 0, @scale)
+      when op == :Z
+        @stack.unshift @stack.shift.length
       when op == :x
         parse(@stack.shift) if @stack[0].is_a? String
       when op == :X

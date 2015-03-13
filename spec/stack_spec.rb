@@ -48,6 +48,16 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [3, 3, 1]
   end
 
+  it "should calculate the length of a string with Z" do
+    @calc.parse('[abc123] Z')
+    expect(@calc.stack).to eq [6]
+  end
+
+  it "should calculate the length of a number with Z" do
+    @calc.parse('1.2345 Z 2 Z .99 Z')
+    expect(@calc.stack).to eq [2, 1, 5]
+  end
+
   it "should print the top of stack with a newline with p (number)" do
     @calc.parse('1p')
     expect(@output.string).to eq "1\n"
