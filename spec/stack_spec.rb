@@ -159,4 +159,10 @@ describe DC::Calculator do
     @calc.parse('0X 1.234X')
     expect(@calc.stack).to eq [3, 0]
   end
+
+  it "should raise an exception for invalid commands" do
+    expect do
+      @calc.parse('$')
+    end.to raise_exception DC::InvalidCommandError
+  end
 end
