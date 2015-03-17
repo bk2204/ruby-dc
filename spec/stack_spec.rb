@@ -165,4 +165,12 @@ describe DC::Calculator do
       @calc.parse('$')
     end.to raise_exception DC::InvalidCommandError
   end
+
+  it "should raise an exception with proper attributes for invalid commands" do
+    begin
+      @calc.parse('$')
+    rescue DC::InvalidCommandError => e
+      expect(e.command).to eq :"$"
+    end
+  end
 end
