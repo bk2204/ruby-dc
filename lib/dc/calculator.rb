@@ -147,7 +147,7 @@ module DC
     def parse(line)
       line.force_encoding('BINARY')
       while !line.empty?
-        if @string_depth > 0
+        if @string
           line = parse_string(line)
         elsif line.sub!(/^(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
           push(number($~[2], $~[1]))
@@ -324,7 +324,7 @@ module DC
     def parse_string(s)
       offset = 0
       @string ||= ''
-      s.scan(/([^\[\]]*)([\[\]])/) do |code, delim|
+      s.scan(/([^\[\]]*)([\[\]])([^\[\]]+$)?/) do |code, delim, trail|
         @string_depth += (delim == ']' ? -1 : 1)
         offset += code.length + delim.length
         if @string_depth == 0
@@ -332,7 +332,7 @@ module DC
           @string = nil
           return s[offset..-1]
         end
-        @string << code << delim
+        @string << code << delim << trail.to_s
       end
       return ''
     end

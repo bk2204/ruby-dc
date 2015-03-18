@@ -92,4 +92,10 @@ describe DC::Calculator do
   it "should raise for a without extensions enabled" do
     expect { @calc.parse('1a') }.to raise_exception(DC::UnsupportedExtensionError)
   end
+
+  it "should parse strings laid out over multiple calls to parse" do
+    @calc.parse('[4 ')
+    @calc.parse('5 *]x')
+    expect(@calc.stack).to eq [20]
+  end
 end
