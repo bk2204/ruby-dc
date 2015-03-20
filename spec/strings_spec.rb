@@ -96,6 +96,9 @@ describe DC::Calculator do
   it "should parse strings laid out over multiple calls to parse" do
     @calc.parse('[4 ')
     @calc.parse('5 *]x')
-    expect(@calc.stack).to eq [20]
+    @calc.parse('[7 ')
+    @calc.parse('3 +')
+    @calc.parse(']x')
+    expect(@calc.stack).to eq [10, 20]
   end
 end

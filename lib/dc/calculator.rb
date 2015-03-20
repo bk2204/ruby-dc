@@ -324,6 +324,10 @@ module DC
     def parse_string(s)
       offset = 0
       @string ||= ''
+      if !s[/[\[\]]/]
+        @string << s
+        return ''
+      end
       s.scan(/([^\[\]]*)([\[\]])([^\[\]]+$)?/) do |code, delim, trail|
         @string_depth += (delim == ']' ? -1 : 1)
         offset += code.length + delim.length
