@@ -101,4 +101,14 @@ describe DC::Calculator do
     @calc.parse(']x')
     expect(@calc.stack).to eq [10, 20]
   end
+
+  it 'should parse nested strings laid out over multiple calls to parse' do
+    @calc.parse('[[4 ')
+    @calc.parse('5 *]x]x')
+    @calc.parse('[[7 ')
+    @calc.parse('3 +')
+    @calc.parse(']x')
+    @calc.parse(']x')
+    expect(@calc.stack).to eq [10, 20]
+  end
 end
