@@ -125,6 +125,7 @@ module DC
       @ibase = @obase = 10
       @scale = 0
       @extensions = Set.new
+      @stack_level = 0
       [:gnu, :freebsd].each do |ext|
         @extensions.add ext if options[ext] || options[:all]
       end
@@ -145,6 +146,12 @@ module DC
     end
 
     def parse(line)
+      !!do_parse(line)
+    end
+
+    protected
+
+    def do_parse(line)
       line.force_encoding('BINARY')
       while !line.empty?
         if @string
@@ -155,8 +162,13 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzZXxfiIOkK]), '')
+        elsif line.sub!(%r(^[-+*/%dpzZXfiIOkK]), '')
           dispatch($~[0].to_sym)
+        elsif line.sub!(/^x/, '')
+          @stack_level += 1
+          resp = dispatch($~[0].to_sym)
+          @stack_level -= 1
+          return if resp == @stack_level
         elsif line.sub!(/^([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/^(!?[<>=])(.)/, '')
@@ -170,14 +182,13 @@ module DC
         elsif line.start_with? ']'
           raise UnbalancedBracketsError
         elsif line[0] == 'q'
-          raise SystemExit
+          return @stack_level - 1
         else
           raise InvalidCommandError, line[0].to_sym
         end
       end
+      @stack_level
     end
-
-    protected
 
     def number(s, negative=false)
       int, frac = s.split('.')
@@ -232,7 +243,7 @@ module DC
       when op == :Z
         @stack.unshift @stack.shift.length
       when op == :x
-        parse(@stack.shift) if @stack[0].is_a? String
+        do_parse(@stack.shift) if @stack[0].is_a? String
       when op == :X
         top = @stack.shift
         @stack.unshift(top.is_a?(String) ? 0 : top.scale)
@@ -291,7 +302,7 @@ module DC
       top = @stack.shift
       second = @stack.shift
       return unless second.send(op, top)
-      parse(@registers[reg][0])
+      do_parse(@registers[reg][0])
     end
 
     def extcmpop(op, reg)
