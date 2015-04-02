@@ -9,3 +9,4 @@ end
 require 'stringio'
 
 require_relative '../lib/dc/calculator'
+require_relative '../lib/dc/math'
