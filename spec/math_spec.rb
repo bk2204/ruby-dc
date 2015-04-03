@@ -16,4 +16,24 @@ describe DC::Math do
       end
     end
   end
+
+  it 'should compute square roots accurately' do
+    (0..100).each do |x|
+      (0..10).each do |scale|
+        expected = Math.sqrt(x).round(scale)
+        expect(DC::Math.root(x, 2, scale)).to eq expected
+      end
+    end
+  end
+
+  it 'should compute small roots accurately' do
+    (1..100).each do |x|
+      (0..10).each do |scale|
+        (3..7).each do |root|
+          expected = (x.to_f ** (1/root.to_f)).round(scale)
+          expect(DC::Math.root(x, root, scale)).to eq expected
+        end
+      end
+    end
+  end
 end

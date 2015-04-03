@@ -20,5 +20,42 @@ module DC
 
       result
     end
+
+    # Based on the square root algorithm given on the "Newton's method"
+    # Wikipedia page.
+    def self.root(base, root, scale=nil)
+      x0 = base.to_f ** (1 / root.to_f).to_r
+
+      if scale.nil?
+        scales = [base, root].map do |v|
+          v.respond_to?(:scale) ? v.scale : nil
+        end
+        scale = scales.reject(&:nil?).max
+        return x0 if scale.nil?
+      end
+
+      root = root.to_r
+      tolerance = 1.to_r / (10.to_r ** (scale + 1))
+      epsilon = tolerance ** 2
+
+      x0 = x0.to_r
+      x1 = x0
+
+      # Rough approximation.
+      ((scale + 3) * 20).times do
+        y = (x0 ** root) - base
+        y_deriv = root * (x0 ** (root-1))
+
+        break if y_deriv.abs < epsilon
+
+        x1 = x0 - y/y_deriv
+
+        break if (((x1 - x0).abs / x1.abs) < tolerance)
+
+        x0 = x1
+      end
+
+      x1.round(scale)
+    end
   end
 end
