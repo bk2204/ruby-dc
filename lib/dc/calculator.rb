@@ -37,6 +37,24 @@ module DC
     end
   end
 
+  class Scale
+    def initialize(val)
+      @value = val.to_i
+    end
+
+    def to_i
+      @value.to_i
+    end
+
+    def to_f
+      @value.to_f
+    end
+
+    def to_r
+      @value.to_r
+    end
+  end
+
   class Numeric
     include Comparable
 
@@ -53,32 +71,32 @@ module DC
     end
 
     def +(other)
-      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
       Numeric.new(@value + other.value, [@scale, other.scale].max, @k)
     end
 
     def -(other)
-      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
+      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
       Numeric.new(@value - other.value, [@scale, other.scale].max, @k)
     end
 
     def *(other)
-      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
-      scale = [@scale + other.scale, [@scale, other.scale, @k].max].min
+      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      scale = [@scale + other.scale, [@scale, other.scale, k].max].min
       v = (@value * other.value).truncate(scale)
       Numeric.new(v, scale, @k)
     end
 
     def /(other)
-      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
-      v = (@value / other.value).truncate(@k)
-      Numeric.new(v, @k, @k)
+      other = Numeric.new(other, k, k) unless other.is_a? Numeric
+      v = (@value / other.value).truncate(k)
+      Numeric.new(v, k, @k)
     end
 
     def %(other)
-      other = Numeric.new(other, @k, @k) unless other.is_a? Numeric
-      v = (@value % other.value).truncate(@k)
-      Numeric.new(v, @k, @k)
+      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      v = (@value % other.value).truncate(k)
+      Numeric.new(v, k, @k)
     end
 
     def method_missing(symbol, *args)
@@ -110,6 +128,11 @@ module DC
     def length
       to_s.sub(/^0\./, '.').gsub('.', '').length
     end
+
+    protected
+    def k
+      @k.to_i
+    end
   end
 
   class Calculator
@@ -123,7 +146,7 @@ module DC
       @string_depth = 0
       @string = nil
       @ibase = @obase = 10
-      @scale = 0
+      @scale = Scale.new 0
       @extensions = Set.new
       @stack_level = 0
       [:gnu, :freebsd].each do |ext|
@@ -229,7 +252,7 @@ module DC
       when op == :O
         @stack.unshift Numeric.new(@obase, 0, @scale)
       when op == :K
-        @stack.unshift Numeric.new(@scale, 0, @scale)
+        @stack.unshift Numeric.new(@scale.to_r, 0, @scale)
       when op == :i
         @ibase = @stack.shift.to_i
       when op == :k
