@@ -99,6 +99,11 @@ module DC
       Numeric.new(v, k, @k)
     end
 
+    def **(other)
+      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      Numeric.new(@value ** other.value, k, @k)
+    end
+
     def method_missing(symbol, *args)
       @value.send(symbol, *args)
     end
@@ -185,7 +190,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%dpzZXfiIOkK]), '')
+        elsif line.sub!(%r(^[-+*/%^dpzZXfiIOkK]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^x/, '')
           @stack_level += 1
@@ -243,7 +248,7 @@ module DC
 
     def dispatch(op, arg = nil)
       case
-      when [:+, :-, :*, :/, :%].include?(op)
+      when [:+, :-, :*, :/, :%, :^].include?(op)
         binop op
       when [:p, :n, :f].include?(op)
         printop(op)
@@ -350,6 +355,8 @@ module DC
     end
 
     def binop(op)
+      map = {:^ => :**}
+      op = map[op] || op
       top = @stack.shift
       second = @stack.shift
       @stack.unshift(second.send(op, top))

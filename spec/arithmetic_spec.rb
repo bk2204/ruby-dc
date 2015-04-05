@@ -22,6 +22,11 @@ describe DC::Calculator do
     expect(@output.string).to eq "-2\n"
   end
 
+  it "exponentiate two numbers with ^" do
+    @calc.parse('3 2^p 5 3^p')
+    expect(@output.string).to eq "9\n125\n"
+  end
+
   it "should computer expected values for remainder" do
     # GNU dc documents that % is the same as the sequence Sd dld/ Ld*-.
     a = [4, -4, 2, -2]
