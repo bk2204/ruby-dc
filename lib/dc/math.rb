@@ -38,13 +38,16 @@ module DC
       tolerance = 1.to_r / (10.to_r ** (scale + 1))
       epsilon = tolerance ** 2
 
+      f = lambda { |x| (x ** root) - base }
+      fprime = lambda { |x| root * (x ** (root-1)) }
+
       x0 = x0.to_r
       x1 = x0
 
       # Rough approximation.
       ((scale + 3) * 20).times do
-        y = (x0 ** root) - base
-        y_deriv = root * (x0 ** (root-1))
+        y = f.call(x0)
+        y_deriv = fprime.call(x0)
 
         break if y_deriv.abs < epsilon
 

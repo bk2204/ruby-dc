@@ -36,4 +36,8 @@ describe DC::Math do
       end
     end
   end
+
+  it 'should compute some expected values accurately' do
+    expect(DC::Math.root(2, 2, 20)).to eq Rational('1.41421356237309504880')
+  end
 end
