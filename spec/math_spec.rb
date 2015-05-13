@@ -17,6 +17,11 @@ describe DC::Math do
     end
   end
 
+  it 'should fail when trying to modexp with invalid exponents' do
+    expect { DC::Math.modexp(10, -1, 5) }.to raise_exception RangeError
+    expect { DC::Math.modexp(10, 0.5, 5) }.to raise_exception RangeError
+  end
+
   it 'should compute square roots accurately' do
     (0..100).each do |x|
       (0..10).each do |scale|
