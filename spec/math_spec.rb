@@ -42,6 +42,11 @@ describe DC::Math do
     end
   end
 
+  it 'should detect proper scale if possible' do
+    base = DC::Numeric.new(2, 20, 20)
+    expect(DC::Math.root(base, 2)).to eq Rational('1.41421356237309504880')
+  end
+
   it 'should compute some expected values accurately' do
     expect(DC::Math.root(2, 2, 20)).to eq Rational('1.41421356237309504880')
   end
