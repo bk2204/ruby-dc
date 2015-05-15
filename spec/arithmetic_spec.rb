@@ -81,4 +81,10 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [1.64, 1.34, 0.99]
     expect(@output.string).to eq "1.64\n1.34\n0.99\n"
   end
+
+  it 'should compute square roots correctly' do
+    result = '1.41421356237309504880'
+    @calc.parse('20k 2vp')
+    expect(@calc.stack).to eq [Rational(result)]
+  end
 end

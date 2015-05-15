@@ -190,7 +190,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/^\s+/, '')
         elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%^dpzZXfiIOkK]), '')
+        elsif line.sub!(%r(^[-+*/%^dpzZXfiIOkKv]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/^x/, '')
           @stack_level += 1
@@ -277,6 +277,9 @@ module DC
         @stack.unshift(top.is_a?(String) ? 0 : top.scale)
       when op == :a
         stringify
+      when op == :v
+        result = DC::Math.root(@stack.shift, 2, @scale)
+        @stack.unshift(Numeric.new(result, @scale, @scale))
       when op == :N
         @stack.unshift(Numeric.new(@stack.shift == 0 ? 1 : 0, 0, @scale))
       when op == :R
