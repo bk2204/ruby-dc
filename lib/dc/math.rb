@@ -59,7 +59,7 @@ module DC
         x0 = x1
       end
 
-      x1.round(scale)
+      x1.truncate(scale)
     end
   end
 end
