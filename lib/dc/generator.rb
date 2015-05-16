@@ -15,18 +15,29 @@ module DC
   # to write and test implementations of the math library, and hopefully to aid
   # others in developing additional useful functions.
   class Generator
+    def initialize
+      @registers = {}
+    end
+
     def emit(s)
-      process(Parser::CurrentRuby.parse(s))
+      process(Parser::CurrentRuby.parse(s)) + cleanup()
     end
 
     protected
 
     def process(node)
       case node.type
+      when :begin
+        node.children.map { |child| process(child) }.join("\n")
       when :send
         process_message(*(node.children))
+      when :lvasgn
+        process(node.children[1]) + "S#{register(node.children[0])}"
+      when :lvar
+        "l#{register(node.children[0])}"
       when :int
-        node.children[0] < 0 ? "_#{node.children[0].abs}" : node.children[0]
+        val = node.children[0]
+        val < 0 ? "_#{val.abs}" : val.to_s
       else
         fail UnimplementedNodeError, "Unknown node type #{node.type}"
       end
@@ -39,6 +50,18 @@ module DC
       else
         fail UnimplementedNodeError, "Unknown message #{message}"
       end
+    end
+
+    def register(var)
+      @registers[var] ||= (128 + @registers.length).chr('ASCII-8BIT')
+    end
+
+    def cleanup
+      s = ''
+      @registers.values.each do |reg|
+        s << "L#{reg} d-+"
+      end
+      s
     end
   end
 end

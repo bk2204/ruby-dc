@@ -25,4 +25,10 @@ describe DC::Generator do
       end
     end
   end
+
+  it 'should generate proper results for assignment operators' do
+    (-2..2).each do |x|
+      generate_and_compare "x = #{x}; x"
+    end
+  end
 end
