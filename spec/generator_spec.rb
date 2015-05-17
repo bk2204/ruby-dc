@@ -31,4 +31,14 @@ describe DC::Generator do
       generate_and_compare "x = #{x}; x"
     end
   end
+
+  it 'should generate proper results for assignment operators' do
+    (-2..2).each do |x|
+      (-2..2).each do |y|
+        [:+, :-, :*].each do |op|
+          generate_and_compare "x = #{x}; x #{op}= #{y}"
+        end
+      end
+    end
+  end
 end
