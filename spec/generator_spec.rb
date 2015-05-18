@@ -41,4 +41,9 @@ describe DC::Generator do
       end
     end
   end
+
+  it 'should treat to_r as a no-op' do
+    generate_and_compare 'x = 1.to_r; x'
+    generate_and_compare 'x = 1; y = x.to_r'
+  end
 end

@@ -59,6 +59,8 @@ module DC
       case
       when [:+, :-, :*, :/].include?(message)
         process_binop(invocant, message, args[0])
+      when message == :to_r
+        process(invocant)
       else
         fail UnimplementedNodeError, "Unknown message #{message}"
       end
