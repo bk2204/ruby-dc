@@ -93,7 +93,7 @@ module DC
     def cleanup
       s = ''
       @registers.values.each do |reg|
-        s << "L#{reg} d-+"
+        s << "L#{reg} R"
       end
       s
     end

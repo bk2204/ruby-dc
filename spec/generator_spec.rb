@@ -5,7 +5,7 @@ describe DC::Generator do
     dc = DC::Generator.new.emit(s)
     output = StringIO.new('', 'w+')
     input = StringIO.new('', 'r')
-    calc = DC::Calculator.new(input, output)
+    calc = DC::Calculator.new(input, output, all: true)
     calc.parse(dc)
     calc
   end
