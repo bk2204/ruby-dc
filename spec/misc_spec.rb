@@ -14,6 +14,7 @@ describe DC::Calculator do
 
   it 'should return false when exiting due to q' do
     expect(@calc.parse('[4 5 q]x')).to eq false
+    expect(@calc.parse('4 5 q')).to eq false
   end
 
   it 'should return true when not exiting due to q' do

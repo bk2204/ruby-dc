@@ -5,5 +5,5 @@ require 'dc/calculator'
 calc = DC::Calculator.new($stdin, $stdout, all: true)
 
 $stdin.each do |line|
-  calc.parse(line)
+  exit unless calc.parse(line)
 end

@@ -210,6 +210,7 @@ module DC
         elsif line.start_with? ']'
           raise UnbalancedBracketsError
         elsif line[0] == 'q'
+          return if @stack_level == 0
           return @stack_level - 1
         else
           raise InvalidCommandError, line[0].to_sym
