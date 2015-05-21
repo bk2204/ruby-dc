@@ -37,6 +37,9 @@ module DC
     end
   end
 
+  class InternalCalculatorError < CalculatorError
+  end
+
   class Scale
     def initialize(val)
       @value = val.to_i
@@ -170,10 +173,12 @@ module DC
     end
 
     def push(val)
+      fail InternalCalculatorError, 'Trying to push invalid value' if val.nil?
       @stack.unshift(val)
     end
 
     def pop
+      fail InternalCalculatorErro, 'Trying to pop empty stack' if @stack.empty?
       @stack.shift
     end
 
