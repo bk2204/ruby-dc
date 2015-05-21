@@ -173,6 +173,10 @@ module DC
       @stack.unshift(val)
     end
 
+    def pop
+      @stack.shift
+    end
+
     def parse(line)
       !!do_parse(line)
     end
@@ -254,37 +258,40 @@ module DC
       when [:p, :n, :f].include?(op)
         printop(op)
       when op == :I
-        @stack.unshift Numeric.new(@ibase, 0, @scale)
+        push Numeric.new(@ibase, 0, @scale)
       when op == :O
-        @stack.unshift Numeric.new(@obase, 0, @scale)
+        push Numeric.new(@obase, 0, @scale)
       when op == :K
-        @stack.unshift Numeric.new(@scale.to_r, 0, @scale)
+        push Numeric.new(@scale.to_r, 0, @scale)
       when op == :i
-        @ibase = @stack.shift.to_i
+        @ibase = pop.to_i
       when op == :k
-        @scale = @stack.shift.to_i
+        @scale = pop.to_i
       when op == :d
-        @stack.unshift @stack[0]
+        push @stack[0]
       when op == :r
-        @stack[0], @stack[1] = @stack[1], @stack[0]
+        a = pop
+        b = pop
+        push a
+        push b
       when op == :z
-        @stack.unshift Numeric.new(@stack.length, 0, @scale)
+        push Numeric.new(@stack.length, 0, @scale)
       when op == :Z
-        @stack.unshift @stack.shift.length
+        push pop.length
       when op == :x
-        do_parse(@stack.shift) if @stack[0].is_a? String
+        do_parse(pop) if @stack[0].is_a? String
       when op == :X
-        top = @stack.shift
-        @stack.unshift(top.is_a?(String) ? 0 : top.scale)
+        top = pop
+        push(top.is_a?(String) ? 0 : top.scale)
       when op == :a
         stringify
       when op == :v
-        result = DC::Math.root(@stack.shift, 2, @scale)
-        @stack.unshift(Numeric.new(result, @scale, @scale))
+        result = DC::Math.root(pop, 2, @scale)
+        push(Numeric.new(result, @scale, @scale))
       when op == :N
-        @stack.unshift(Numeric.new(@stack.shift == 0 ? 1 : 0, 0, @scale))
+        push(Numeric.new(pop == 0 ? 1 : 0, 0, @scale))
       when op == :R
-        @stack.shift
+        pop
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
@@ -305,7 +312,7 @@ module DC
     end
 
     def stringify
-      val = @stack.shift
+      val = pop
       if val.is_a? String
         val = val.empty? ? '' : val[0]
       else
@@ -319,7 +326,7 @@ module DC
       when :p
         @output.puts @stack[0]
       when :n
-        val = @stack.shift
+        val = pop
         @output.print val
       when :f
         @stack.each do |item|
@@ -331,8 +338,8 @@ module DC
     def cmpop(op, reg)
       syms = { :'=' => :==, :'!>' => :<=, :'!<' => :>= }
       op = syms[op] || op
-      top = @stack.shift
-      second = @stack.shift
+      top = pop
+      second = pop
       return unless second.send(op, top)
       do_parse(@registers[reg][0])
     end
@@ -340,30 +347,30 @@ module DC
     def extcmpop(op, reg)
       syms = { :G => :==, :"(" => :<, :"{" => :<= }
       op = syms[op]
-      top = @stack.shift
-      second = @stack.shift
+      top = pop
+      second = pop
       push(Numeric.new(top.send(op, second) ? 1 : 0, 0, @scale))
     end
 
     def regop(op, reg)
       case op
       when :L
-        @stack.unshift @registers[reg].shift
+        push @registers[reg].shift
       when :S
-        @registers[reg].unshift @stack.shift
+        @registers[reg].unshift pop
       when :l
-        @stack.unshift @registers[reg][0]
+        push @registers[reg][0]
       when :s
-        @registers[reg][0] = @stack.shift
+        @registers[reg][0] = pop
       end
     end
 
     def binop(op)
       map = {:^ => :**}
       op = map[op] || op
-      top = @stack.shift
-      second = @stack.shift
-      @stack.unshift(second.send(op, top))
+      top = pop
+      second = pop
+      push(second.send(op, top))
     end
 
     def parse_string(s)
