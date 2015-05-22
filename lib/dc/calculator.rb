@@ -183,7 +183,7 @@ module DC
     end
 
     def parse(line)
-      !!do_parse(line)
+      !!do_parse(line.dup)
     end
 
     protected
