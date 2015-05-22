@@ -46,4 +46,10 @@ describe DC::Generator do
     generate_and_compare 'x = 1.to_r; x'
     generate_and_compare 'x = 1; y = x.to_r'
   end
+
+  it 'should truncate values with to_i' do
+    (-20..20).each do |x|
+      generate_and_compare "x = #{x / 10.0}.to_i; x"
+    end
+  end
 end

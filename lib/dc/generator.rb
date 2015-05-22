@@ -41,7 +41,7 @@ module DC
         process_op_assign(*node.children)
       when :lvar
         process_load(node.children[0])
-      when :int
+      when :int, :float
         val = node.children[0]
         val < 0 ? "_#{val.abs}" : val.to_s
       else
@@ -61,6 +61,8 @@ module DC
         process_binop(invocant, message, args[0])
       when message == :to_r
         process(invocant)
+      when message == :to_i
+        'K 0k ' << process(invocant) << ' 1/ rk'
       else
         fail UnimplementedNodeError, "Unknown message #{message}"
       end
