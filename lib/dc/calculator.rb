@@ -193,26 +193,26 @@ module DC
       while !line.empty?
         if @string
           line = parse_string(line)
-        elsif line.sub!(/^(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
+        elsif line.sub!(/\A(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
           push(number($~[2], $~[1]))
-        elsif line.sub!(/^(_)?(\.([\dA-F]+))/, '')
+        elsif line.sub!(/\A(_)?(\.([\dA-F]+))/, '')
           push(number($~[2], $~[1]))
-        elsif line.sub!(/^\s+/, '')
-        elsif line.sub!(/^#[^\n]+/, '')
-        elsif line.sub!(%r(^[-+*/%^dpzZXfiIOkKv]), '')
+        elsif line.sub!(/\A\s+/, '')
+        elsif line.sub!(/\A#[^\n]+/, '')
+        elsif line.sub!(%r(\A[-+*/%^dpzZXfiIOkKv]), '')
           dispatch($~[0].to_sym)
-        elsif line.sub!(/^x/, '')
+        elsif line.sub!(/\Ax/, '')
           @stack_level += 1
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
           return if resp == @stack_level
-        elsif line.sub!(/^([SsLl])(.)/, '')
+        elsif line.sub!(/\A([SsLl])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/^(!?[<>=])(.)/, '')
+        elsif line.sub!(/\A(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/^([nra])/, '')
+        elsif line.sub!(/\A([nra])/, '')
           dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
-        elsif line.sub!(/^([NRG({])/, '')
+        elsif line.sub!(/\A([NRG({])/, '')
           dispatch_extension($~[0].to_sym, [:freebsd])
         elsif line.start_with? '['
           line = parse_string(line)

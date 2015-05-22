@@ -30,4 +30,11 @@ describe DC::Calculator do
   it 'should return true when exiting normally' do
     expect(@calc.parse('[4 5 *]x')).to eq true
   end
+
+  it 'should parse multiline strings properly' do
+    code = "K 0k 2.0 1/ rkS@\nl@L@ R"
+    calc = DC::Calculator.new(@input, @output, all: true)
+    expect { calc.parse(code) }.not_to raise_exception
+    expect(calc.stack).to eq [2]
+  end
 end
