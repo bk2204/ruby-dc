@@ -173,4 +173,9 @@ describe DC::Calculator do
       expect(e.command).to eq :"$"
     end
   end
+
+  it "should clear the stack with c" do
+    @calc.parse('1 2 c 4 5')
+    expect(@calc.stack).to eq [5, 4]
+  end
 end

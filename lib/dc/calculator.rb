@@ -199,7 +199,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/\A\s+/, '')
         elsif line.sub!(/\A#[^\n]+/, '')
-        elsif line.sub!(%r(\A[-+*/%^dpzZXfiIOkKv]), '')
+        elsif line.sub!(%r(\A[-+*/%^dpzZXfiIOkKvc]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/\Ax/, '')
           @stack_level += 1
@@ -274,6 +274,8 @@ module DC
         @scale = pop.to_i
       when op == :d
         push @stack[0]
+      when op == :c
+        @stack.clear
       when op == :r
         a = pop
         b = pop
