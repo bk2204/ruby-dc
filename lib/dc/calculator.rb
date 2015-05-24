@@ -178,7 +178,7 @@ module DC
     end
 
     def pop
-      fail InternalCalculatorErro, 'Trying to pop empty stack' if @stack.empty?
+      fail InternalCalculatorError, 'Trying to pop empty stack' if @stack.empty?
       @stack.shift
     end
 
