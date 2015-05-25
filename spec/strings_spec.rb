@@ -102,6 +102,11 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [10, 20]
   end
 
+  it "should parse strings laid out over multiple lines" do
+    @calc.parse("[4 \n5 *]x\n[7 3 +\n]x")
+    expect(@calc.stack).to eq [10, 20]
+  end
+
   it 'should parse nested strings laid out over multiple calls to parse' do
     @calc.parse('[[4 ')
     @calc.parse('5 *]x]x')
