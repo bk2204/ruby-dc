@@ -52,4 +52,8 @@ describe DC::Generator do
       generate_and_compare "x = #{x / 10.0}.to_i; x"
     end
   end
+
+  it 'should call functions correctly' do
+    generate_and_compare "def e(x); y = x + 1; y; end; e(2)"
+  end
 end

@@ -7,6 +7,9 @@ module DC
   class UnimplementedNodeError < GeneratorError
   end
 
+  class InvalidNameError < GeneratorError
+  end
+
   # A class to generate dc code from Ruby.
   #
   # This class is intentionally designed to be very stupid.  It will never learn
@@ -44,6 +47,8 @@ module DC
       when :int, :float
         val = node.children[0]
         val < 0 ? "_#{val.abs}" : val.to_s
+      when :def
+        process_def(*node.children)
       else
         fail UnimplementedNodeError, "Unknown node type #{node.type}"
       end
@@ -63,6 +68,9 @@ module DC
         process(invocant)
       when message == :to_i
         'K 0k ' << process(invocant) << ' 1/ rk'
+      when invocant.nil? && message.length == 1
+        # dc function call
+        process(args[0]) + "l#{message}x"
       else
         fail UnimplementedNodeError, "Unknown message #{message}"
       end
@@ -86,6 +94,20 @@ module DC
       result = process_load(reg)
       result << process_binop(nil, op, val)
       result << process_store(reg)
+    end
+
+    def process_def(name, args, code)
+      if name.length > 1
+        fail InvalidNameError, "name must be a single character, not #{name}"
+      end
+      if args.children.length > 1
+        fail NotImplementedError, "multiple arguments not supported"
+      end
+      gen = DC::Generator.new
+      result = '['
+      result << gen.process_store(args.children[0].children[0])
+      result << gen.process(code)
+      result << "]S#{name}"
     end
 
     def register(var)
