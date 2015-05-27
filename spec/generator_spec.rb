@@ -45,15 +45,18 @@ describe DC::Generator do
   it 'should treat to_r as a no-op' do
     generate_and_compare 'x = 1.to_r; x'
     generate_and_compare 'x = 1; y = x.to_r'
+    generate_and_compare 'x = 1; x.to_r'
   end
 
   it 'should truncate values with to_i' do
     (-20..20).each do |x|
       generate_and_compare "x = #{x / 10.0}.to_i; x"
+      generate_and_compare "#{x / 10.0}.to_i"
     end
   end
 
   it 'should call functions correctly' do
     generate_and_compare "def e(x); y = x + 1; y; end; e(2)"
+    generate_and_compare "def e(x); x + 1; end; e(2)"
   end
 end
