@@ -1,0 +1,5 @@
+#!/usr/bin/ruby
+
+require 'dc/generator'
+
+puts DC::Generator.new().emit(ARGF.read)
