@@ -59,4 +59,10 @@ describe DC::Generator do
     generate_and_compare "def e(x); y = x + 1; y; end; e(2)"
     generate_and_compare "def e(x); x + 1; end; e(2)"
   end
+
+  it 'should raise when function names are too long' do
+    expect do
+      generate_and_compare 'def foo(x); y = x + 1; y; end; foo(2)'
+    end.to raise_exception(DC::InvalidNameError, /single character/)
+  end
 end
