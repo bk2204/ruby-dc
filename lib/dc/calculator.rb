@@ -129,7 +129,18 @@ module DC
     end
 
     def to_s
-      format("%.#{@scale}f", @value)
+      i = @value.to_i
+      temp = @value.to_r.truncate(@scale)
+      frac = temp - i
+      s = i.to_s
+      s << '.' if @scale > 0
+      @scale.times do |j|
+        frac *= 10
+        value = frac.to_i
+        frac -= value
+        s << value.to_s
+      end
+      s
     end
 
     # Number of digits.

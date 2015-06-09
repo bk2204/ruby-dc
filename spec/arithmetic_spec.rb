@@ -86,5 +86,6 @@ describe DC::Calculator do
     result = '1.41421356237309504880'
     @calc.parse('20k 2vp')
     expect(@calc.stack).to eq [Rational(result)]
+    expect(@output.string).to eq "#{result}\n"
   end
 end
