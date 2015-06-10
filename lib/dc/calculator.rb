@@ -161,6 +161,7 @@ module DC
     def initialize(input = $stdin, output = $stdout, options = {})
       @stack = []
       @registers = Hash.new { |hash, key| hash[key] = [] }
+      @arrays = Hash.new { |hash, key| hash[key] = [] }
       @input = input
       @output = output
       @string_depth = 0
@@ -172,6 +173,10 @@ module DC
       [:gnu, :freebsd].each do |ext|
         @extensions.add ext if options[ext] || options[:all]
       end
+    end
+
+    def arrays
+      @arrays.map { |k, v| [k, v[0]] }.to_h
     end
 
     def extension?(option)
@@ -218,7 +223,7 @@ module DC
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
           return if resp == @stack_level
-        elsif line.sub!(/\A([SsLl])(.)/, '')
+        elsif line.sub!(/\A([SsLl:;])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/\A(!?[<>=])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
@@ -319,6 +324,8 @@ module DC
         cmpop op, arg
       when [:G, :'(', :'{'].include?(op)
         extcmpop op, arg
+      when [:';', :':'].include?(op)
+        arrayop op, arg
       end
     end
 
@@ -330,6 +337,18 @@ module DC
     def convert_string(s)
       # FreeBSD uses C-style strings (boo!)
       s == "\x00" && extension?(:freebsd) && !extension?(:gnu) ? '' : s
+    end
+
+    def arrayop(op, reg)
+      @arrays[reg][0] ||= []
+      index = pop
+      case op
+      when :':'
+        value = pop
+        @arrays[reg][0][index] = value
+      when :';'
+        push(@arrays[reg][0][index] || 0)
+      end
     end
 
     def stringify
@@ -381,8 +400,10 @@ module DC
       case op
       when :L
         push @registers[reg].shift
+        @arrays[reg].shift
       when :S
         @registers[reg].unshift pop
+        @arrays[reg].unshift []
       when :l
         push @registers[reg][0]
       when :s
