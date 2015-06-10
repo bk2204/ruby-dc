@@ -1,15 +1,25 @@
-A very tiny and woefully incomplete version of dc.  Currently understands:
+ruby-dc
+=======
 
-* positive and negative integers
-* basic arithmetic
-* p (print)
-* q (quit)
+This is a reasonably complete version of dc.  It currently understands most
+operators, including FreeBSD and GNU extensions, except the following:
 
-Goals:
+* ~
+* |
+* J
+* M
+* P
+* Q
+* !
+* ?
 
-* library
+== Goals
+
+* A math library implementing at least the bc -l features.
 * GNU features
-* OpenBSD features
-* maybe conversion to other formats
+* FreeBSD features
+* A simple Ruby-to-dc converter
 
-License: MIT
+== License
+
+MIT
