@@ -82,6 +82,12 @@ describe DC::Calculator do
     expect(@output.string).to eq "1.64\n1.34\n0.99\n"
   end
 
+  it 'should print values in the output base' do
+    @calc.parse('16i FF F 1+op Aop')
+    expect(@calc.stack).to eq [255]
+    expect(@output.string).to eq "FF\n255\n"
+  end
+
   it 'should compute square roots correctly' do
     result = '1.41421356237309504880'
     @calc.parse('20k 2vp')

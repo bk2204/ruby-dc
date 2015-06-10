@@ -128,17 +128,18 @@ module DC
       @value.to_f
     end
 
-    def to_s
+    def to_s(base=10)
+      base = base.to_i
       i = @value.to_i
       temp = @value.to_r.truncate(@scale)
       frac = temp - i
-      s = i.to_s
+      s = i.to_s(base)
       s << '.' if @scale > 0
       @scale.times do |j|
-        frac *= 10
+        frac *= base
         value = frac.to_i
         frac -= value
-        s << value.to_s
+        s << value.to_s(base)
       end
       s
     end
@@ -210,7 +211,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/\A\s+/, '')
         elsif line.sub!(/\A#[^\n]+/, '')
-        elsif line.sub!(%r(\A[-+*/%^dpzZXfiIOkKvc]), '')
+        elsif line.sub!(%r(\A[-+*/%^dpzZXfiIoOkKvc]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/\Ax/, '')
           @stack_level += 1
@@ -281,6 +282,8 @@ module DC
         push Numeric.new(@scale.to_r, 0, @scale)
       when op == :i
         @ibase = pop.to_i
+      when op == :o
+        @obase = pop.to_i
       when op == :k
         @scale = pop.to_i
       when op == :d
@@ -339,16 +342,20 @@ module DC
       push(val)
     end
 
+    def printable(val)
+      val.is_a?(DC::Numeric) ? val.to_s(@obase).upcase : val
+    end
+
     def printop(op)
       case op
       when :p
-        @output.puts @stack[0]
+        @output.puts printable(@stack[0])
       when :n
         val = pop
-        @output.print val
+        @output.print printable(val)
       when :f
         @stack.each do |item|
-          @output.puts item
+          @output.puts printable(item)
         end
       end
     end
