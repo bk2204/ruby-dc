@@ -88,6 +88,18 @@ describe DC::Calculator do
     expect(@output.string).to eq "FF\n255\n"
   end
 
+  it 'should print fractional values in the output base' do
+    @calc.parse('4k 16i FF F 1+/ 1k F 1+op Aop')
+    expect(@calc.stack).to eq [15.9375]
+    expect(@output.string).to eq "F.F000\n15.9375\n"
+  end
+
+  it 'should print fractional values in the output base (truncated)' do
+    @calc.parse('1k 16i FF F 1+/ F 1+op Aop')
+    expect(@calc.stack).to eq [15.9]
+    expect(@output.string).to eq "F.E\n15.9\n"
+  end
+
   it 'should compute square roots correctly' do
     result = '1.41421356237309504880'
     @calc.parse('20k 2vp')
