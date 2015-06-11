@@ -216,7 +216,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/\A\s+/, '')
         elsif line.sub!(/\A#[^\n]+/, '')
-        elsif line.sub!(%r(\A[-+*/%^dpzZXfiIoOkKvc]), '')
+        elsif line.sub!(%r(\A[-+*/%^|dpzZXfiIoOkKvc]), '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/\Ax/, '')
           @stack_level += 1
@@ -279,6 +279,11 @@ module DC
         binop op
       when [:p, :n, :f].include?(op)
         printop(op)
+      when op == :|
+        mod = pop.to_r
+        exp = pop.to_i
+        base = pop.to_i
+        push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
       when op == :I
         push Numeric.new(@ibase, 0, @scale)
       when op == :O

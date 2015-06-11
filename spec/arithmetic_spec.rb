@@ -106,4 +106,16 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [Rational(result)]
     expect(@output.string).to eq "#{result}\n"
   end
+
+  it 'should compute modular exponentiation correctly' do
+    12.times do |i|
+      expected = (2 ** i) % 11
+      output = StringIO.new('', 'w+')
+      input = StringIO.new('', 'r')
+      calc = DC::Calculator.new(input, output)
+      calc.parse("2 #{i} 11|p")
+      expect(calc.stack).to eq [expected]
+      expect(output.string).to eq "#{expected}\n"
+    end
+  end
 end

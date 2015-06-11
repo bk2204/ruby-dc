@@ -5,7 +5,6 @@ This is a reasonably complete version of dc.  It currently understands most
 operators, including FreeBSD and GNU extensions, except the following:
 
 * ~
-* |
 * J
 * M
 * P
