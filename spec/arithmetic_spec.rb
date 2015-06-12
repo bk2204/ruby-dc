@@ -118,4 +118,18 @@ describe DC::Calculator do
       expect(output.string).to eq "#{expected}\n"
     end
   end
+
+  it 'should compute modular exponentiation correctly' do
+    10.times do |i0|
+      25.times do |j|
+        i = i0 + 1
+        expected = [j % i, j / i]
+        output = StringIO.new('', 'w+')
+        input = StringIO.new('', 'r')
+        calc = DC::Calculator.new(input, output)
+        calc.parse("#{j} #{i}~")
+        expect(calc.stack).to eq expected
+      end
+    end
+  end
 end
