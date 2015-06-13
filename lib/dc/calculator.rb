@@ -231,6 +231,8 @@ module DC
           dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
         elsif line.sub!(/\A([NRG({])/, '')
           dispatch_extension($~[0].to_sym, [:freebsd])
+        elsif line.sub!(/\A\?/, '')
+          do_parse(@input.gets)
         elsif line.start_with? '['
           line = parse_string(line)
         elsif line.start_with? ']'

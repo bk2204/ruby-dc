@@ -116,4 +116,11 @@ describe DC::Calculator do
     @calc.parse(']x')
     expect(@calc.stack).to eq [10, 20]
   end
+
+  it 'should read and execute a line with ?' do
+    @input.string = "4 5 *\n6 *\n"
+    @calc.parse('2 ? 3*p')
+    expect(@calc.stack).to eq [60, 2]
+    expect(@output.string).to eq "60\n"
+  end
 end

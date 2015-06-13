@@ -9,7 +9,6 @@ operators, including FreeBSD and GNU extensions, except the following:
 * P
 * Q
 * !
-* ?
 
 == Goals
 
