@@ -37,4 +37,26 @@ describe DC::Calculator do
     expect { calc.parse(code) }.not_to raise_exception
     expect(calc.stack).to eq [2]
   end
+
+  it 'should not execute strings by default' do
+    Dir.mktmpdir do |dir|
+      calc = DC::Calculator.new(@input, @output, all: true)
+      file = File.join(dir, 'foo')
+      code = "! touch #{file}"
+      expect { calc.parse(code) }.to raise_exception DC::InsecureCommandError
+      expect { File.stat(file) }.to raise_exception Errno::ENOENT
+      expect(calc.secure?).to eq true
+    end
+  end
+
+  it 'should not execute strings by default' do
+    Dir.mktmpdir do |dir|
+      calc = DC::Calculator.new(@input, @output, all: true, insecure: true)
+      file = File.join(dir, 'foo')
+      code = "! touch #{file}"
+      expect { calc.parse(code) }.not_to raise_exception
+      expect { File.stat(file) }.not_to raise_exception
+      expect(calc.secure?).to eq false
+    end
+  end
 end

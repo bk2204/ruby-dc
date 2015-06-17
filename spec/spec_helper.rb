@@ -7,6 +7,7 @@ if ENV['COVERAGE']
 end
 
 require 'stringio'
+require 'tmpdir'
 
 require_relative '../lib/dc/calculator'
 require_relative '../lib/dc/math'

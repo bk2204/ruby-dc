@@ -40,6 +40,9 @@ module DC
   class InternalCalculatorError < CalculatorError
   end
 
+  class InsecureCommandError < CalculatorError
+  end
+
   class Scale
     def initialize(val)
       @value = val.to_i
@@ -173,6 +176,7 @@ module DC
       [:gnu, :freebsd].each do |ext|
         @extensions.add ext if options[ext] || options[:all]
       end
+      @extensions.add :insecure if options[:insecure]
     end
 
     def arrays
@@ -201,6 +205,10 @@ module DC
 
     def parse(line)
       !!do_parse(line.dup)
+    end
+
+    def secure?
+      !@extensions.include? :insecure
     end
 
     protected
@@ -233,6 +241,8 @@ module DC
           dispatch_extension($~[0].to_sym, [:freebsd])
         elsif line.sub!(/\A\?/, '')
           do_parse(@input.gets)
+        elsif line.sub!(/\A(!)([^\n]+)/, '')
+          dispatch_insecure($~[1].to_sym, $~[2])
         elsif line.start_with? '['
           line = parse_string(line)
         elsif line.start_with? ']'
@@ -338,6 +348,15 @@ module DC
         extcmpop op, arg
       when [:';', :':'].include?(op)
         arrayop op, arg
+      end
+    end
+
+
+    def dispatch_insecure(op, arg)
+      raise InsecureCommandError, op if secure?
+      case op
+      when :!
+        system(arg)
       end
     end
 
