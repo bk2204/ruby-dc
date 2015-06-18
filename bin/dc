@@ -2,7 +2,7 @@
 
 require 'dc/calculator'
 
-calc = DC::Calculator.new($stdin, $stdout, all: true)
+calc = DC::Calculator.new($stdin, $stdout, all: true, insecure: true)
 
 $stdin.each do |line|
   exit unless calc.parse(line)
