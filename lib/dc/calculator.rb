@@ -231,8 +231,10 @@ module DC
           @stack_level += 1
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
-          return resp if !resp.nil? && resp < @stack_level && !@break
-          return if resp == @stack_level && @break
+          unless resp.nil?
+            return resp if resp <= @stack_level && !@break
+            return if resp == @stack_level && @break
+          end
         elsif line.sub!(/\A([SsLl:;])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/\A(!?[<>=])(.)/, '')
@@ -256,7 +258,7 @@ module DC
           level = pop.to_i
           @break = false
           return 0 if level > @stack_level
-          return @stack_level - level
+          return @stack_level - level + 1
         else
           raise InvalidCommandError, line[0].to_sym
         end
