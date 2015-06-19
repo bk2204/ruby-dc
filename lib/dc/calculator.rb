@@ -257,7 +257,7 @@ module DC
         elsif line[0] == 'Q'
           level = pop.to_i
           @break = false
-          return 0 if level > @stack_level
+          return 1 if level > @stack_level
           return @stack_level - level + 1
         else
           raise InvalidCommandError, line[0].to_sym

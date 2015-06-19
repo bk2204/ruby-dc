@@ -37,6 +37,11 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [6, 5, 4]
   end
 
+  it 'should handle overly large level values with Q' do
+    expect(@calc.parse('[[[4 5 4Q]x *]x 2 *]x 6')).to eq true
+    expect(@calc.stack).to eq [6, 5, 4]
+  end
+
   it 'should only exit the proper number of stages correctly' do
     expect(@calc.parse('[[[4 5 2Q]x *]x 2 *]x 6')).to eq true
     expect(@calc.stack).to eq [6, 10, 4]
