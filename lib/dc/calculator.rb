@@ -173,6 +173,7 @@ module DC
       @scale = Scale.new 0
       @extensions = Set.new
       @stack_level = 0
+      @break = true
       [:gnu, :freebsd].each do |ext|
         @extensions.add ext if options[ext] || options[:all]
       end
@@ -230,7 +231,8 @@ module DC
           @stack_level += 1
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
-          return if resp == @stack_level
+          return resp if !resp.nil? && resp < @stack_level && !@break
+          return if resp == @stack_level && @break
         elsif line.sub!(/\A([SsLl:;])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/\A(!?[<>=])(.)/, '')
@@ -250,6 +252,11 @@ module DC
         elsif line[0] == 'q'
           return if @stack_level == 0
           return @stack_level - 1
+        elsif line[0] == 'Q'
+          level = pop.to_i
+          @break = false
+          return 0 if level > @stack_level
+          return @stack_level - level
         else
           raise InvalidCommandError, line[0].to_sym
         end

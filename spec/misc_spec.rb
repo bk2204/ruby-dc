@@ -27,6 +27,21 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [5, 4]
   end
 
+  it 'should exit macros successfully with Q' do
+    expect(@calc.parse('[4 5 1Q *]x')).to eq true
+    expect(@calc.stack).to eq [5, 4]
+  end
+
+  it 'should exit multi-stage macros successfully with Q' do
+    expect(@calc.parse('[[[4 5 3Q]x *]x 2 *]x 6')).to eq true
+    expect(@calc.stack).to eq [6, 5, 4]
+  end
+
+  it 'should only exit the proper number of stages correctly' do
+    expect(@calc.parse('[[[4 5 2Q]x *]x 2 *]x 6')).to eq true
+    expect(@calc.stack).to eq [6, 10, 4]
+  end
+
   it 'should return true when exiting normally' do
     expect(@calc.parse('[4 5 *]x')).to eq true
   end
