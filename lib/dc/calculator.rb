@@ -231,10 +231,7 @@ module DC
           @stack_level += 1
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
-          unless resp.nil?
-            return resp if resp <= @stack_level && !@break
-            return if resp == @stack_level && @break
-          end
+          return @break ? nil : resp if !resp.nil? && resp <= @stack_level
         elsif line.sub!(/\A([SsLl:;])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/\A(!?[<>=])(.)/, '')
