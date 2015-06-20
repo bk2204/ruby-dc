@@ -42,6 +42,16 @@ describe DC::Calculator do
       .to raise_exception(DC::UnbalancedBracketsError)
   end
 
+  it 'should print a string without newlines for P' do
+    @calc.parse('[hello]P')
+    expect(@output.string).to eq 'hello'
+  end
+
+  it 'should convert numbers to strings and print for P' do
+    @calc.parse('16i 48656C6C6F2C20776F726C64210A P')
+    expect(@output.string).to eq "Hello, world!\n"
+  end
+
   it "should compute (n % 256).chr for a (number, GNU)" do
     # GNU overrides FreeBSD in this case, because the behavior is more
     # consistent.
