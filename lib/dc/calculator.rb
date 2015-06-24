@@ -215,6 +215,7 @@ module DC
     protected
 
     def do_parse(line)
+      line = line.dup
       line.force_encoding('BINARY')
       while !line.empty?
         if @string
