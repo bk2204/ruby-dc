@@ -429,7 +429,7 @@ module DC
       op = syms[op] || op
       top = pop
       second = pop
-      return unless second.send(op, top)
+      return unless top.send(op, second)
       do_parse(@registers[reg][0])
     end
 

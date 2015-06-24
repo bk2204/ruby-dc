@@ -13,12 +13,12 @@ describe DC::Calculator do
   end
 
   [
-    [1, 2, '>', false],
+    [1, 2, '>', true],
     [1, 1, '>', false],
-    [2, 1, '>', true],
-    [1, 2, '<', true],
+    [2, 1, '>', false],
+    [1, 2, '<', false],
     [1, 1, '<', false],
-    [2, 1, '<', false],
+    [2, 1, '<', true],
     [1, 2, '=', false],
     [1, 1, '=', true],
     [2, 1, '=', false]
@@ -49,6 +49,16 @@ describe DC::Calculator do
       @extcalc.parse("#{a} #{b} #{op}")
       expect(@extcalc.stack).to eq [val]
     end
+  end
+
+  it 'should invoke register a for 1 2>a' do
+    @calc.parse('[[hello]p]sa 1 2>a')
+    expect(@output.string).to eq "hello\n"
+  end
+
+  it 'should not invoke register a for 2 1>a' do
+    @calc.parse('[[hello]p]sa 2 1>a')
+    expect(@output.string).to eq ''
   end
 
   it "should negate top of stack for N" do
