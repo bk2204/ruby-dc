@@ -69,7 +69,7 @@ describe DC::Calculator do
     end
   end
 
-  it 'should not execute strings by default' do
+  it 'should execute strings in insecure mode' do
     Dir.mktmpdir do |dir|
       calc = DC::Calculator.new(@input, @output, all: true, insecure: true)
       file = File.join(dir, 'foo')
