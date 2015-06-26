@@ -1,7 +1,9 @@
 require 'set'
 
+require 'dc/exception'
+
 module DC
-  class CalculatorError < StandardError
+  class CalculatorError < DC::Exception
     attr_reader :name
   end
 

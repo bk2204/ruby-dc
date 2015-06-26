@@ -1,7 +1,9 @@
 require 'parser/current'
 
+require 'dc/exception'
+
 module DC
-  class GeneratorError < StandardError
+  class GeneratorError < DC::Exception
   end
 
   class UnimplementedNodeError < GeneratorError
