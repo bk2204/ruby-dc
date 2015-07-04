@@ -37,7 +37,7 @@ describe DC::Calculator do
         numbers = "#{av.to_s.tr('-', '_')} #{bv.to_s.tr('-', '_')}"
         @calc.parse("#{numbers} % #{numbers} Sd dld/ Ld*-pp")
         expect(@calc.stack[0]).to eq @calc.stack[1]
-        values = @output.readlines.each { |s| s.chomp! }
+        values = @output.readlines.each(&:chomp!)
         expect(values[0]).to eq values[1]
       end
     end
