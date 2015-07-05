@@ -354,7 +354,7 @@ module DC
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
         cmpop op, arg
       when [:G, :'(', :'{'].include?(op)
-        extcmpop op, arg
+        extcmpop op
       when [:';', :':'].include?(op)
         arrayop op, arg
       end
@@ -436,7 +436,7 @@ module DC
       do_parse(@registers[reg][0])
     end
 
-    def extcmpop(op, reg)
+    def extcmpop(op)
       syms = { :G => :==, :"(" => :<, :"{" => :<= }
       op = syms[op]
       top = pop
