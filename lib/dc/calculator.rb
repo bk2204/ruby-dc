@@ -140,7 +140,7 @@ module DC
       frac = temp - i
       s = i.to_s(base)
       s << '.' if @scale > 0
-      @scale.times do |j|
+      @scale.times do
         frac *= base
         value = frac.to_i
         frac -= value
