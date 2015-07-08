@@ -16,6 +16,7 @@ describe DC::Calculator do
     @calc.parse("[ln 1+ d sn p ln 10>b]sb")
     @calc.parse("0sn0")
     @calc.parse("lbx")
-    expect(@output.string).to eq (1..10).map { |n| "#{n}\n" }.join('')
+    expected = (1..10).map { |n| "#{n}\n" }.join('')
+    expect(@output.string).to eq expected
   end
 end

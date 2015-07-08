@@ -25,12 +25,14 @@ describe DC::Calculator do
   ].each do |a, b, op, val|
     it "should think #{a} #{op} #{b} is #{val}" do
       @calc.parse("#{@macro} #{a} #{b} #{op}a")
-      expect(@calc.stack).to eq (val ? @trueval : @falseval)
+      expected = val ? @trueval : @falseval
+      expect(@calc.stack).to eq expected
     end
 
     it "should think #{a} !#{op} #{b} is #{!val}" do
       @calc.parse("#{@macro} #{a} #{b} !#{op}a")
-      expect(@calc.stack).to eq (val ? @falseval : @trueval)
+      expected = val ? @falseval : @trueval
+      expect(@calc.stack).to eq expected
     end
   end
 
