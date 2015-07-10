@@ -12,7 +12,7 @@ describe DC::Generator do
 
   def generate_and_compare(s)
     calc = generate_and_run(s)
-    ruby = eval(s)
+    ruby = eval(s)  # rubocop:disable Lint/Eval
     expect(calc.stack).to eq [ruby]
   end
 
