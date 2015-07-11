@@ -15,7 +15,7 @@ module DC
         result *= factor if (exp & 1) != 0
         result %= modulus
         exp >>= 1
-        factor = factor ** 2
+        factor **= 2
       end
 
       result
@@ -23,7 +23,7 @@ module DC
 
     # Based on the square root algorithm given on the "Newton's method"
     # Wikipedia page.
-    def self.root(base, root, scale=nil)
+    def self.root(base, root, scale = nil)
       x0 = base.to_f ** (1 / root.to_f).to_r
 
       if scale.nil?
@@ -40,7 +40,7 @@ module DC
       epsilon = tolerance ** 2
 
       f = lambda { |x| (x ** root) - base }
-      fprime = lambda { |x| root * (x ** (root-1)) }
+      fprime = lambda { |x| root * (x ** (root - 1)) }
 
       x0 = x0.to_r
       x1 = x0
@@ -52,9 +52,9 @@ module DC
 
         break if y_deriv.abs < epsilon
 
-        x1 = x0 - y/y_deriv
+        x1 = x0 - y / y_deriv
 
-        break if (((x1 - x0).abs / x1.abs) < tolerance)
+        break if ((x1 - x0).abs / x1.abs) < tolerance
 
         x0 = x1
       end
