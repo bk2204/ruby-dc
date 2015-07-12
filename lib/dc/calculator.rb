@@ -294,34 +294,48 @@ module DC
       value
     end
 
+    def mathop(op)
+      case op
+      when :|
+        mod = pop.to_r
+        exp = pop.to_i
+        base = pop.to_i
+        push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
+      when :~
+        denom = pop
+        num = pop
+        push num / denom
+        push num % denom
+      end
+    end
+
+    def baseop(op)
+      case op
+      when :I
+        push Numeric.new(@ibase, 0, @scale)
+      when :O
+        push Numeric.new(@obase, 0, @scale)
+      when :K
+        push Numeric.new(@scale.to_r, 0, @scale)
+      when :i
+        @ibase = pop.to_i
+      when :o
+        @obase = pop.to_i
+      when :k
+        @scale = pop.to_i
+      end
+    end
+
     def dispatch(op, arg = nil)
       case
       when [:+, :-, :*, :/, :%, :^].include?(op)
         binop op
       when [:P, :p, :n, :f].include?(op)
         printop(op)
-      when op == :|
-        mod = pop.to_r
-        exp = pop.to_i
-        base = pop.to_i
-        push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
-      when op == :~
-        denom = pop
-        num = pop
-        push num / denom
-        push num % denom
-      when op == :I
-        push Numeric.new(@ibase, 0, @scale)
-      when op == :O
-        push Numeric.new(@obase, 0, @scale)
-      when op == :K
-        push Numeric.new(@scale.to_r, 0, @scale)
-      when op == :i
-        @ibase = pop.to_i
-      when op == :o
-        @obase = pop.to_i
-      when op == :k
-        @scale = pop.to_i
+      when [:|, :~].include?(op)
+        mathop op
+      when [:I, :O, :K, :i, :o, :k].include?(op)
+        baseop op
       when op == :d
         push @stack[0]
       when op == :c
