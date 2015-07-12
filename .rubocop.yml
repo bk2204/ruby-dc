@@ -1,0 +1,4 @@
+Style/TrailingComma:
+    EnforcedStyleForMultiline: comma
+Style/FileName:
+    Enabled: false
