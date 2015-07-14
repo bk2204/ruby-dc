@@ -155,6 +155,7 @@ module DC
     end
 
     protected
+
     def k
       @k.to_i
     end
@@ -219,7 +220,7 @@ module DC
     def do_parse(line)
       line = line.dup
       line.force_encoding('BINARY')
-      while !line.empty?
+      until line.empty?
         if @string
           line = parse_string(line)
         elsif line.sub!(/\A(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
@@ -484,7 +485,7 @@ module DC
     def parse_string(s)
       offset = 0
       @string ||= ''
-      if !s[/[\[\]]/]
+      unless s[/[\[\]]/]
         @string << s
         return ''
       end
@@ -498,7 +499,7 @@ module DC
         end
         @string << code << delim << trail.to_s
       end
-      return ''
+      ''
     end
   end
 end
