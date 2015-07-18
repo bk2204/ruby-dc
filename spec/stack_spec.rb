@@ -11,17 +11,17 @@ describe DC::Calculator do
     @calc = calc
   end
 
-  it "should duplicate the top number on stack with d" do
+  it 'should duplicate the top number on stack with d' do
     @calc.parse('3dpp')
     expect(@output.string).to eq "3\n3\n"
   end
 
-  it "should compute the correct value with duplicated value" do
+  it 'should compute the correct value with duplicated value' do
     @calc.parse('1 3d *+p')
     expect(@output.string).to eq "10\n"
   end
 
-  it "should swap the top two values with r with extensions enabled" do
+  it 'should swap the top two values with r with extensions enabled' do
     [:gnu, :freebsd].each do |ext|
       c = calc(ext => true)
       c.parse('1 2 3r')
@@ -29,54 +29,54 @@ describe DC::Calculator do
     end
   end
 
-  it "should raise for r without extensions enabled" do
+  it 'should raise for r without extensions enabled' do
     expect { @calc.parse('1 2 3r') }.to raise_exception(DC::UnsupportedExtensionError)
   end
 
-  it "should push the current stack depth with z" do
+  it 'should push the current stack depth with z' do
     @calc.parse('zzzzz')
     expect(@calc.stack).to eq [4, 3, 2, 1, 0]
   end
 
-  it "should calculate correct stack depth at various points" do
+  it 'should calculate correct stack depth at various points' do
     @calc.parse('3 5 z *- z')
     expect(@calc.stack).to eq [1, -7]
   end
 
-  it "should expose the stack through #stack" do
+  it 'should expose the stack through #stack' do
     @calc.parse('1 3d')
     expect(@calc.stack).to eq [3, 3, 1]
   end
 
-  it "should calculate the length of a string with Z" do
+  it 'should calculate the length of a string with Z' do
     @calc.parse('[abc123] Z')
     expect(@calc.stack).to eq [6]
   end
 
-  it "should calculate the length of a number with Z" do
+  it 'should calculate the length of a number with Z' do
     @calc.parse('1.2345 Z 2 Z .99 Z')
     expect(@calc.stack).to eq [2, 1, 5]
   end
 
-  it "should print the top of stack with a newline with p (number)" do
+  it 'should print the top of stack with a newline with p (number)' do
     @calc.parse('1p')
     expect(@output.string).to eq "1\n"
     expect(@calc.stack).to eq [1]
   end
 
-  it "should print the top of stack with a newline with p (string)" do
+  it 'should print the top of stack with a newline with p (string)' do
     @calc.parse('[foo]p')
     expect(@output.string).to eq "foo\n"
     expect(@calc.stack).to eq ['foo']
   end
 
-  it "should print fractions properly with p" do
+  it 'should print fractions properly with p' do
     @calc.parse('1.64p')
     expect(@output.string).to eq "1.64\n"
     expect(@calc.stack).to eq [1.64]
   end
 
-  it "should pop and print the top of stack with n (number)" do
+  it 'should pop and print the top of stack with n (number)' do
     [:gnu, :freebsd].each do |ext|
       c = calc(ext => true)
       c.parse('1n')
@@ -85,7 +85,7 @@ describe DC::Calculator do
     end
   end
 
-  it "should pop and print the top of stack with n (string)" do
+  it 'should pop and print the top of stack with n (string)' do
     [:gnu, :freebsd].each do |ext|
       c = calc(ext => true)
       c.parse('[foo]n')
@@ -94,7 +94,7 @@ describe DC::Calculator do
     end
   end
 
-  it "should print fractions properly with n" do
+  it 'should print fractions properly with n' do
     [:gnu, :freebsd, :all].each do |ext|
       c = calc(ext => true)
       c.parse('1.64n')
@@ -102,11 +102,11 @@ describe DC::Calculator do
     end
   end
 
-  it "should raise for n without extensions enabled" do
+  it 'should raise for n without extensions enabled' do
     expect { @calc.parse('1n') }.to raise_exception(DC::UnsupportedExtensionError)
   end
 
-  it "should pop top of stack with R" do
+  it 'should pop top of stack with R' do
     [:freebsd, :all].each do |ext|
       c = calc(ext => true)
       c.parse('1 2 3R')
@@ -114,59 +114,59 @@ describe DC::Calculator do
     end
   end
 
-  it "should raise for R with only GNU extensions enabled" do
+  it 'should raise for R with only GNU extensions enabled' do
     c = calc(gnu: true)
     expect { c.parse('1R') }.to raise_exception(DC::UnsupportedExtensionError)
   end
 
-  it "should raise for R without extensions enabled" do
+  it 'should raise for R without extensions enabled' do
     expect { @calc.parse('1R') }.to raise_exception(DC::UnsupportedExtensionError)
   end
 
-  it "should print the entire stack without altering anything with f" do
+  it 'should print the entire stack without altering anything with f' do
     @calc.parse('1 2 [foo] 3f')
     expect(@output.string).to eq "3\nfoo\n2\n1\n"
     expect(@calc.stack).to eq [3, 'foo', 2, 1]
   end
 
-  it "should print fractions properly with f" do
+  it 'should print fractions properly with f' do
     @calc.parse('4 2.53 1.64 17f')
     expect(@output.string).to eq "17\n1.64\n2.53\n4\n"
     expect(@calc.stack).to eq [17, 1.64, 2.53, 4]
   end
 
-  it "should load the default input base with I" do
+  it 'should load the default input base with I' do
     @calc.parse('I')
     expect(@calc.stack).to eq [10]
   end
 
-  it "should load the default output base with O" do
+  it 'should load the default output base with O' do
     @calc.parse('O')
     expect(@calc.stack).to eq [10]
   end
 
-  it "should load the default scale with K" do
+  it 'should load the default scale with K' do
     @calc.parse('K')
     expect(@calc.stack).to eq [0]
   end
 
-  it "should store the scale with k" do
+  it 'should store the scale with k' do
     @calc.parse('4k K')
     expect(@calc.stack).to eq [4]
   end
 
-  it "should store the scale of the top of stack with X" do
+  it 'should store the scale of the top of stack with X' do
     @calc.parse('0X 1.234X')
     expect(@calc.stack).to eq [3, 0]
   end
 
-  it "should raise an exception for invalid commands" do
+  it 'should raise an exception for invalid commands' do
     expect do
       @calc.parse('$')
     end.to raise_exception DC::InvalidCommandError
   end
 
-  it "should raise an exception with proper attributes for invalid commands" do
+  it 'should raise an exception with proper attributes for invalid commands' do
     begin
       @calc.parse('$')
     rescue DC::InvalidCommandError => e
@@ -174,7 +174,7 @@ describe DC::Calculator do
     end
   end
 
-  it "should clear the stack with c" do
+  it 'should clear the stack with c' do
     @calc.parse('1 2 c 4 5')
     expect(@calc.stack).to eq [5, 4]
   end
