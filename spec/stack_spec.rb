@@ -30,7 +30,8 @@ describe DC::Calculator do
   end
 
   it 'should raise for r without extensions enabled' do
-    expect { @calc.parse('1 2 3r') }.to raise_exception(DC::UnsupportedExtensionError)
+    expect { @calc.parse('1 2 3r') }
+      .to raise_exception(DC::UnsupportedExtensionError)
   end
 
   it 'should push the current stack depth with z' do
@@ -103,7 +104,8 @@ describe DC::Calculator do
   end
 
   it 'should raise for n without extensions enabled' do
-    expect { @calc.parse('1n') }.to raise_exception(DC::UnsupportedExtensionError)
+    expect { @calc.parse('1n') }
+      .to raise_exception(DC::UnsupportedExtensionError)
   end
 
   it 'should pop top of stack with R' do
@@ -120,7 +122,8 @@ describe DC::Calculator do
   end
 
   it 'should raise for R without extensions enabled' do
-    expect { @calc.parse('1R') }.to raise_exception(DC::UnsupportedExtensionError)
+    expect { @calc.parse('1R') }
+      .to raise_exception(DC::UnsupportedExtensionError)
   end
 
   it 'should print the entire stack without altering anything with f' do
