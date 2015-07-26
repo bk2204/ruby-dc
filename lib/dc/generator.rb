@@ -21,6 +21,7 @@ module DC
   # others in developing additional useful functions.
   class Generator
     def initialize
+      @anonymous_reg = 0
       @registers = {}
     end
 
@@ -51,6 +52,8 @@ module DC
         val < 0 ? "_#{val.abs}" : val.to_s
       when :def
         process_def(*node.children)
+      when :block
+        process_loop(*node.children)
       else
         fail UnimplementedNodeError, "Unknown node type #{node.type}"
       end
@@ -112,8 +115,41 @@ module DC
       result << "]S#{name}"
     end
 
+    # var is a Symbol for variables and an Integer for code.
     def register(var)
       @registers[var] ||= (64 + @registers.length).chr('ASCII-8BIT')
+    end
+
+    def next_anonymous_register
+      @anonymous_reg += 1
+    end
+
+    def process_condition(condition, arg, code_reg)
+      invocant, message = *condition.children
+      case message
+      when :times
+        setup = '0' << process_store(arg)
+        test = process_load(arg) << '1+d' << process_store(arg)
+        test << process(invocant) << ">#{register(code_reg)}"
+      else
+        fail NotImplementedError, "unknown message #{message} in condition"
+      end
+      [setup, test]
+    end
+
+    def process_loop(condition, args, code)
+      if args.children.length > 1
+        fail NotImplementedError, 'multiple arguments to block not supported'
+      end
+      arg = args.children[0].children[0]
+      code_dc = process(code)
+      code_reg = next_anonymous_register
+      setup, test = process_condition(condition, arg, code_reg)
+      result = setup
+      result << '[' << code_dc << test << ']'
+      result << process_store(code_reg)
+      result << process_load(code_reg) << 'x'
+      result
     end
 
     def cleanup

@@ -65,4 +65,13 @@ describe DC::Generator do
       generate_and_compare 'def foo(x); y = x + 1; y; end; foo(2)'
     end.to raise_exception(DC::InvalidNameError, /single character/)
   end
+
+  it 'should be able to handle Integer#times' do
+    code = <<-EOM
+    n = 0
+    25.times { |i| n += i + 1 }
+    n
+    EOM
+    generate_and_compare code
+  end
 end
