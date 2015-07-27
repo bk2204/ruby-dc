@@ -74,4 +74,14 @@ describe DC::Generator do
     EOM
     generate_and_compare code
   end
+
+  it 'should be able to handle Range#reverse_each' do
+    code = <<-EOM
+    m = 1
+    n = 0
+    (1..10).reverse_each { |i| n -= i; m *= n }
+    m - n
+    EOM
+    generate_and_compare code
+  end
 end

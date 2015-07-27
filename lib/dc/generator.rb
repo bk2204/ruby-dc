@@ -31,11 +31,13 @@ module DC
 
     protected
 
-    def process(node)
+    # Processes a node.  If anonymous is set and the node is a :begin node,
+    # don't perform the implicit final load.
+    def process(node, anonymous = false)
       case node.type
       when :begin
         result = node.children.map { |child| process(child) }.join("\n")
-        if assignment? node.children[-1]
+        if !anonymous && assignment?(node.children[-1])
           result << process_load(@last_store)
         end
         result
@@ -131,6 +133,14 @@ module DC
         setup = '0' << process_store(arg)
         test = process_load(arg) << '1+d' << process_store(arg)
         test << process(invocant) << ">#{register(code_reg)}"
+      when :reverse_each
+        range = invocant.children[0]
+        if invocant.type != :begin || range.type != :irange
+          fail NotImplementedError, 'bad invocant for reverse_each'
+        end
+        setup = process(range.children[1]) << process_store(arg)
+        test = process_load(arg) << '1-d' << process_store(arg)
+        test << process(range.children[0]) << "!>#{register(code_reg)}"
       else
         fail NotImplementedError, "unknown message #{message} in condition"
       end
@@ -142,7 +152,7 @@ module DC
         fail NotImplementedError, 'multiple arguments to block not supported'
       end
       arg = args.children[0].children[0]
-      code_dc = process(code)
+      code_dc = process(code, true)
       code_reg = next_anonymous_register
       setup, test = process_condition(condition, arg, code_reg)
       result = setup
