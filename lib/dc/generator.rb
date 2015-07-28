@@ -141,6 +141,14 @@ module DC
         setup = process(range.children[1]) << process_store(arg)
         test = process_load(arg) << '1-d' << process_store(arg)
         test << process(range.children[0]) << "!>#{register(code_reg)}"
+      when :each
+        range = invocant.children[0]
+        if invocant.type != :begin || range.type != :irange
+          fail NotImplementedError, 'bad invocant for reverse_each'
+        end
+        setup = process(range.children[0]) << process_store(arg)
+        test = process_load(arg) << '1+d' << process_store(arg)
+        test << process(range.children[1]) << "!<#{register(code_reg)}"
       else
         fail NotImplementedError, "unknown message #{message} in condition"
       end
