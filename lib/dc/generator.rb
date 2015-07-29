@@ -126,33 +126,38 @@ module DC
       @anonymous_reg += 1
     end
 
+    def process_for_loop(startval, endval, op, comparison, arg, code_reg)
+      startval = startval.is_a?(::Numeric) ? startval.to_s : process(startval)
+      endval = endval.is_a?(::Numeric) ? endval.to_s : process(endval)
+
+      setup = startval << process_store(arg)
+      test = process_load(arg) << "1#{op}d" << process_store(arg)
+      test << endval << comparison.to_s << register(code_reg)
+      [setup, test]
+    end
+
     def process_condition(condition, arg, code_reg)
       invocant, message = *condition.children
       case message
       when :times
-        setup = '0' << process_store(arg)
-        test = process_load(arg) << '1+d' << process_store(arg)
-        test << process(invocant) << ">#{register(code_reg)}"
+        process_for_loop(0, invocant, :+, :>, arg, code_reg)
       when :reverse_each
         range = invocant.children[0]
         if invocant.type != :begin || range.type != :irange
           fail NotImplementedError, 'bad invocant for reverse_each'
         end
-        setup = process(range.children[1]) << process_store(arg)
-        test = process_load(arg) << '1-d' << process_store(arg)
-        test << process(range.children[0]) << "!>#{register(code_reg)}"
+        process_for_loop(range.children[1], range.children[0], :-, '!>', arg,
+                         code_reg)
       when :each
         range = invocant.children[0]
         if invocant.type != :begin || range.type != :irange
           fail NotImplementedError, 'bad invocant for reverse_each'
         end
-        setup = process(range.children[0]) << process_store(arg)
-        test = process_load(arg) << '1+d' << process_store(arg)
-        test << process(range.children[1]) << "!<#{register(code_reg)}"
+        process_for_loop(range.children[0], range.children[1], :+, '!<', arg,
+                         code_reg)
       else
         fail NotImplementedError, "unknown message #{message} in condition"
       end
-      [setup, test]
     end
 
     def process_loop(condition, args, code)
