@@ -54,8 +54,12 @@ module DC
         val < 0 ? "_#{val.abs}" : val.to_s
       when :def
         process_def(*node.children)
+      when :defs
+        process_defs(*node.children)
       when :block
         process_loop(*node.children)
+      when :module
+        process_module(*node.children)
       else
         fail UnimplementedNodeError, "Unknown node type #{node.type}"
       end
@@ -77,6 +81,10 @@ module DC
         'K 0k ' << process(invocant) << ' 1/ rk'
       when invocant.nil? && message.length == 1
         # dc function call
+        process(args[0]) + "l#{message}x"
+      when invocant.is_a?(Parser::AST::Node) && invocant.type == :const &&
+        message.length == 1
+        # dc function call (math library)
         process(args[0]) + "l#{message}x"
       else
         fail UnimplementedNodeError, "Unknown message #{message}"
@@ -115,6 +123,10 @@ module DC
       result << gen.process_store(args.children[0].children[0])
       result << gen.process(code)
       result << "]S#{name}"
+    end
+
+    def process_defs(*args)
+      process_def(*args[1..-1])
     end
 
     # var is a Symbol for variables and an Integer for code.
@@ -173,6 +185,10 @@ module DC
       result << process_store(code_reg)
       result << process_load(code_reg) << 'x'
       result
+    end
+
+    def process_module(_name, block)
+      process(block)
     end
 
     def cleanup

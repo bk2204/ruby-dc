@@ -94,4 +94,20 @@ describe DC::Generator do
     EOM
     generate_and_compare code
   end
+
+  it 'should be able to handle methods in the math library' do
+    code = <<-EOM
+    module DC
+      module Math
+        module Library
+          def self.f(x)
+            x * 2
+          end
+        end
+      end
+    end
+    DC::Math::Library.f(3.5)
+    EOM
+    generate_and_compare code
+  end
 end
