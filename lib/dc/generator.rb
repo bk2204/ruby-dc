@@ -112,6 +112,7 @@ module DC
     end
 
     def process_def(name, args, code)
+      return if /\Ascale=?\z/.match name
       if name.length > 1
         fail InvalidNameError, "name must be a single character, not #{name}"
       end

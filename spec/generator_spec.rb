@@ -110,4 +110,29 @@ describe DC::Generator do
     EOM
     generate_and_compare code
   end
+
+  it 'should ignore scale methods in the math library' do
+    code = <<-EOM
+    module DC
+      module Math
+        module Library
+          def self.scale
+            @scale
+          end
+
+          def self.scale=(value)
+            @scale = value
+          end
+
+          def self.f(x)
+            scale = 2
+            x * 2
+          end
+        end
+      end
+    end
+    DC::Math::Library.f(3.5)
+    EOM
+    generate_and_compare code
+  end
 end
