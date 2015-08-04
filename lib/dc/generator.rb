@@ -96,10 +96,12 @@ module DC
     end
 
     def process_load(var)
+      return 'K' if var == :scale
       "l#{register(var)}"
     end
 
     def process_store(var)
+      return 'k' if var == :scale
       @last_store = var
       "S#{register(var)}"
     end
