@@ -2,6 +2,15 @@ require_relative 'calculator'
 
 module DC
   module Math
+    # Perform a modular exponentiation.
+    #
+    # @param base [Rational] the base or mantissa
+    # @param exponent [Integer] the exponent
+    # @param modulus [Rational] the modulus
+    # @return the result of the exponentiation
+    #
+    # The algorithm is the basic double-and-multiply technique, just extended to
+    # rationals instead of integers.
     def self.modexp(base, exponent, modulus)
       return 1 if exponent == 0
       if exponent < 0 || exponent.to_i != exponent
@@ -21,8 +30,15 @@ module DC
       result
     end
 
-    # Based on the square root algorithm given on the "Newton's method"
-    # Wikipedia page.
+    # Compute a root of a number.
+    #
+    # @param base [Rational] the base
+    # @param root [Integer] the root (e.g. 2 for square root)
+    # @param scale [Integer] the scale (argument to Rational#truncate)
+    # @return the provided root
+    #
+    # Uses the Newton-Raphson method and is based on the square root algorithm
+    # given at https://en.wikipedia.org/wiki/Newton%27s_method.
     def self.root(base, root, scale = nil)
       x0 = base.to_f ** (1 / root.to_f).to_r
 
