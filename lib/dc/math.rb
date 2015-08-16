@@ -46,12 +46,13 @@ module DC
         scales = [base, root].map do |v|
           v.respond_to?(:scale) ? v.scale : nil
         end
-        scale = scales.reject(&:nil?).max
+        scale = scales.reject(&:nil?).map(&:to_i).max
         return x0 if scale.nil?
       end
 
       base = base.to_r
       root = root.to_r
+      scale = scale.to_i
       tolerance = 1.to_r / (10.to_r ** (scale + 1))
       epsilon = tolerance ** 2
 

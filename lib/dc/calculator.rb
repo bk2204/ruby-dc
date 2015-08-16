@@ -47,8 +47,14 @@ module DC
   end
 
   class Scale
+    attr_accessor :value
+
     def initialize(val)
       @value = val.to_i
+    end
+
+    def <=>(other)
+      @value <=> other.to_r
     end
 
     def to_i
@@ -71,7 +77,7 @@ module DC
 
     def initialize(value, scale, calc_scale)
       @value = Rational(value)
-      @scale = scale
+      @scale = scale.to_i
       @k = calc_scale
     end
 
@@ -97,8 +103,8 @@ module DC
     end
 
     def /(other)
-      other = Numeric.new(other, k, k) unless other.is_a? Numeric
-      v = (@value / other.value).truncate(k)
+      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      v = (@value / other.value).truncate(@k.to_i)
       Numeric.new(v, k, @k)
     end
 
@@ -328,7 +334,7 @@ module DC
       when :o
         @obase = pop.to_i
       when :k
-        @scale = pop.to_i
+        @scale.value = pop.to_i
       end
     end
 
@@ -364,7 +370,7 @@ module DC
         stringify
       when op == :v
         result = DC::Math.root(pop, 2, @scale)
-        push(Numeric.new(result, @scale, @scale))
+        push(Numeric.new(result, @scale.to_i, @scale))
       when op == :N
         push(Numeric.new(pop == 0 ? 1 : 0, 0, @scale))
       when op == :R
