@@ -19,6 +19,20 @@ describe DC::Calculator do
     true
   end
 
+  it 'should produce the SHA-1 round constants correctly' do
+    values = %w(
+      5A827999
+      6ED9EBA1
+      8F1BBCDC
+      CA62C1D6
+    )
+    values.zip([2, 3, 5, 10]).each do |(val, x)|
+      c = calc
+      c.parse("32k 16o #{x}v 0k 2 30^* 1/p")
+      expect(@output.string).to eq("#{val}\n")
+    end
+  end
+
   it 'should produce the SHA-256 initial values correctly' do
     values = %w(
       6A09E667
