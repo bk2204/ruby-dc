@@ -24,4 +24,11 @@ describe DC::Numeric do
       expect(n.to_f).to eq value.to_f
     end
   end
+
+  it 'should implement respond_to? correctly' do
+    n = DC::Numeric.new(2, 4, 4)
+    expect(n).to respond_to :ceil
+    expect(n).to respond_to :to_i
+    expect(n).not_to respond_to :lalala
+  end
 end
