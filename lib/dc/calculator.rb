@@ -1,6 +1,7 @@
 require 'set'
 
 require 'dc/exception'
+require 'dc/math'
 
 module DC
   class CalculatorError < DC::Exception
