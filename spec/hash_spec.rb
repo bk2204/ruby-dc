@@ -4,9 +4,9 @@ require_relative 'spec_helper'
 # and round constants to ensure that the calculator is working correctly.
 describe DC::Calculator do
   def calc
-    @output = StringIO.new('', 'w+')
-    @input = StringIO.new('', 'r')
-    DC::Calculator.new(@input, @output)
+    output = StringIO.new('', 'w+')
+    input = StringIO.new('', 'r')
+    DC::Calculator.new(input, output)
   end
 
   def prime?(x)
@@ -29,7 +29,7 @@ describe DC::Calculator do
     values.zip([2, 3, 5, 10]).each do |(val, x)|
       c = calc
       c.parse("32k 16o #{x}v 0k 2 30^* 1/p")
-      expect(@output.string).to eq("#{val}\n")
+      expect(c.output.string).to eq("#{val}\n")
     end
   end
 
@@ -47,7 +47,7 @@ describe DC::Calculator do
     values.zip((2..19).select { |x| prime?(x) }).each do |(val, p)|
       c = calc
       c.parse("32k 16o #{p}v d 0k 1/- 2 32^* 1/p")
-      expect(@output.string).to eq("#{val}\n")
+      expect(c.output.string).to eq("#{val}\n")
     end
   end
 end

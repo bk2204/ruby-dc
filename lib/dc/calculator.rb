@@ -173,7 +173,7 @@ module DC
   end
 
   class Calculator
-    attr_reader :stack, :registers
+    attr_reader :stack, :registers, :input, :output
 
     def initialize(input = $stdin, output = $stdout, options = {})
       @stack = []
