@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe DC::Generator do
   def generate_and_run(s)
-    dc = DC::Generator.new.emit(s)
+    dc = DC::Generator.new(true).emit(s)
     output = StringIO.new('', 'w+')
     input = StringIO.new('', 'r')
     calc = DC::Calculator.new(input, output, all: true)
@@ -161,5 +161,33 @@ describe DC::Generator do
     generate_and_compare code
     dc = DC::Generator.new.emit(code)
     expect(dc).to match(/\[.*?2\s*k.*?\]Sf/m)
+  end
+
+  it 'should generate i calls for setting ibase' do
+    code = <<-EOM
+    module DC
+      module Math
+        class Library
+          def ibase
+            @ibase
+          end
+
+          def ibase=(value)
+            @ibase = value
+          end
+
+          def f(x)
+            ibase = 10
+            ibase * 2 + x
+          end
+        end
+      end
+    end
+    l = DC::Math::Library.new
+    l.f(5)
+    EOM
+    generate_and_compare code
+    dc = DC::Generator.new.emit(code)
+    expect(dc).to match(/\[.*?10\s*i.*?\]Sf/m)
   end
 end

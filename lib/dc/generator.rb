@@ -21,7 +21,8 @@ module DC
   # to write and test implementations of the math library, and hopefully to aid
   # others in developing additional useful functions.
   class Generator
-    def initialize
+    def initialize(toplevel = false)
+      @toplevel = toplevel
       @anonymous_reg = 0
       @registers = {}
       # These are variables used in Ruby for which no code will be emitted.
@@ -30,7 +31,7 @@ module DC
     end
 
     def emit(s)
-      process(Parser::CurrentRuby.parse(s)) + cleanup()
+      prologue() + process(Parser::CurrentRuby.parse(s)) + epilogue()
     end
 
     protected
@@ -137,12 +138,14 @@ module DC
     def process_load(var)
       return '' if stub? var
       return 'K' if var == :scale
+      return 'I' if var == :ibase
       "l#{register(var)}"
     end
 
     def process_store(var)
       return '' if stub? var
       return 'k' if var == :scale
+      return 'i' if var == :ibase
       @last_store = var
       "S#{register(var)}"
     end
@@ -155,7 +158,7 @@ module DC
     end
 
     def process_def(name, args, code)
-      return if /\A(?:initialize|scale=?)\z/.match name
+      return if /\A(?:initialize|(?:ibase|scale)=?)\z/.match name
       if name.length > 1
         fail InvalidNameError, "name must be a single character, not #{name}"
       end
@@ -239,11 +242,16 @@ module DC
       process(block)
     end
 
-    def cleanup
+    def prologue
+      @toplevel ? '' : 'IAir'
+    end
+
+    def epilogue
       s = ''
       @registers.values.each do |reg|
         s << "L#{reg} R"
       end
+      s << 'ri' unless @toplevel
       s
     end
   end

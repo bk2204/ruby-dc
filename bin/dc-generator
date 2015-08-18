@@ -2,4 +2,4 @@
 
 require 'dc/generator'
 
-puts DC::Generator.new.emit(ARGF.read)
+puts DC::Generator.new(true).emit(ARGF.read)
