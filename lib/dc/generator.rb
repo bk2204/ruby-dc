@@ -102,6 +102,10 @@ module DC
       false
     end
 
+    def special_method?(invocant, message)
+      invocant == nil && [:ibase, :scale].include?(message)
+    end
+
     def process_message(invocant, message, *args)
       case
       when [:+, :-, :*, :/].include?(message)
@@ -113,6 +117,8 @@ module DC
       when invocant.nil? && message.length == 1
         # dc function call
         process(args[0]) + "l#{message}x"
+      when special_method?(invocant, message)
+        process_load(message)
       when instantiation?(invocant, message)
         ''
       when function_call?(invocant, message)

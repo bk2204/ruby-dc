@@ -163,6 +163,28 @@ describe DC::Generator do
     expect(dc).to match(/\[.*?2\s*k.*?\]Sf/m)
   end
 
+  it 'should handle loading special variables properly' do
+    code = <<-EOM
+    module DC
+      module Math
+        class Library
+          def ibase
+            10
+          end
+
+          def f(x)
+            a = ibase
+            a + x * 2
+          end
+        end
+      end
+    end
+    l = DC::Math::Library.new
+    l.f(3.5)
+    EOM
+    generate_and_compare code
+  end
+
   it 'should generate i calls for setting ibase' do
     code = <<-EOM
     module DC
