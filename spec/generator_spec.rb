@@ -99,14 +99,17 @@ describe DC::Generator do
     code = <<-EOM
     module DC
       module Math
-        module Library
-          def self.f(x)
+        class Library
+          def initialize
+          end
+
+          def f(x)
             x * 2
           end
         end
       end
     end
-    DC::Math::Library.f(3.5)
+    DC::Math::Library.new.f(3.5)
     EOM
     generate_and_compare code
   end
@@ -115,23 +118,23 @@ describe DC::Generator do
     code = <<-EOM
     module DC
       module Math
-        module Library
-          def self.scale
+        class Library
+          def scale
             @scale
           end
 
-          def self.scale=(value)
+          def scale=(value)
             @scale = value
           end
 
-          def self.f(x)
+          def f(x)
             scale = 2
             x * 2
           end
         end
       end
     end
-    DC::Math::Library.f(3.5)
+    DC::Math::Library.new.f(3.5)
     EOM
     generate_and_compare code
   end
@@ -140,19 +143,20 @@ describe DC::Generator do
     code = <<-EOM
     module DC
       module Math
-        module Library
-          def self.scale=(value)
+        class Library
+          def scale=(value)
             @scale = value
           end
 
-          def self.f(x)
+          def f(x)
             scale = 2
             x * 2
           end
         end
       end
     end
-    DC::Math::Library.f(3.5)
+    l = DC::Math::Library.new
+    l.f(3.5)
     EOM
     generate_and_compare code
     dc = DC::Generator.new.emit(code)

@@ -1,4 +1,5 @@
 require 'parser/current'
+require 'set'
 
 require 'dc/exception'
 
@@ -23,6 +24,9 @@ module DC
     def initialize
       @anonymous_reg = 0
       @registers = {}
+      # These are variables used in Ruby for which no code will be emitted.
+      # Generally, this includes instantiations of the math library class.
+      @stubs = Set.new
     end
 
     def emit(s)
@@ -44,6 +48,12 @@ module DC
       when :send
         process_message(*node.children)
       when :lvasgn
+        if node.children[1].is_a?(Parser::AST::Node) &&
+            node.children[1].type == :send &&
+            node.children[1].children[1] == :new
+          mark_stub(node.children[0])
+          return ''
+        end
         process(node.children[1]) + process_store(node.children[0])
       when :op_asgn
         process_op_assign(*node.children)
@@ -60,6 +70,8 @@ module DC
         process_loop(*node.children)
       when :module
         process_module(*node.children)
+      when :class
+        process_class(*node.children)
       else
         fail UnimplementedNodeError, "Unknown node type #{node.type}"
       end
@@ -69,6 +81,24 @@ module DC
     def process_binop(a, op, second)
       ar = a.nil? ? '' : process(a)
       [ar, process(second), op].join(' ')
+    end
+
+    def instantiation?(invocant, message)
+      return false unless invocant.is_a?(Parser::AST::Node)
+      return false unless invocant.type == :const
+      return message == :new
+    end
+
+    def function_call?(invocant, message)
+      return false unless invocant.is_a?(Parser::AST::Node)
+      type = invocant.type
+      # class method call
+      return true if type == :const && message.length == 1
+      # method call
+      return true if type == :send && invocant.children[1] == :new
+      # method call on instantiated object
+      return true if type == :lvar && stub?(invocant.children[0])
+      false
     end
 
     def process_message(invocant, message, *args)
@@ -82,8 +112,9 @@ module DC
       when invocant.nil? && message.length == 1
         # dc function call
         process(args[0]) + "l#{message}x"
-      when invocant.is_a?(Parser::AST::Node) && invocant.type == :const &&
-        message.length == 1
+      when instantiation?(invocant, message)
+        ''
+      when function_call?(invocant, message)
         # dc function call (math library)
         process(args[0]) + "l#{message}x"
       else
@@ -95,12 +126,22 @@ module DC
       [:lvasgn, :op_asgn].include? node.type
     end
 
+    def mark_stub(var)
+      @stubs << var
+    end
+
+    def stub?(var)
+      @stubs.include? var
+    end
+
     def process_load(var)
+      return '' if stub? var
       return 'K' if var == :scale
       "l#{register(var)}"
     end
 
     def process_store(var)
+      return '' if stub? var
       return 'k' if var == :scale
       @last_store = var
       "S#{register(var)}"
@@ -114,7 +155,7 @@ module DC
     end
 
     def process_def(name, args, code)
-      return if /\Ascale=?\z/.match name
+      return if /\A(?:initialize|scale=?)\z/.match name
       if name.length > 1
         fail InvalidNameError, "name must be a single character, not #{name}"
       end
@@ -191,6 +232,10 @@ module DC
     end
 
     def process_module(_name, block)
+      process(block)
+    end
+
+    def process_class(_name, _parent, block)
       process(block)
     end
 
