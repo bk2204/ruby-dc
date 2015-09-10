@@ -1,5 +1,11 @@
 require_relative 'spec_helper'
 
+class FakeNode
+  def type
+    :nonexistent
+  end
+end
+
 describe DC::Generator do
   def generate_and_run(s)
     dc = DC::Generator.new(true).emit(s)
@@ -64,6 +70,13 @@ describe DC::Generator do
     expect do
       generate_and_compare 'def foo(x); y = x + 1; y; end; foo(2)'
     end.to raise_exception(DC::InvalidNameError, /single character/)
+  end
+
+  it 'should raise when processing an unknown node' do
+    dc = DC::Generator.new(true)
+    expect do
+      dc.send(:process, FakeNode.new)
+    end.to raise_exception(DC::UnimplementedNodeError, /unknown node type/i)
   end
 
   it 'should be able to handle Integer#times' do
