@@ -103,7 +103,7 @@ module DC
     end
 
     def special_method?(invocant, message)
-      invocant == nil && [:ibase, :scale].include?(message)
+      [:ibase, :scale, :ibase=, :scale=].include?(message)
     end
 
     def process_message(invocant, message, *args)
@@ -117,8 +117,15 @@ module DC
       when invocant.nil? && message.length == 1
         # dc function call
         process(args[0]) + "l#{message}x"
+      when message == :truncate
+        process(invocant) + ' 1/'
       when special_method?(invocant, message)
-        process_load(message)
+        smessage = message.to_s
+        if smessage.end_with? '='
+          process(args[0]) + process_store(smessage.chop.to_sym)
+        else
+          process_load(message)
+        end
       when instantiation?(invocant, message)
         ''
       when function_call?(invocant, message)

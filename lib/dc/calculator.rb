@@ -195,6 +195,14 @@ module DC
       @extensions.add :insecure if options[:insecure]
     end
 
+    def scale
+      @scale.to_r
+    end
+
+    def scale=(x)
+      @scale.value = x.to_i
+    end
+
     def arrays
       @arrays.map { |k, v| [k, v[0]] }.to_h
     end

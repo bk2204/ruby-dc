@@ -11,4 +11,5 @@ require 'tmpdir'
 
 require_relative '../lib/dc/calculator'
 require_relative '../lib/dc/math'
+require_relative '../lib/dc/math/library'
 require_relative '../lib/dc/generator'
