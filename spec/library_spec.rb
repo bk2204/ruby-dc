@@ -18,13 +18,21 @@ class Stub < BasicObject
 end
 
 describe DC::Generator do
-  def generate_and_run(s)
-    dc = DC::Generator.new(true).emit(s)
+  def generate(s)
+    DC::Generator.new(true).emit(s)
+  end
+
+  def run(s)
     output = StringIO.new('', 'w+')
     input = StringIO.new('', 'r')
     calc = DC::Calculator.new(input, output, all: true)
-    calc.parse(dc)
+    calc.parse(s)
     calc
+  end
+
+  def generate_and_run(s)
+    dc = generate(s)
+    run(dc)
   end
 
   def generate_and_compare(s)
@@ -62,6 +70,22 @@ describe DC::Generator do
         s = Stub.new
         s.scale = scale
         expect(s.e(x)).to eq Math.exp(x).to_r.truncate(scale)
+      end
+    end
+  end
+
+  it 'should not leave anything on the stack after execution' do
+    mathlib = generate(slurp)
+    %w(e).each do |f|
+      calc = run(mathlib + "1l#{f}x")
+      calc.registers.each do |i, reg|
+        if i == f.ord
+          expect(reg).to be_a Array
+          expect(reg.length).to eq 1
+          expect(reg[0]).to be_a String
+        else
+          expect(reg).to eq []
+        end
       end
     end
   end

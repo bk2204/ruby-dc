@@ -23,8 +23,9 @@ module DC
   class Generator
     def initialize(toplevel = false)
       @toplevel = toplevel
-      @anonymous_reg = 0
+      @code_reg = 0
       @registers = {}
+      @code_registers = {}
       # These are variables used in Ruby for which no code will be emitted.
       # Generally, this includes instantiations of the math library class.
       @stubs = Set.new
@@ -152,7 +153,7 @@ module DC
       return '' if stub? var
       return 'K' if var == :scale
       return 'I' if var == :ibase
-      "l#{register(var)}"
+      " #{register(var)};#{data_register}"
     end
 
     def process_store(var)
@@ -160,7 +161,19 @@ module DC
       return 'k' if var == :scale
       return 'i' if var == :ibase
       @last_store = var
-      "S#{register(var)}"
+      " #{register(var)}:#{data_register}"
+    end
+
+    def code_register?(var)
+      @code_registers.include? var
+    end
+
+    def process_code_load(var)
+      "l#{code_register(var)}"
+    end
+
+    def process_code_store(var)
+      (code_register?(var) ? 's' : 'S') + code_register(var)
     end
 
     def process_op_assign(lvasgn, op, val)
@@ -191,13 +204,25 @@ module DC
       process_def(*args[1..-1])
     end
 
-    # var is a Symbol for variables and an Integer for code.
-    def register(var)
-      @registers[var] ||= (64 + @registers.length).chr('ASCII-8BIT')
+    # The register that is used for arrays.
+    def data_register
+      '@'
     end
 
-    def next_anonymous_register
-      @anonymous_reg += 1
+    # var is a Symbol for variables and an Integer for code.  These are not
+    # actually registers, but index values for the array specified with
+    # data_register.  Single-digit index values are reserved for the prologue
+    # and epilogue.
+    def register(var)
+      @registers[var] ||= (10 + @registers.length)
+    end
+
+    def next_code_register
+      @code_reg += 1
+    end
+
+    def code_register(var)
+      @code_registers[var] ||= (65 + @code_registers.length).chr('ASCII-8BIT')
     end
 
     def process_for_loop(startval, endval, op, comparison, arg, code_reg)
@@ -206,7 +231,7 @@ module DC
 
       setup = startval << process_store(arg)
       test = process_load(arg) << "1#{op}d" << process_store(arg)
-      test << endval << comparison.to_s << register(code_reg)
+      test << endval << comparison.to_s << code_register(code_reg)
       [setup, test]
     end
 
@@ -240,12 +265,12 @@ module DC
       end
       arg = args.children[0].children[0]
       code_dc = process(code, true)
-      code_reg = next_anonymous_register
+      code_reg = next_code_register
       setup, test = process_condition(condition, arg, code_reg)
       result = setup
       result << '[' << code_dc << test << ']'
-      result << process_store(code_reg)
-      result << process_load(code_reg) << 'x'
+      result << process_code_store(code_reg)
+      result << process_code_load(code_reg) << 'x'
       result
     end
 
@@ -258,15 +283,17 @@ module DC
     end
 
     def prologue
-      @toplevel ? '' : 'IAir'
+      reg = data_register
+      @toplevel ? '' : "0S#{reg} I0:#{reg} Ai"
     end
 
     def epilogue
       s = ''
-      @registers.values.each do |reg|
-        s << "L#{reg} R"
+      reg = data_register
+      @code_registers.values.each do |r|
+        s << "L#{r}R "
       end
-      s << 'ri' unless @toplevel
+      s << "0;#{reg}i L#{reg}R" unless @toplevel
       s
     end
   end
