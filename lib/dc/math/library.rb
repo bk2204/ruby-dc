@@ -28,7 +28,7 @@ module DC
         accum = 1.to_r
         # Rough heuristic.
         iters = ((s + 10) * 6).to_i
-        self.scale = 0.5 * x + iters
+        self.scale = 0.5 * x + (iters / 10) + 10
         iters.times do |i|
           n = i + 1
           accum *= x
