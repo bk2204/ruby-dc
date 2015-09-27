@@ -180,8 +180,10 @@ module DC
       end
       gen = DC::Generator.new
       result = '['
+      result << gen.prologue
       result << gen.process_store(args.children[0].children[0])
       result << gen.process(code)
+      result << gen.epilogue
       result << "]S#{name}"
     end
 
