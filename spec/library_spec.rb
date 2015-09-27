@@ -42,9 +42,11 @@ describe DC::Generator do
   it 'should generate proper exponential values for small values' do
     (1..10).each do |x|
       generate_and_compare "s = Stub.new; s.scale = 20; s.e(#{x})"
-      s = Stub.new
-      s.scale = 5
-      expect(s.e(x)).to eq Math.exp(x).to_r.truncate(s.scale)
+      (1..10).each do |scale|
+        s = Stub.new
+        s.scale = scale
+        expect(s.e(x)).to eq Math.exp(x).to_r.truncate(scale)
+      end
     end
   end
 end

@@ -27,7 +27,7 @@ module DC
         result = 1
         accum = 1.to_r
         # Rough heuristic.
-        iters = ((s * 6) + 10).to_i
+        iters = ((s + 10) * 6).to_i
         self.scale = 0.5 * x + iters
         iters.times do |i|
           n = i + 1
