@@ -49,4 +49,20 @@ describe DC::Generator do
       end
     end
   end
+
+  it 'should generate proper exponential values for zero' do
+    generate_and_compare "s = Stub.new; s.scale = 20; s.e(0)"
+  end
+
+  it 'should generate proper exponential values for negative values' do
+    (-20..-1).each do |x|
+      x /= 2
+      generate_and_compare "s = Stub.new; s.scale = 20; s.e(#{x})"
+      (1..10).each do |scale|
+        s = Stub.new
+        s.scale = scale
+        expect(s.e(x)).to eq Math.exp(x).to_r.truncate(scale)
+      end
+    end
+  end
 end
