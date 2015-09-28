@@ -55,8 +55,8 @@ describe DC::Calculator do
   end
 
   it 'should calculate the length of a number with Z' do
-    @calc.parse('1.2345 Z 2 Z .99 Z')
-    expect(@calc.stack).to eq [2, 1, 5]
+    @calc.parse('1.2345 Z 2 Z .99 Z .000006 Z 1935.000 Z')
+    expect(@calc.stack).to eq [7, 1, 2, 1, 5]
   end
 
   it 'should print the top of stack with a newline with p (number)' do
