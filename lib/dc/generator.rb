@@ -115,6 +115,15 @@ module DC
         process(invocant)
       when message == :to_i
         'K 0k ' << process(invocant) << ' 1/ rk'
+      when invocant.nil? && message == :length
+        # This is the bc length function, because that's what's required to
+        # implement algorithms effectively.  The difference between that and Z
+        # is that Z ignores leading zeros to the right of the radix point, while
+        # length counts them.  Essentially, the result is X if X is larger than
+        # Z, and Z otherwise.
+        s = process(args[0])
+        s << 'd XSa ZSb [la]Sc[lb]Sd lbla>c lbla!>d LaR LbR LcR LdR'
+        s
       when invocant.nil? && message.length == 1
         # dc function call
         process(args[0]) + "l#{message}x"

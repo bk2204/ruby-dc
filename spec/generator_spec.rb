@@ -7,13 +7,17 @@ class FakeNode
 end
 
 describe DC::Generator do
-  def generate_and_run(s)
-    dc = DC::Generator.new(true).emit(s)
+  def run(s)
     output = StringIO.new('', 'w+')
     input = StringIO.new('', 'r')
     calc = DC::Calculator.new(input, output, all: true)
-    calc.parse(dc)
+    calc.parse(s)
     calc
+  end
+
+  def generate_and_run(s)
+    dc = DC::Generator.new(true).emit(s)
+    run(dc)
   end
 
   def generate_and_compare(s)
@@ -224,5 +228,22 @@ describe DC::Generator do
     generate_and_compare code
     dc = DC::Generator.new.emit(code)
     expect(dc).to match(/\[.*?10\s*i.*?\]Sf/m)
+  end
+
+  it 'should generate expected results for the length function' do
+    values = {
+      '1' => 1,
+      '0.1' => 1,
+      '0.22' => 2,
+      '99' => 2,
+      '100' => 3,
+      '0.0006' => 4,
+      '0.00062' => 5,
+    }
+    values.each do |value, expected|
+      dc = DC::Generator.new.emit("s = #{value}; length(s)")
+      calc = run(dc)
+      expect(calc.stack).to eq [expected]
+    end
   end
 end
