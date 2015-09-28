@@ -59,6 +59,11 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [7, 1, 2, 1, 5]
   end
 
+  it 'should calculate the length of negative numbers with Z' do
+    @calc.parse('_1.2345 Z _2 Z _.99 Z _.000006 Z _1935.000 Z')
+    expect(@calc.stack).to eq [7, 1, 2, 1, 5]
+  end
+
   it 'should print the top of stack with a newline with p (number)' do
     @calc.parse('1p')
     expect(@output.string).to eq "1\n"

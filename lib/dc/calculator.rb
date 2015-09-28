@@ -162,7 +162,7 @@ module DC
 
     # Number of digits.
     def length
-      to_s.sub(/^0\.0*/, '.').gsub('.', '').length
+      to_s.sub(/^0\.0*/, '.').gsub(/[.-]/, '').length
     end
 
     protected
