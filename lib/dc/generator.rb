@@ -51,8 +51,8 @@ module DC
         process_message(*node.children)
       when :lvasgn
         if node.children[1].is_a?(Parser::AST::Node) &&
-            node.children[1].type == :send &&
-            node.children[1].children[1] == :new
+           node.children[1].type == :send &&
+           node.children[1].children[1] == :new
           mark_stub(node.children[0])
           return ''
         end
@@ -88,7 +88,7 @@ module DC
     def instantiation?(invocant, message)
       return false unless invocant.is_a?(Parser::AST::Node)
       return false unless invocant.type == :const
-      return message == :new
+      message == :new
     end
 
     def function_call?(invocant, message)
@@ -103,7 +103,7 @@ module DC
       false
     end
 
-    def special_method?(invocant, message)
+    def special_method?(_invocant, message)
       [:ibase, :scale, :ibase=, :scale=].include?(message)
     end
 
@@ -198,7 +198,7 @@ module DC
         fail InvalidNameError, "name must be a single character, not #{name}"
       end
       if args.children.length > 1
-        fail NotImplementedError, "multiple arguments not supported"
+        fail NotImplementedError, 'multiple arguments not supported'
       end
       gen = DC::Generator.new
       result = '['
