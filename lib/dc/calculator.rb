@@ -2,6 +2,7 @@ require 'set'
 
 require 'dc/exception'
 require 'dc/math'
+require 'dc/util'
 
 module DC
   class CalculatorError < DC::Exception
@@ -145,24 +146,12 @@ module DC
     end
 
     def to_s(base=10)
-      base = base.to_i
-      i = @value.to_i
-      temp = @value.to_r.truncate(@scale)
-      frac = temp - i
-      s = i.to_s(base)
-      s << '.' if @scale > 0
-      @scale.times do
-        frac *= base
-        value = frac.to_i
-        frac -= value
-        s << value.to_s(base)
-      end
-      s
+      DC::Util.stringify(@value, @scale, base)
     end
 
     # Number of digits.
     def length
-      to_s.sub(/^0\.0*/, '.').gsub(/[.-]/, '').length
+      DC::Util.length(@value, @scale)
     end
 
     protected
