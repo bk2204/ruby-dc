@@ -21,6 +21,10 @@ module DC
         @calc.ibase = x.to_i
       end
 
+      def length(x)
+        DC::Util.length(x, scale)
+      end
+
       def e(x)
         s = scale
         ib = ibase
