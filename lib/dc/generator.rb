@@ -193,7 +193,7 @@ module DC
     end
 
     def process_def(name, args, code)
-      return if /\A(?:initialize|(?:ibase|scale)=?)\z/.match name
+      return if /\A(?:initialize|length|(?:ibase|scale)=?)\z/.match name
       if name.length > 1
         fail InvalidNameError, "name must be a single character, not #{name}"
       end
