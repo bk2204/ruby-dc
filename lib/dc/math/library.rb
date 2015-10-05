@@ -43,6 +43,28 @@ module DC
         self.ibase = ib
         result.to_r.truncate(s)
       end
+
+      def l(x)
+        s = scale
+        ib = ibase
+        # Rough heuristic.
+        iters = ((s + 20) * 10).to_i
+        self.scale = s * 4
+        x = x.to_r
+        accum = 1.to_r
+        y = (x - 1) / (x + 1)
+        y2 = y * y
+        (0..iters).reverse_each do |i|
+          n = i * 2 + 1
+          f = 1 / n.to_r
+          r = accum * y2
+          accum = (r + f).to_r.truncate(scale)
+        end
+        result = accum * 2 * y
+        self.scale = s
+        self.ibase = ib
+        result.to_r.truncate(s)
+      end
     end
   end
 end

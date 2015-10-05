@@ -1,4 +1,5 @@
 require_relative 'spec_helper'
+require 'set'
 
 class Stub < BasicObject
   def initialize
@@ -74,12 +75,13 @@ describe DC::Generator do
     end
   end
 
-  it 'should not leave anything on the stack after execution' do
+  it 'should not leave anything in registers after execution' do
     mathlib = generate(slurp)
-    %w(e).each do |f|
+    set = Set.new(%w(e l))
+    set.each do |f|
       calc = run(mathlib + "1l#{f}x")
       calc.registers.each do |i, reg|
-        if i == f.ord
+        if set.include? i.chr
           expect(reg).to be_a Array
           expect(reg.length).to eq 1
           expect(reg[0]).to be_a String
@@ -87,6 +89,16 @@ describe DC::Generator do
           expect(reg).to eq []
         end
       end
+    end
+  end
+
+  it 'should generate proper natural log for small values' do
+    (1..10).each do |x|
+      x /= 2.0
+      generate_and_compare "s = Stub.new; s.scale = 20; s.l(#{x})"
+      s = Stub.new
+      s.scale = 5
+      expect(s.l(x)).to eq Math.log(x).to_r.truncate(s.scale)
     end
   end
 end
