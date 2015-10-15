@@ -17,12 +17,24 @@ def parse_options(args)
     opts.on('-f', '--file FILE', 'Run the specified file as a script') do |f|
       options[:scripts] << file_from_name(f)
     end
+
+    opts.on('-l', '--mathlib', 'Define the standard math library') do
+      require 'dc/generator'
+
+      path = nil
+      $LOAD_PATH.each do |p|
+        loc = File.join(p, 'dc', 'math', 'library.rb')
+        if File.exist? loc
+          path = loc
+          break
+        end
+      end
+      fail "Can't find math library" if path.nil?
+
+      options[:scripts] << DC::Generator.new(true).emit(File.new(path).read)
+    end
   end.parse!(args)
   [options, args]
-end
-
-def process(thing, &block)
-    thing.each_line { |line| yield block(line) }
 end
 
 def script(args)
