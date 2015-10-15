@@ -1,9 +1,41 @@
 #!/usr/bin/ruby
 
+require 'optparse'
 require 'dc/calculator'
 
-calc = DC::Calculator.new($stdin, $stdout, all: true, insecure: true)
-
-$stdin.each do |line|
-  exit unless calc.parse(line)
+def file_from_name(f)
+  f == '-' ? $stdin : File.new(f)
 end
+
+def parse_options(args)
+  options = { scripts: [] }
+  OptionParser.new do |opts|
+    opts.on('-e', '--expression SCRIPT', 'Run the specified script') do |s|
+      options[:scripts] << s
+    end
+
+    opts.on('-f', '--file FILE', 'Run the specified file as a script') do |f|
+      options[:scripts] << file_from_name(f)
+    end
+  end.parse!(args)
+  [options, args]
+end
+
+def process(thing, &block)
+    thing.each_line { |line| yield block(line) }
+end
+
+def script(args)
+  options, args = parse_options(args)
+
+  calc = DC::Calculator.new($stdin, $stdout, all: true, insecure: true)
+
+  inputs = options[:scripts] + args.map { |f| file_from_name(f) }
+  inputs.each do |source|
+    source.each_line do |line|
+      exit unless calc.parse(line)
+    end
+  end
+end
+
+script(ARGV) if __FILE__ == $PROGRAM_NAME
