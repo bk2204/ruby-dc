@@ -45,7 +45,7 @@ def script(args)
   inputs = options[:scripts] + args.map { |f| file_from_name(f) }
   inputs.each do |source|
     source.each_line do |line|
-      exit unless calc.parse(line)
+      return unless calc.parse(line)
     end
   end
 end
