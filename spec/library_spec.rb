@@ -101,4 +101,10 @@ describe DC::Generator do
       expect(s.l(x)).to eq Math.log(x).to_r.truncate(s.scale)
     end
   end
+
+  it 'should generate properly formatted numbers for ln of fractional values' do
+    code = generate(slurp) + ' 10k 0.5 llx 2*p'
+    calc = run(code)
+    expect(calc.output.string).to eq "-1.3862943610\n"
+  end
 end

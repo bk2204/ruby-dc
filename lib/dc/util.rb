@@ -6,6 +6,8 @@ require 'dc/math'
 module DC
   module Util
     def self.stringify(x, scale, base=10)
+      sign = x < 0 ? '-' : ''
+      x = x.abs
       base = base.to_i
       i = x.to_i
       temp = x.to_r.truncate(scale)
@@ -18,11 +20,11 @@ module DC
         frac -= value
         s << value.to_s(base)
       end
-      s
+      sign + s
     end
 
     def self.length(x, scale)
-      stringify(x, scale).sub(/^0\.0*/, '.').gsub(/[.-]/, '').length
+      stringify(x, scale).sub(/^-?0\.0*/, '.').gsub(/[.-]/, '').length
     end
   end
 end
