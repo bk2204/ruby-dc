@@ -36,8 +36,8 @@ describe DC::Generator do
     run(dc)
   end
 
-  def generate_and_compare(s)
-    code = "#{slurp}\n#{s}"
+  def generate_and_compare(s, scale)
+    code = "#{slurp}\ns = Stub.new; s.scale = #{scale}; #{s}"
     calc = generate_and_run(code)
     ruby = eval(code)  # rubocop:disable Lint/Eval
     expect(calc.stack).to eq [ruby]
@@ -50,7 +50,7 @@ describe DC::Generator do
 
   it 'should generate proper exponential values for small values' do
     (1..10).each do |x|
-      generate_and_compare "s = Stub.new; s.scale = 20; s.e(#{x})"
+      generate_and_compare "s.e(#{x})", 20
       (1..10).each do |scale|
         s = Stub.new
         s.scale = scale
@@ -60,13 +60,13 @@ describe DC::Generator do
   end
 
   it 'should generate proper exponential values for zero' do
-    generate_and_compare "s = Stub.new; s.scale = 20; s.e(0)"
+    generate_and_compare "s.e(0)", 20
   end
 
   it 'should generate proper exponential values for negative values' do
     (-20..-1).each do |x|
       x /= 2
-      generate_and_compare "s = Stub.new; s.scale = 20; s.e(#{x})"
+      generate_and_compare "s.e(#{x})", 20
       (1..10).each do |scale|
         s = Stub.new
         s.scale = scale
@@ -95,7 +95,7 @@ describe DC::Generator do
   it 'should generate proper natural log for small values' do
     (1..10).each do |x|
       x /= 2.0
-      generate_and_compare "s = Stub.new; s.scale = 20; s.l(#{x})"
+      generate_and_compare "s.l(#{x})", 20
       s = Stub.new
       s.scale = 5
       expect(s.l(x)).to eq Math.log(x).to_r.truncate(s.scale)
