@@ -32,20 +32,26 @@ describe DC::Generator do
   end
 
   def generate_and_run(s)
-    dc = generate(s)
+    dc = math_library + generate(s)
     run(dc)
   end
 
+  def math_library
+    return @mathlib if @mathlib
+    @mathlib = generate(slurp)
+  end
+
   def generate_and_compare(s, scale)
-    code = "#{slurp}\ns = Stub.new; s.scale = #{scale}; #{s}"
+    code = "s = Stub.new; s.scale = #{scale}; #{s}"
     calc = generate_and_run(code)
-    ruby = eval(code)  # rubocop:disable Lint/Eval
+    ruby = eval(slurp + code)  # rubocop:disable Lint/Eval
     expect(calc.stack).to eq [ruby]
   end
 
   def slurp
+    return @ruby_mathlib if @ruby_mathlib
     filename = File.join(File.dirname(__FILE__), '../lib/dc/math/library.rb')
-    File.new(filename).read
+    @ruby_mathlib = File.new(filename).read
   end
 
   it 'should generate proper exponential values for small values' do
