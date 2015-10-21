@@ -108,6 +108,16 @@ describe DC::Generator do
     end
   end
 
+  it 'should compute square roots accurately' do
+    (1..10).each do |x|
+      code_exp = generate(slurp) + " 10k 0.5 #{x} llx* lex 5k 1/p"
+      code_sqrt = "5k #{x} vp"
+      exp = run(code_exp).output.string.chomp.to_f
+      sqrt = run(code_sqrt).output.string.chomp.to_f
+      expect(exp).to be_within(0.000011).of(sqrt)
+    end
+  end
+
   it 'should generate properly formatted numbers for ln of fractional values' do
     code = generate(slurp) + ' 10k 0.5 llx 2*p'
     calc = run(code)
