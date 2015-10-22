@@ -17,6 +17,7 @@ describe DC::Generator do
 
   def generate_and_run(s)
     dc = DC::Generator.new(true).emit(s)
+    puts dc if ENV['DEBUG']
     run(dc)
   end
 
