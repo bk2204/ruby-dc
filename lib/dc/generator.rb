@@ -122,7 +122,8 @@ module DC
         # length counts them.  Essentially, the result is X if X is larger than
         # Z, and Z otherwise.
         s = process(args[0])
-        s << 'd XSa ZSb [la]Sc[lb]Sd lbla>c lbla!>d LaR LbR LcR LdR'
+        s << 'd XSa ZSb [la]Sc[lb]Sd lbla>c lbla!>d '
+        s << ('a'..'d').map { |reg| "L#{reg}#{drop}" }.join(' ')
         s
       when invocant.nil? && message.length == 1
         # dc function call
