@@ -300,10 +300,18 @@ module DC
       s = ''
       reg = data_register
       @code_registers.values.each do |r|
-        s << "L#{r}R "
+        s << "L#{r}#{drop} "
       end
-      s << "0;#{reg}i L#{reg}R" unless @toplevel
+      s << "0;#{reg}i L#{reg}#{drop}" unless @toplevel
       s
+    end
+
+    # We could use the FreeBSD "R" for this, but that doesn't work on GNU dc.
+    # Convert the top of stack to a number, duplicate it, and subtract, which
+    # gives us 0.  Then add that to the current scale.  Unlike some others,
+    # this technique works even if there is nothing else on the stack.
+    def drop
+      'Xd-K+k'
     end
   end
 end
