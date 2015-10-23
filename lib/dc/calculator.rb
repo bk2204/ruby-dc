@@ -208,6 +208,7 @@ module DC
 
     def push(val)
       fail InternalCalculatorError, 'Trying to push invalid value' if val.nil?
+      fail InternalCalculatorError, 'Trying to push Fixnum' if val.is_a? Fixnum
       @stack.unshift(val)
     end
 
@@ -319,6 +320,10 @@ module DC
       end
     end
 
+    def int(x)
+      Numeric.new(x, 0, @scale)
+    end
+
     def baseop(op)
       case op
       when :I
@@ -358,12 +363,12 @@ module DC
       when op == :z
         push Numeric.new(@stack.length, 0, @scale)
       when op == :Z
-        push pop.length
+        push int(pop.length)
       when op == :x
         do_parse(pop) if @stack[0].is_a? String
       when op == :X
         top = pop
-        push(top.is_a?(String) ? 0 : top.scale)
+        push(int(top.is_a?(String) ? 0 : top.scale))
       when op == :a
         stringify
       when op == :v
@@ -411,7 +416,7 @@ module DC
         value = pop
         @arrays[reg][0][index] = value
       when :';'
-        push(@arrays[reg][0][index] || 0)
+        push(@arrays[reg][0][index] || int(0))
       end
     end
 
