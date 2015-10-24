@@ -17,7 +17,7 @@ def find_math_library
 end
 
 def parse_options(args)
-  options = { scripts: [] }
+  options = { scripts: [], mathlib: false }
   OptionParser.new do |opts|
     opts.on('-e', '--expression SCRIPT', 'Run the specified script') do |s|
       options[:scripts] << s
@@ -32,6 +32,7 @@ def parse_options(args)
 
       path = find_math_library
       options[:scripts] << DC::Generator.new(true).emit(File.new(path).read)
+      options[:mathlib] = true
     end
   end.parse!(args)
   [options, args]
@@ -43,6 +44,7 @@ def script(args)
   calc = DC::Calculator.new($stdin, $stdout, all: true, insecure: true)
 
   inputs = options[:scripts] + args.map { |f| file_from_name(f) }
+  inputs << $stdin if inputs.length <= (options[:mathlib] ? 1 : 0)
   inputs.each do |source|
     source.each_line do |line|
       return unless calc.parse(line)
