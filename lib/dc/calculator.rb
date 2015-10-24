@@ -230,7 +230,7 @@ module DC
     def do_parse(line)
       line = line.dup
       line.force_encoding('BINARY')
-      until line.empty?
+      until line.empty? || @unwind
         if @string
           line = parse_string(line)
         elsif line.sub!(/\A(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
@@ -246,6 +246,7 @@ module DC
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
           return @break ? nil : resp if !resp.nil? && resp <= @stack_level
+          @unwind = false
         elsif line.sub!(/\A([SsLl:;])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
         elsif line.sub!(/\A(!?[<>=])(.)/, '')
@@ -264,10 +265,12 @@ module DC
           raise UnbalancedBracketsError
         elsif line[0] == 'q'
           return if @stack_level == 0
+          @unwind = true
           return @stack_level - 1
         elsif line[0] == 'Q'
           level = pop.to_i
           @break = false
+          @unwind = true
           return 1 if level > @stack_level
           return @stack_level - level + 1
         else

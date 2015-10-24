@@ -12,8 +12,11 @@ describe DC::Calculator do
     expect(@calc.stack).to eq [7, 2]
   end
 
-  it 'should return false when exiting due to q' do
+  it 'should return false when exiting due to q from a macro' do
     expect(@calc.parse('[4 5 q]x')).to eq false
+  end
+
+  it 'should return false when exiting due to q from the top level' do
     expect(@calc.parse('4 5 q')).to eq false
   end
 
@@ -45,6 +48,29 @@ describe DC::Calculator do
   it 'should only exit the proper number of stages correctly' do
     expect(@calc.parse('[[[4 5 2Q]x *]x 2 *]x 6')).to eq true
     expect(@calc.stack).to eq [6, 10, 4]
+  end
+
+  it 'should exit the proper number of stages correctly with unnested macros' do
+    expect(@calc.parse('[4 5 2Q]Sa[lax *]Sb[lbx 2 *]Sc lcx 6')).to eq true
+    expect(@calc.stack).to eq [6, 10, 4]
+  end
+
+  it 'should exit macros properly when called conditionally (with Q)' do
+    code = <<-EOM
+    0 sa 1 sb
+    [lalb+sa [2Q]Sn 10 la >n lb 1+d sb 10!<o]solox la
+    EOM
+    expect(@calc.parse(code)).to eq true
+    expect(@calc.stack).to eq [15]
+  end
+
+  it 'should exit macros properly when called conditionally (with q)' do
+    code = <<-EOM
+    0 sa 1 sb
+    [lalb+sa [q]Sn 10 la >n lb 1+d sb 10!<o]solox la
+    EOM
+    expect(@calc.parse(code)).to eq true
+    expect(@calc.stack).to eq [15]
   end
 
   it 'should return true when exiting normally' do
