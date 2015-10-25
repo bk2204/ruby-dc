@@ -113,6 +113,18 @@ describe DC::Generator do
     generate_and_compare code
   end
 
+  it 'should be able to handle if and break statements' do
+    code = <<-EOM
+    n = 0
+    (1..10).each do |i|
+      n += i
+      break if n > 10
+    end
+    n
+    EOM
+    generate_and_compare code
+  end
+
   it 'should be able to handle methods in the math library' do
     code = <<-EOM
     module DC

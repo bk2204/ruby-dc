@@ -74,6 +74,10 @@ module DC
         process_module(*node.children)
       when :class
         process_class(*node.children)
+      when :if
+        process_conditional(*node.children)
+      when :break
+        '2Q'
       else
         fail UnimplementedNodeError, "Unknown node type #{node.type}"
       end
@@ -182,8 +186,8 @@ module DC
       "l#{code_register(var)}"
     end
 
-    def process_code_store(var)
-      (code_register?(var) ? 's' : 'S') + code_register(var)
+    def process_code_store(var, preallocate = false)
+      (code_register?(var) || preallocate ? 's' : 'S') + code_register(var)
     end
 
     def process_op_assign(lvasgn, op, val)
@@ -280,7 +284,36 @@ module DC
       result = setup
       result << '[' << code_dc << test << ']'
       result << process_code_store(code_reg)
+      result << preallocate_registers((code_reg + 1)..@code_reg)
       result << process_code_load(code_reg) << 'x'
+      result
+    end
+
+    def preallocate_registers(range)
+      range.map { |r| "[]S#{code_register(r)}" }.join(' ')
+    end
+
+    def process_comparison(cmp, code_reg)
+      # 1 2 >a triggers
+      ops = {
+        :== => '=',
+        :!= => '!=',
+        :> =>  '>',
+        :< =>  '<',
+        :>= => '!<',
+        :<= => '!>',
+      }
+      result = process(cmp.children[2]) << ' '
+      result << process(cmp.children[0]) << ' '
+      result << ops[cmp.children[1]] << code_register(code_reg)
+    end
+
+    def process_conditional(cmp, iftrue, _iffalse)
+      fail NotImplementedError, 'unknown comparison' if cmp.type != :send
+      code_reg = next_code_register
+      result = '[' << process(iftrue) << ']'
+      result << process_code_store(code_reg, true)
+      result << process_comparison(cmp, code_reg)
       result
     end
 
