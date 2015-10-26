@@ -47,9 +47,10 @@ def script(args)
   inputs << $stdin if inputs.length <= (options[:mathlib] ? 1 : 0)
   inputs.each do |source|
     source.each_line do |line|
-      return unless calc.parse(line)
+      return 0 unless calc.parse(line)
     end
   end
+  0
 end
 
-script(ARGV) if __FILE__ == $PROGRAM_NAME
+exit(script(ARGV)) if __FILE__ == $PROGRAM_NAME
