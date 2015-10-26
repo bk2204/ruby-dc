@@ -56,8 +56,8 @@ module DC
       tolerance = 1.to_r / (10.to_r ** (scale + 1))
       epsilon = tolerance ** 2
 
-      f = lambda { |x| (x ** root) - base }
-      fprime = lambda { |x| root * (x ** (root - 1)) }
+      f = ->(x) { (x ** root) - base }
+      fprime = ->(x) { root * (x ** (root - 1)) }
 
       x0 = x0.to_r
       x1 = x0
