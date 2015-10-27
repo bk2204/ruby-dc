@@ -7,7 +7,7 @@ describe DC::Calculator do
     @calc = DC::Calculator.new(@input, @output)
   end
 
-  it "should ignore comments" do
+  it 'should ignore comments' do
     @calc.parse("2 3 4# *\n+p")
     expect(@calc.stack).to eq [7, 2]
   end
