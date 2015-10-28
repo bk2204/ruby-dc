@@ -32,7 +32,7 @@ module DC
     end
 
     def emit(s)
-      prologue() + process(Parser::CurrentRuby.parse(s)) + epilogue()
+      prologue + process(Parser::CurrentRuby.parse(s)) + epilogue
     end
 
     protected
