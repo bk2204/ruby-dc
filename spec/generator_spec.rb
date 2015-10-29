@@ -67,8 +67,8 @@ describe DC::Generator do
   end
 
   it 'should call functions correctly' do
-    generate_and_compare "def e(x); y = x + 1; y; end; e(2)"
-    generate_and_compare "def e(x); x + 1; end; e(2)"
+    generate_and_compare 'def e(x); y = x + 1; y; end; e(2)'
+    generate_and_compare 'def e(x); x + 1; end; e(2)'
   end
 
   it 'should raise when function names are too long' do

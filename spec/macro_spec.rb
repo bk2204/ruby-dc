@@ -13,9 +13,9 @@ describe DC::Calculator do
 
   it 'should loop on strings properly' do
     # Print the numbers from 1 to 10.
-    @calc.parse("[ln 1+ d sn p ln 10>b]sb")
-    @calc.parse("0sn0")
-    @calc.parse("lbx")
+    @calc.parse('[ln 1+ d sn p ln 10>b]sb')
+    @calc.parse('0sn0')
+    @calc.parse('lbx')
     expected = (1..10).map { |n| "#{n}\n" }.join('')
     expect(@output.string).to eq expected
   end

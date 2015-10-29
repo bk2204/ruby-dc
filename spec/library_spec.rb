@@ -66,7 +66,7 @@ describe DC::Generator do
   end
 
   it 'should generate proper exponential values for zero' do
-    generate_and_compare "s.e(0)", 20
+    generate_and_compare 's.e(0)', 20
   end
 
   it 'should generate proper exponential values for negative values' do
