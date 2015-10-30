@@ -329,18 +329,15 @@ module DC
 
     def baseop(op)
       case op
-      when :I
-        push Numeric.new(@ibase, 0, @scale)
-      when :O
-        push Numeric.new(@obase, 0, @scale)
-      when :K
-        push Numeric.new(@scale.to_r, 0, @scale)
       when :i
         @ibase = pop.to_i
       when :o
         @obase = pop.to_i
       when :k
         @scale.value = pop.to_i
+      else
+        ops = { I: @ibase, O: @obase, K: @scale.to_r }
+        push int(ops[op])
       end
     end
 
