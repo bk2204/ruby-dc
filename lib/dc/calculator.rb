@@ -328,13 +328,9 @@ module DC
     end
 
     def baseop(op)
-      case op
-      when :i
-        @ibase = pop.to_i
-      when :o
-        @obase = pop.to_i
-      when :k
-        @scale.value = pop.to_i
+      if [:i, :o, :k].include? op
+        methods = { i: :ibase=, o: :obase=, k: :scale= }
+        method(methods[op]).call(pop.to_i)
       else
         ops = { I: @ibase, O: @obase, K: @scale.to_r }
         push int(ops[op])
