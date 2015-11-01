@@ -301,10 +301,10 @@ module DC
     # to 10 regardless of its current state.
     def integer(s)
       value = 0
-      s.each_char { |c|
+      s.each_char do |c|
         value *= @ibase
         value += c.to_i(16)
-      }
+      end
       value
     end
 
