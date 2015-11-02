@@ -23,7 +23,7 @@ describe DC::Calculator do
 
   it 'should parse adjacent strings separately' do
     @calc.parse('[hello][goodbye]')
-    expect(@calc.stack).to eq ['goodbye', 'hello']
+    expect(@calc.stack).to eq %w(goodbye hello)
   end
 
   it 'should parse strings with brackets in them' do
@@ -100,7 +100,8 @@ describe DC::Calculator do
   end
 
   it 'should raise for a without extensions enabled' do
-    expect { @calc.parse('1a') }.to raise_exception(DC::UnsupportedExtensionError)
+    expect { @calc.parse('1a') }.to \
+      raise_exception(DC::UnsupportedExtensionError)
   end
 
   it 'should parse strings laid out over multiple calls to parse' do

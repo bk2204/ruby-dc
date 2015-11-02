@@ -1,5 +1,6 @@
 require_relative 'spec_helper'
 
+# A dummy node for tests.
 class FakeNode
   def type
     :nonexistent

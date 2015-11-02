@@ -10,7 +10,7 @@ describe DC::Math do
     (0..100).each do |base|
       (0..10).each do |exponent|
         (2..10).each do |modulus|
-          expected = (base ** exponent) % modulus
+          expected = (base**exponent) % modulus
           expect(DC::Math.modexp(base, exponent, modulus)).to eq expected
         end
       end
@@ -39,7 +39,7 @@ describe DC::Math do
             # The other expression provides the wrong value (3) for x == 64.
             expected = Math.cbrt(x).to_r.truncate(scale)
           else
-            expected = (x.to_f ** (1/root.to_f)).to_r.truncate(scale)
+            expected = (x.to_f**(1 / root.to_f)).to_r.truncate(scale)
           end
           expect(DC::Math.root(x, root, scale)).to eq expected
         end

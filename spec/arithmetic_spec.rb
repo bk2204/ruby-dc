@@ -109,7 +109,7 @@ describe DC::Calculator do
 
   it 'should compute modular exponentiation correctly' do
     12.times do |i|
-      expected = (2 ** i) % 11
+      expected = (2**i) % 11
       output = StringIO.new('', 'w+')
       input = StringIO.new('', 'r')
       calc = DC::Calculator.new(input, output)

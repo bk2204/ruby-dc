@@ -1,6 +1,7 @@
 require_relative 'spec_helper'
 require 'set'
 
+# A stub object designed simply to make the same code work in dc as in Ruby.
 class Stub < BasicObject
   def initialize
     @output = ::StringIO.new('', 'w+')

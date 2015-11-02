@@ -21,7 +21,7 @@ describe DC::Calculator do
     [2, 1, '<', true],
     [1, 2, '=', false],
     [1, 1, '=', true],
-    [2, 1, '=', false]
+    [2, 1, '=', false],
   ].each do |a, b, op, val|
     it "should think #{a} #{op} #{b} is #{val}" do
       @calc.parse("#{@macro} #{a} #{b} #{op}a")
@@ -45,7 +45,7 @@ describe DC::Calculator do
     [2, 1, '(', 1],
     [1, 2, 'G', 0],
     [1, 1, 'G', 1],
-    [2, 1, 'G', 0]
+    [2, 1, 'G', 0],
   ].each do |a, b, op, val|
     it "should push #{val} for #{a} #{b} #{op}" do
       @extcalc.parse("#{a} #{b} #{op}")
