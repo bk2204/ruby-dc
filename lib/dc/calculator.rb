@@ -430,25 +430,25 @@ module DC
       val.is_a?(DC::Numeric) ? val.to_s(@obase).upcase : val
     end
 
+    # Take a number and convert it to a series of bytes.
+    def num_to_bytes(val)
+      val = val.to_i.to_s(16)
+      val = "0#{val}" if val.length.odd?
+      [val].pack('H*')
+    end
+
     def printop(op)
       case op
       when :p
         @output.puts printable(@stack[0])
       when :P
         val = pop
-        if val.is_a? DC::Numeric
-          val = val.to_i.to_s(16)
-          val = "0#{val}" if val.length.odd?
-          val = [val].pack('H*')
-        end
+        val = num_to_bytes(val) if val.is_a? DC::Numeric
         @output.print val
       when :n
-        val = pop
-        @output.print printable(val)
+        @output.print printable(pop)
       when :f
-        @stack.each do |item|
-          @output.puts printable(item)
-        end
+        @stack.each { |item| @output.puts printable(item) }
       end
     end
 
