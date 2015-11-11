@@ -2,3 +2,5 @@ Style/TrailingComma:
     EnforcedStyleForMultiline: comma
 Style/FileName:
     Enabled: false
+Style/SpecialGlobalVars:
+    Enabled: false
