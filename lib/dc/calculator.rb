@@ -353,6 +353,20 @@ module DC
       end
     end
 
+    def fracop(op)
+      case op
+      when :z
+        push Numeric.new(@stack.length, 0, @scale)
+      when :Z
+        push int(pop.length)
+      when :x
+        do_parse(pop) if @stack[0].is_a? String
+      when :X
+        top = pop
+        push(int(top.is_a?(String) ? 0 : top.scale))
+      end
+    end
+
     def dispatch(op, arg = nil)
       case
       when [:+, :-, :*, :/, :%, :^].include?(op)
@@ -365,15 +379,8 @@ module DC
         baseop op
       when [:d, :c, :r, :R].include?(op)
         stackop op
-      when op == :z
-        push Numeric.new(@stack.length, 0, @scale)
-      when op == :Z
-        push int(pop.length)
-      when op == :x
-        do_parse(pop) if @stack[0].is_a? String
-      when op == :X
-        top = pop
-        push(int(top.is_a?(String) ? 0 : top.scale))
+      when [:z, :Z, :x, :X].include?(op)
+        fracop op
       when op == :a
         stringify
       when op == :v
