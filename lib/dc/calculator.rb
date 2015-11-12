@@ -337,6 +337,22 @@ module DC
       end
     end
 
+    def stackop(op)
+      case op
+      when :d
+        push @stack[0]
+      when :c
+        @stack.clear
+      when :r
+        a = pop
+        b = pop
+        push a
+        push b
+      when :R
+        pop
+      end
+    end
+
     def dispatch(op, arg = nil)
       case
       when [:+, :-, :*, :/, :%, :^].include?(op)
@@ -347,15 +363,8 @@ module DC
         mathop op
       when [:I, :O, :K, :i, :o, :k].include?(op)
         baseop op
-      when op == :d
-        push @stack[0]
-      when op == :c
-        @stack.clear
-      when op == :r
-        a = pop
-        b = pop
-        push a
-        push b
+      when [:d, :c, :r, :R].include?(op)
+        stackop op
       when op == :z
         push Numeric.new(@stack.length, 0, @scale)
       when op == :Z
@@ -372,8 +381,6 @@ module DC
         push(Numeric.new(result, @scale.to_i, @scale))
       when op == :N
         push(Numeric.new(pop == 0 ? 1 : 0, 0, @scale))
-      when op == :R
-        pop
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
