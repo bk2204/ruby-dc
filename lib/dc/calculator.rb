@@ -212,9 +212,12 @@ module DC
       @stack.unshift(val)
     end
 
-    def pop
-      fail InternalCalculatorError, 'Trying to pop empty stack' if @stack.empty?
-      @stack.shift
+    def pop(*args)
+      count = args.empty? ? 1 : args[0]
+      if @stack.length < count
+        fail InternalCalculatorError, 'Trying to pop empty stack'
+      end
+      @stack.shift(*args)
     end
 
     def parse(line)
@@ -312,12 +315,10 @@ module DC
       case op
       when :|
         mod = pop.to_r
-        exp = pop.to_i
-        base = pop.to_i
+        exp, base = pop(2).map(&:to_i)
         push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
       when :~
-        denom = pop
-        num = pop
+        denom, num = pop(2)
         push num / denom
         push num % denom
       end
@@ -344,8 +345,7 @@ module DC
       when :c
         @stack.clear
       when :r
-        a = pop
-        b = pop
+        a, b = pop(2)
         push a
         push b
       when :R
@@ -469,8 +469,7 @@ module DC
     def cmpop(op, reg)
       syms = { :'=' => :==, :'!>' => :<=, :'!<' => :>= }
       op = syms[op] || op
-      top = pop
-      second = pop
+      top, second = pop(2)
       return unless top.send(op, second)
       do_parse(@registers[reg][0])
     end
@@ -478,8 +477,7 @@ module DC
     def extcmpop(op)
       syms = { :G => :==, :"(" => :<, :"{" => :<= }
       op = syms[op]
-      top = pop
-      second = pop
+      top, second = pop(2)
       push(Numeric.new(top.send(op, second) ? 1 : 0, 0, @scale))
     end
 
@@ -501,8 +499,7 @@ module DC
     def binop(op)
       map = {:^ => :**}
       op = map[op] || op
-      top = pop
-      second = pop
+      top, second = pop(2)
       push(second.send(op, top))
     end
 
