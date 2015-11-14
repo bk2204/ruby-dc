@@ -367,6 +367,18 @@ module DC
       end
     end
 
+    def miscop(op)
+      case op
+      when :a
+        stringify
+      when :v
+        result = DC::Math.root(pop, 2, @scale)
+        push(Numeric.new(result, @scale.to_i, @scale))
+      when :N
+        push(Numeric.new(pop == 0 ? 1 : 0, 0, @scale))
+      end
+    end
+
     def dispatch(op, arg = nil)
       case
       when [:+, :-, :*, :/, :%, :^].include?(op)
@@ -381,13 +393,8 @@ module DC
         stackop op
       when [:z, :Z, :x, :X].include?(op)
         fracop op
-      when op == :a
-        stringify
-      when op == :v
-        result = DC::Math.root(pop, 2, @scale)
-        push(Numeric.new(result, @scale.to_i, @scale))
-      when op == :N
-        push(Numeric.new(pop == 0 ? 1 : 0, 0, @scale))
+      when [:a, :v, :N].include?(op)
+        miscop op
       when [:L, :S, :l, :s].include?(op)
         regop op, arg
       when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
