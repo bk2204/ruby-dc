@@ -182,6 +182,7 @@ module DC
         @extensions.add ext if options[ext] || options[:all]
       end
       @extensions.add :insecure if options[:insecure]
+      setup_dispatch_table
     end
 
     def scale
@@ -379,30 +380,32 @@ module DC
       end
     end
 
+    def setup_dispatch_table
+      sets = [
+        [[:+, :-, :*, :/, :%, :^], :binop],
+        [[:P, :p, :n, :f], :printop],
+        [[:|, :~], :mathop],
+        [[:I, :O, :K, :i, :o, :k], :baseop],
+        [[:d, :c, :r, :R], :stackop],
+        [[:z, :Z, :x, :X], :fracop],
+        [[:a, :v, :N], :miscop],
+        [[:L, :S, :l, :s], :regop],
+        [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
+        [[:G, :'(', :'{'], :extcmpop],
+        [[:';', :':'], :arrayop],
+      ]
+      @dispatch = {}
+      sets.each do |entries, func|
+        entries.each { |op| @dispatch[op] = func }
+      end
+    end
+
     def dispatch(op, arg = nil)
-      case
-      when [:+, :-, :*, :/, :%, :^].include?(op)
-        binop op
-      when [:P, :p, :n, :f].include?(op)
-        printop(op)
-      when [:|, :~].include?(op)
-        mathop op
-      when [:I, :O, :K, :i, :o, :k].include?(op)
-        baseop op
-      when [:d, :c, :r, :R].include?(op)
-        stackop op
-      when [:z, :Z, :x, :X].include?(op)
-        fracop op
-      when [:a, :v, :N].include?(op)
-        miscop op
-      when [:L, :S, :l, :s].include?(op)
-        regop op, arg
-      when [:!=, :'=', :>, :'!>', :<, :'!<'].include?(op)
-        cmpop op, arg
-      when [:G, :'(', :'{'].include?(op)
-        extcmpop op
-      when [:';', :':'].include?(op)
-        arrayop op, arg
+      func = method(@dispatch[op])
+      if func.arity == 2
+        func.call(op, arg)
+      else
+        func.call(op)
       end
     end
 
