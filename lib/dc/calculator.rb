@@ -243,7 +243,7 @@ module DC
           push(number($~[2], $~[1]))
         elsif line.sub!(/\A\s+/, '')
         elsif line.sub!(/\A#[^\n]+/, '')
-        elsif line.sub!(%r(\A[-+*/%^|~dpPzZXfiIoOkKvc]), '')
+        elsif line.sub!(%r{\A[-+*/%^|~dpPzZXfiIoOkKvc]}, '')
           dispatch($~[0].to_sym)
         elsif line.sub!(/\Ax/, '')
           @stack_level += 1
