@@ -117,7 +117,7 @@ module DC
 
     def **(other)
       other = Numeric.new(other, k, @k) unless other.is_a? Numeric
-      Numeric.new(@value ** other.value, k, @k)
+      Numeric.new(@value**other.value, k, @k)
     end
 
     def respond_to?(symbol)
@@ -145,7 +145,7 @@ module DC
       @value.to_f
     end
 
-    def to_s(base=10)
+    def to_s(base = 10)
       DC::Util.stringify(@value, @scale, base)
     end
 
@@ -284,11 +284,11 @@ module DC
       @stack_level
     end
 
-    def number(s, negative=false)
+    def number(s, negative = false)
       int, frac = s.split('.')
       value = integer(int)
       frac_digits = frac.to_s.length
-      value += Rational(integer(frac), @ibase ** frac_digits) if frac
+      value += Rational(integer(frac), @ibase**frac_digits) if frac
       # For ease of internal conversion and compatibility with the GNU
       # implementation, the scale is always computed in base 10.  Also for GNU
       # compatibility, we always compute the number of fractional digits as the
@@ -409,7 +409,6 @@ module DC
       end
     end
 
-
     def dispatch_insecure(op, arg)
       fail InsecureCommandError, op if secure?
       case op
@@ -507,7 +506,7 @@ module DC
     end
 
     def binop(op)
-      map = {:^ => :**}
+      map = { :^ => :** }
       op = map[op] || op
       top, second = pop(2)
       push(second.send(op, top))
