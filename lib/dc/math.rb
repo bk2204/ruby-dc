@@ -40,7 +40,7 @@ module DC
     # Uses the Newton-Raphson method and is based on the square root algorithm
     # given at https://en.wikipedia.org/wiki/Newton%27s_method.
     def self.root(base, root, scale = nil)
-      x0 = base.to_f ** (1 / root.to_f).to_r
+      x0 = base.to_f**(1 / root.to_f).to_r
 
       if scale.nil?
         scales = [base, root].map do |v|
@@ -53,11 +53,11 @@ module DC
       base = base.to_r
       root = root.to_r
       scale = scale.to_i
-      tolerance = 1.to_r / (10.to_r ** (scale + 1))
-      epsilon = tolerance ** 2
+      tolerance = 1.to_r / (10.to_r**(scale + 1))
+      epsilon = tolerance**2
 
-      f = ->(x) { (x ** root) - base }
-      fprime = ->(x) { root * (x ** (root - 1)) }
+      f = ->(x) { (x**root) - base }
+      fprime = ->(x) { root * (x**(root - 1)) }
 
       x0 = x0.to_r
       x1 = x0
