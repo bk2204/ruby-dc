@@ -207,10 +207,14 @@ module DC
       @extensions.sort
     end
 
-    def push(val)
-      fail InternalCalculatorError, 'Trying to push invalid value' if val.nil?
-      fail InternalCalculatorError, 'Trying to push Fixnum' if val.is_a? Fixnum
-      @stack.unshift(val)
+    def push(*args)
+      args.each do |val|
+        fail InternalCalculatorError, 'Trying to push invalid value' if val.nil?
+        if val.is_a? Fixnum
+          fail InternalCalculatorError, 'Trying to push Fixnum'
+        end
+      end
+      @stack.unshift(*args)
     end
 
     def pop(*args)
@@ -347,8 +351,7 @@ module DC
         @stack.clear
       when :r
         a, b = pop(2)
-        push a
-        push b
+        push b, a
       when :R
         pop
       end
