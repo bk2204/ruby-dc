@@ -360,7 +360,7 @@ module DC
     def fracop(op)
       case op
       when :z
-        push Numeric.new(@stack.length, 0, @scale)
+        push int(@stack.length)
       when :Z
         push int(pop.length)
       when :x
@@ -379,7 +379,7 @@ module DC
         result = DC::Math.root(pop, 2, @scale)
         push(Numeric.new(result, @scale.to_i, @scale))
       when :N
-        push(Numeric.new(pop == 0 ? 1 : 0, 0, @scale))
+        push(int(pop == 0 ? 1 : 0))
       end
     end
 
@@ -494,7 +494,7 @@ module DC
       # rubocop:enable Style/HashSyntax
       op = syms[op]
       top, second = pop(2)
-      push(Numeric.new(top.send(op, second) ? 1 : 0, 0, @scale))
+      push(int(top.send(op, second) ? 1 : 0))
     end
 
     def regop(op, reg)
