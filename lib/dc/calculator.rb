@@ -27,7 +27,8 @@ module DC
     attr_reader :command, :standard
 
     def initialize(command, standard)
-      super("Unsupported extension '#{command}': standards #{standard} not enabled")
+      super("Unsupported extension '#{command}': " \
+            "standards #{standard} not enabled")
       @name = :extension
       @command = command
       @standard = standard
@@ -37,7 +38,7 @@ module DC
   class UnbalancedBracketsError < CalculatorError
     def initialize
       @name = :unbalanced
-      super("Unbalanced brackets")
+      super('Unbalanced brackets')
     end
   end
 
