@@ -97,14 +97,19 @@ module DC
 
     def function_call?(invocant, message)
       return false unless invocant.is_a?(Parser::AST::Node)
-      type = invocant.type
-      # class method call
-      return true if type == :const && message.length == 1
-      # method call
-      return true if type == :send && invocant.children[1] == :new
-      # method call on instantiated object
-      return true if type == :lvar && stub?(invocant.children[0])
-      false
+      case invocant.type
+      when :const
+        # class method call
+        message.length == 1
+      when :send
+        # method call
+        invocant.children[1] == :new
+      when :lvar
+        # method call on instantiated object
+        stub?(invocant.children[0])
+      else
+        false
+      end
     end
 
     def special_method?(_invocant, message)
