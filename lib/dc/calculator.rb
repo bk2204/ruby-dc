@@ -364,12 +364,14 @@ module DC
         push int(@stack.length)
       when :Z
         push int(pop.length)
-      when :x
-        do_parse(pop) if @stack[0].is_a? String
       when :X
         top = pop
         push(int(top.is_a?(String) ? 0 : top.scale))
       end
+    end
+
+    def parseop(op)
+      do_parse(pop) if @stack[0].is_a? String
     end
 
     def miscop(op)
@@ -391,7 +393,8 @@ module DC
         [[:|, :~], :mathop],
         [[:I, :O, :K, :i, :o, :k], :baseop],
         [[:d, :c, :r, :R], :stackop],
-        [[:z, :Z, :x, :X], :fracop],
+        [[:z, :Z, :X], :fracop],
+        [[:x], :parseop],
         [[:a, :v, :N], :miscop],
         [[:L, :S, :l, :s], :regop],
         [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
