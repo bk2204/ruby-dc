@@ -370,7 +370,7 @@ module DC
       end
     end
 
-    def parseop(op)
+    def parseop(_op)
       do_parse(pop) if @stack[0].is_a? String
     end
 
