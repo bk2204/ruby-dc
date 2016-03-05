@@ -236,6 +236,21 @@ module DC
 
     protected
 
+    DISPATCH = [
+      [[:+, :-, :*, :/, :%, :^], :binop],
+      [[:P, :p, :n, :f], :printop],
+      [[:|, :~], :mathop],
+      [[:I, :O, :K, :i, :o, :k], :baseop],
+      [[:d, :c, :r, :R], :stackop],
+      [[:z, :Z, :X], :fracop],
+      [[:x], :parseop],
+      [[:a, :v, :N], :miscop],
+      [[:L, :S, :l, :s], :regop],
+      [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
+      [[:G, :'(', :'{'], :extcmpop],
+      [[:';', :':'], :arrayop],
+    ]
+
     def do_parse(line)
       line = line.dup
       line.force_encoding('BINARY')
@@ -387,22 +402,8 @@ module DC
     end
 
     def setup_dispatch_table
-      sets = [
-        [[:+, :-, :*, :/, :%, :^], :binop],
-        [[:P, :p, :n, :f], :printop],
-        [[:|, :~], :mathop],
-        [[:I, :O, :K, :i, :o, :k], :baseop],
-        [[:d, :c, :r, :R], :stackop],
-        [[:z, :Z, :X], :fracop],
-        [[:x], :parseop],
-        [[:a, :v, :N], :miscop],
-        [[:L, :S, :l, :s], :regop],
-        [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
-        [[:G, :'(', :'{'], :extcmpop],
-        [[:';', :':'], :arrayop],
-      ]
       @dispatch = {}
-      sets.each do |entries, func|
+      DISPATCH.each do |entries, func|
         entries.each { |op| @dispatch[op] = func }
       end
     end
