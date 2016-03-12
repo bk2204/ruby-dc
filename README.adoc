@@ -14,6 +14,14 @@ operators, including FreeBSD and GNU extensions, except the following:
 * FreeBSD features
 * A simple Ruby-to-dc converter
 
+== Example
+
+To generate the math library into dc code, run
+`bin/dc-generator lib/dc/math/library.rb`.  This will produce a math library
+containing at least the e(x) and l(x) functions from bc, using the @ register as
+temporary storage.  The generated code should be suitable for both FreeBSD and
+GNU dc implementations.
+
 == License
 
 MIT
