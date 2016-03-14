@@ -45,7 +45,7 @@ describe DC::Generator do
   def generate_and_compare(s, scale)
     code = "s = Stub.new; s.scale = #{scale}; #{s}"
     calc = generate_and_run(code)
-    ruby = eval(slurp + code)  # rubocop:disable Lint/Eval
+    ruby = eval(slurp + code) # rubocop:disable Lint/Eval
     expect(calc.stack).to eq [ruby]
   end
 
