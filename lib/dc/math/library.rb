@@ -1,5 +1,10 @@
 module DC
   module Math
+    # The math library for dc.
+    #
+    # This code is designed such that it can be used both in Ruby and, via the
+    # code generator, in dc.  As such, it is simpler, more verbose, and
+    # necessarily less expressive than typical Ruby code would be.
     class Library
       def initialize(calc)
         @calc = calc
@@ -25,6 +30,7 @@ module DC
         DC::Util.length(x, scale)
       end
 
+      # The exponential function, e^x.
       def e(x)
         s = scale
         ib = ibase
@@ -44,6 +50,7 @@ module DC
         result.to_r.truncate(s)
       end
 
+      # The natural logarithm function, ln x.
       def l(x)
         s = scale
         ib = ibase
