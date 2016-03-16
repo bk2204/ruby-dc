@@ -10,18 +10,30 @@ module DC
         @calc = calc
       end
 
+      # Get the scale of the calculator.
+      #
+      # In dc, calls to this function invoke the k operator.
       def scale
         @calc.scale.to_i
       end
 
+      # Set the scale of the calculator.
+      #
+      # In dc, calls to this function invoke the K operator.
       def scale=(x)
         @calc.scale = x.to_i
       end
 
+      # Set the input base of the calculator.
+      #
+      # In dc, calls to this function invoke the i operator.
       def ibase
         @calc.ibase.to_i
       end
 
+      # Set the input base of the calculator.
+      #
+      # In dc, calls to this function invoke the i operator.
       def ibase=(x)
         @calc.ibase = x.to_i
       end
