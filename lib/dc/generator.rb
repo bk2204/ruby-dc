@@ -116,6 +116,13 @@ module DC
       [:ibase, :scale, :ibase=, :scale=].include?(message)
     end
 
+    # Process a message sent to a variable.
+    #
+    # The messages that can be sent are restricted to a certain limited subset.
+    # :to_r is a no-op and :to_i truncates to an integer. All single-character
+    # function calls are converted to a call to the macro of the same name.
+    # :truncate serves only to apply the current scale to the value; its
+    # argument is ignored.
     def process_message(invocant, message, *args)
       case
       when [:+, :-, :*, :/].include?(message)
