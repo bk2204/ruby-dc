@@ -1,3 +1,5 @@
 .yardoc/
 coverage/
 doc/
+.bundle/
+Gemfile.lock
