@@ -484,9 +484,7 @@ module DC
     end
 
     def cmpop(op, reg)
-      # rubocop:disable Style/HashSyntax
       syms = { :'=' => :==, :'!>' => :<=, :'!<' => :>= }
-      # rubocop:enable Style/HashSyntax
       op = syms[op] || op
       top, second = pop(2)
       return unless top.send(op, second)
@@ -494,9 +492,7 @@ module DC
     end
 
     def extcmpop(op)
-      # rubocop:disable Style/HashSyntax
       syms = { :G => :==, :"(" => :<, :"{" => :<= }
-      # rubocop:enable Style/HashSyntax
       op = syms[op]
       top, second = pop(2)
       push(int(top.send(op, second) ? 1 : 0))
