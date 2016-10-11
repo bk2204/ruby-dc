@@ -14,7 +14,7 @@ module DC
     def self.modexp(base, exponent, modulus)
       return 1 if exponent == 0
       if exponent < 0 || exponent.to_i != exponent
-        fail RangeError, "exponent '#{exponent}' not a non-negative integer"
+        raise RangeError, "exponent '#{exponent}' not a non-negative integer"
       end
 
       exp = exponent

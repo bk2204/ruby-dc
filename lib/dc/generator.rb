@@ -79,7 +79,7 @@ module DC
       when :break
         '2Q'
       else
-        fail UnimplementedNodeError, "Unknown node type #{node.type}"
+        raise UnimplementedNodeError, "Unknown node type #{node.type}"
       end
     end
 
@@ -159,7 +159,7 @@ module DC
         # dc function call (math library)
         process(args[0]) + "l#{message}x"
       else
-        fail UnimplementedNodeError, "Unknown message #{message}"
+        raise UnimplementedNodeError, "Unknown message #{message}"
       end
     end
 
@@ -212,10 +212,10 @@ module DC
     def process_def(name, args, code)
       return if /\A(?:initialize|length|(?:ibase|scale)=?)\z/.match name
       if name.length > 1
-        fail InvalidNameError, "name must be a single character, not #{name}"
+        raise InvalidNameError, "name must be a single character, not #{name}"
       end
       if args.children.length > 1
-        fail NotImplementedError, 'multiple arguments not supported'
+        raise NotImplementedError, 'multiple arguments not supported'
       end
       gen = DC::Generator.new
       result = '['
@@ -269,25 +269,25 @@ module DC
       when :reverse_each
         range = invocant.children[0]
         if invocant.type != :begin || range.type != :irange
-          fail NotImplementedError, 'bad invocant for reverse_each'
+          raise NotImplementedError, 'bad invocant for reverse_each'
         end
         process_for_loop(range.children[1], range.children[0], :-, '!>', arg,
                          code_reg)
       when :each
         range = invocant.children[0]
         if invocant.type != :begin || range.type != :irange
-          fail NotImplementedError, 'bad invocant for reverse_each'
+          raise NotImplementedError, 'bad invocant for reverse_each'
         end
         process_for_loop(range.children[0], range.children[1], :+, '!<', arg,
                          code_reg)
       else
-        fail NotImplementedError, "unknown message #{message} in condition"
+        raise NotImplementedError, "unknown message #{message} in condition"
       end
     end
 
     def process_loop(condition, args, code)
       if args.children.length > 1
-        fail NotImplementedError, 'multiple arguments to block not supported'
+        raise NotImplementedError, 'multiple arguments to block not supported'
       end
       arg = args.children[0].children[0]
       code_dc = process(code, true)
@@ -321,7 +321,7 @@ module DC
     end
 
     def process_conditional(cmp, iftrue, _iffalse)
-      fail NotImplementedError, 'unknown comparison' if cmp.type != :send
+      raise NotImplementedError, 'unknown comparison' if cmp.type != :send
       code_reg = next_code_register
       result = '[' << process(iftrue) << ']'
       result << process_code_store(code_reg, true)

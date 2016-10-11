@@ -13,7 +13,7 @@ def find_math_library
     loc = File.join(p, 'dc', 'math', 'library.rb')
     return loc if File.exist? loc
   end
-  fail "Can't find math library" if path.nil?
+  raise "Can't find math library" if path.nil?
 end
 
 def parse_options(args) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize

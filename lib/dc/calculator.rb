@@ -210,9 +210,9 @@ module DC
 
     def push(*args)
       args.each do |val|
-        fail InternalCalculatorError, 'Trying to push invalid value' if val.nil?
+        raise InternalCalculatorError, 'Trying to push invalid value' if val.nil?
         if val.is_a? Fixnum
-          fail InternalCalculatorError, 'Trying to push Fixnum'
+          raise InternalCalculatorError, 'Trying to push Fixnum'
         end
       end
       @stack.unshift(*args)
@@ -221,7 +221,7 @@ module DC
     def pop(*args)
       count = args.empty? ? 1 : args[0]
       if @stack.length < count
-        fail InternalCalculatorError, 'Trying to pop empty stack'
+        raise InternalCalculatorError, 'Trying to pop empty stack'
       end
       @stack.shift(*args)
     end
@@ -286,7 +286,7 @@ module DC
         elsif line.start_with? '['
           line = parse_string(line)
         elsif line.start_with? ']'
-          fail UnbalancedBracketsError
+          raise UnbalancedBracketsError
         elsif line[0] == 'q'
           return if @stack_level == 0
           @unwind = true
@@ -298,7 +298,7 @@ module DC
           return 1 if level > @stack_level
           return @stack_level - level + 1
         else
-          fail InvalidCommandError, line[0].to_sym
+          raise InvalidCommandError, line[0].to_sym
         end
       end
       @stack_level
@@ -418,7 +418,7 @@ module DC
     end
 
     def dispatch_insecure(op, arg)
-      fail InsecureCommandError, op if secure?
+      raise InsecureCommandError, op if secure?
       case op
       when :!
         system(arg)
@@ -426,7 +426,7 @@ module DC
     end
 
     def dispatch_extension(op, exts)
-      fail UnsupportedExtensionError.new(op, exts) unless extension? exts
+      raise UnsupportedExtensionError.new(op, exts) unless extension? exts
       dispatch(op)
     end
 
