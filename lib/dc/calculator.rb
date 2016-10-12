@@ -449,11 +449,11 @@ module DC
 
     def stringify
       val = pop
-      if val.is_a? String
-        val = val.empty? ? '' : val[0]
-      else
-        val = convert_string((val.to_i % 256).chr)
-      end
+      val = if val.is_a? String
+              val.empty? ? '' : val[0]
+            else
+              convert_string((val.to_i % 256).chr)
+            end
       push(val)
     end
 
