@@ -96,36 +96,36 @@ module DC
     end
 
     def +(other)
-      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      other = numericize(other)
       Numeric.new(@value + other.value, [@scale, other.scale].max, @k)
     end
 
     def -(other)
-      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      other = numericize(other)
       Numeric.new(@value - other.value, [@scale, other.scale].max, @k)
     end
 
     def *(other)
-      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      other = numericize(other)
       scale = [@scale + other.scale, [@scale, other.scale, k].max].min
       v = (@value * other.value).truncate(scale)
       Numeric.new(v, scale, @k)
     end
 
     def /(other)
-      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      other = numericize(other)
       v = (@value / other.value).truncate(@k.to_i)
       Numeric.new(v, k, @k)
     end
 
     def %(other)
-      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      other = numericize(other)
       v = (@value % other.value).truncate(k)
       Numeric.new(v, k, @k)
     end
 
     def **(other)
-      other = Numeric.new(other, k, @k) unless other.is_a? Numeric
+      other = numericize(other)
       Numeric.new(@value**other.value, k, @k)
     end
 
@@ -167,6 +167,11 @@ module DC
 
     def k
       @k.to_i
+    end
+
+    def numericize(other)
+      return other if other.is_a? Numeric
+      Numeric.new(other, k, @k)
     end
   end
 
