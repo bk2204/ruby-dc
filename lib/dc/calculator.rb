@@ -48,6 +48,14 @@ module DC
   class InsecureCommandError < CalculatorError
   end
 
+  # An object representing the precision of the calculator.
+  #
+  # The value of this object is the number of decimal digits after the decimal
+  # point.
+  #
+  # This is essentially a glorified integer wrapped in a class.  DC uses a
+  # global scale value in some math operations, which means that it must be an
+  # object to be shared across multiple objects and kept in sync.
   class Scale
     attr_accessor :value
 
