@@ -38,6 +38,12 @@ describe DC::Generator do
     end
   end
 
+  it 'should generate proper results for negation' do
+    (-2..2).each do |x|
+      generate_and_compare "-#{x}"
+    end
+  end
+
   it 'should generate proper results for assignment operators' do
     (-2..2).each do |x|
       generate_and_compare "x = #{x}; x"

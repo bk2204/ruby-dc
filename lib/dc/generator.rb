@@ -131,6 +131,8 @@ module DC
         process(invocant)
       when message == :to_i
         'K 0k ' << process(invocant) << ' 1/ rk'
+      when message == :-@
+        '0 ' << process(invocant) << ' -'
       when invocant.nil? && message == :length
         # This is the bc length function, because that's what's required to
         # implement algorithms effectively.  The difference between that and Z
