@@ -79,7 +79,7 @@ module DC
       when :break
         '2Q'
       else
-        raise UnimplementedNodeError, "Unknown node type #{node.type}"
+        raise UnimplementedNodeError, "Unknown node type #{node.type} (#{node.inspect})"
       end
     end
 
