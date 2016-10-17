@@ -253,35 +253,33 @@ module DC
       @code_registers[var] ||= (65 + @code_registers.length).chr('ASCII-8BIT')
     end
 
-    def process_for_loop(startval, endval, op, comparison, arg, code_reg)
+    def process_for_loop(startval, endval, op, comparison, arg)
       startval = startval.is_a?(::Numeric) ? startval.to_s : process(startval)
       endval = endval.is_a?(::Numeric) ? endval.to_s : process(endval)
 
       setup = startval << process_store(arg)
-      test = process_load(arg) << "1#{op}d" << process_store(arg)
-      test << endval << comparison.to_s << code_register(code_reg)
-      [setup, test]
+      inc = process_load(arg) << "1#{op}" << process_store(arg)
+      test = process_load(arg) << endval << comparison.to_s
+      [setup, inc, test]
     end
 
-    def process_condition(condition, arg, code_reg)
+    def process_condition(condition, arg)
       invocant, message = *condition.children
       case message
       when :times
-        process_for_loop(0, invocant, :+, :>, arg, code_reg)
+        process_for_loop(0, invocant, :+, :>, arg)
       when :reverse_each
         range = invocant.children[0]
         if invocant.type != :begin || range.type != :irange
           raise NotImplementedError, 'bad invocant for reverse_each'
         end
-        process_for_loop(range.children[1], range.children[0], :-, '!>', arg,
-                         code_reg)
+        process_for_loop(range.children[1], range.children[0], :-, '!>', arg)
       when :each
         range = invocant.children[0]
         if invocant.type != :begin || range.type != :irange
           raise NotImplementedError, 'bad invocant for reverse_each'
         end
-        process_for_loop(range.children[0], range.children[1], :+, '!<', arg,
-                         code_reg)
+        process_for_loop(range.children[0], range.children[1], :+, '!<', arg)
       else
         raise NotImplementedError, "unknown message #{message} in condition"
       end
@@ -293,21 +291,15 @@ module DC
       end
       arg = args.children[0].children[0]
       code_dc = process(code, true)
-      code_reg = next_code_register
-      setup, test = process_condition(condition, arg, code_reg)
-      result = setup
-      result << '[' << code_dc << test << ']'
-      result << process_code_store(code_reg)
-      result << preallocate_registers((code_reg + 1)..@code_reg)
-      result << process_code_load(code_reg) << 'x'
-      result
+      setup, inc, test = process_condition(condition, arg)
+      return process_branch(test, setup, code_dc + inc, '', true)
     end
 
     def preallocate_registers(range)
       range.map { |r| "[]S#{code_register(r)}" }.join(' ')
     end
 
-    def process_comparison(cmp, code_reg)
+    def process_comparison(cmp)
       # 1 2 >a triggers
       ops = {
         :== => '=',
@@ -319,15 +311,25 @@ module DC
       }
       result = process(cmp.children[2]) << ' '
       result << process(cmp.children[0]) << ' '
-      result << ops[cmp.children[1]] << code_register(code_reg)
+      result << ops[cmp.children[1]]
     end
 
     def process_conditional(cmp, iftrue, _iffalse)
-      raise NotImplementedError, 'unknown comparison' if cmp.type != :send
+      process_branch(process_comparison(cmp), '', process(iftrue), _iffalse)
+    end
+
+    # This handles the implementation of branches, both loops and conditionals.
+    # The main difference is that for loops, the true code is executed again if
+    # the condition holds.  Conditionals can also have a false branch, but this
+    # is not yet implemented.
+    def process_branch(cmp, setup, iftrue, _iffalse, isloop = false)
       code_reg = next_code_register
-      result = '[' << process(iftrue) << ']'
-      result << process_code_store(code_reg, true)
-      result << process_comparison(cmp, code_reg)
+      result = setup
+      cmp << code_register(code_reg)
+      result << '[' << iftrue << (isloop ? cmp : '') << ']'
+      result << process_code_store(code_reg)
+      result << preallocate_registers((code_reg + 1)..@code_reg)
+      result << (isloop ? '[' << cmp << ']x' : cmp)
       result
     end
 

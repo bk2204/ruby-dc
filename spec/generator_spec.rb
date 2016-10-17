@@ -100,6 +100,15 @@ describe DC::Generator do
     generate_and_compare code
   end
 
+  it 'should be able to handle 0.times' do
+    code = <<-EOM
+    n = 0
+    0.times { |i| n += i + 1 }
+    n
+    EOM
+    generate_and_compare code
+  end
+
   it 'should be able to handle Range#each' do
     code = <<-EOM
     m = 1
