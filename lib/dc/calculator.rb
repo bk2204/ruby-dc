@@ -262,7 +262,7 @@ module DC
       [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
       [[:G, :'(', :'{'], :extcmpop],
       [[:';', :':'], :arrayop],
-    ]
+    ].freeze
 
     def do_parse(line)
       line = line.dup
