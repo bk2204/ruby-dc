@@ -292,7 +292,7 @@ module DC
       arg = args.children[0].children[0]
       code_dc = process(code, true)
       setup, inc, test = process_condition(condition, arg)
-      return process_branch(test, setup, code_dc + inc, '', true)
+      process_branch(test, setup, code_dc + inc, '', true)
     end
 
     def preallocate_registers(range)
