@@ -314,8 +314,8 @@ module DC
       result << ops[cmp.children[1]]
     end
 
-    def process_conditional(cmp, iftrue, _iffalse)
-      process_branch(process_comparison(cmp), '', process(iftrue), _iffalse)
+    def process_conditional(cmp, iftrue, iffalse)
+      process_branch(process_comparison(cmp), '', process(iftrue), iffalse)
     end
 
     # This handles the implementation of branches, both loops and conditionals.
