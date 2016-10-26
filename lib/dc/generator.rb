@@ -50,13 +50,7 @@ module DC
       when :send
         process_message(*node.children)
       when :lvasgn
-        if node.children[1].is_a?(Parser::AST::Node) &&
-           node.children[1].type == :send &&
-           node.children[1].children[1] == :new
-          mark_stub(node.children[0])
-          return ''
-        end
-        process(node.children[1]) + process_store(node.children[0])
+        process_lvasgn(*node.children)
       when :op_asgn
         process_op_assign(*node.children)
       when :lvar
@@ -81,6 +75,16 @@ module DC
       else
         raise UnimplementedNodeError, "Unknown node type #{node.type} (#{node.inspect})"
       end
+    end
+
+    def process_lvasgn(first, second)
+      if second.is_a?(Parser::AST::Node) &&
+         second.type == :send &&
+         second.children[1] == :new
+        mark_stub(first)
+        return ''
+      end
+      process(second) + process_store(first)
     end
 
     # If a is nil, assumed to be top-of-stack.
