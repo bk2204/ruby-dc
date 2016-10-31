@@ -129,12 +129,16 @@ module DC
       Numeric.new(@value**other.value, k, @k)
     end
 
-    def respond_to?(symbol, *args)
+    def respond_to_missing?(symbol, *args)
       super(symbol, *args) || @value.respond_to?(symbol, *args)
     end
 
     def method_missing(symbol, *args)
-      @value.send(symbol, *args)
+      if @value.respond_to?(symbol)
+        @value.send(symbol, *args)
+      else
+        super
+      end
     end
 
     def <=>(other)
