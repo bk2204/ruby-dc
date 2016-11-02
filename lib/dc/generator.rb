@@ -328,13 +328,13 @@ module DC
     # is not yet implemented.
     def process_branch(cmp, setup, iftrue, _iffalse, isloop = false)
       code_reg = next_code_register
-      result = setup
       cmp << code_register(code_reg)
-      result << '[' << iftrue << (isloop ? cmp : '') << ']'
-      result << process_code_store(code_reg)
-      result << preallocate_registers((code_reg + 1)..@code_reg)
-      result << (isloop ? '[' << cmp << ']x' : cmp)
-      result
+      [
+        setup, '[', iftrue, (isloop ? cmp : ''), ']',
+        process_code_store(code_reg),
+        preallocate_registers((code_reg + 1)..@code_reg),
+        (isloop ? '[' << cmp << ']x' : cmp)
+      ].join
     end
 
     def process_module(_name, block)
