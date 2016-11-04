@@ -11,11 +11,15 @@ class Stub < BasicObject
   end
 
   def method_missing(symbol, *args)
-    @proxy.method(symbol).call(*args)
+    if @proxy.respond_to? symbol
+      @proxy.method(symbol).call(*args)
+    else
+      super
+    end
   end
 
-  def respond_to?(symbol)
-    @proxy.respond_to?(symbol)
+  def respond_to_missing?(symbol)
+    @proxy.respond_to?(symbol) || super.respond_to?(symbol)
   end
 end
 
