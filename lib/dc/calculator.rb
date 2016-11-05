@@ -5,10 +5,12 @@ require 'dc/math'
 require 'dc/util'
 
 module DC
+  # A generic dc error.
   class CalculatorError < DC::Exception
     attr_reader :name
   end
 
+  # An exception representing an unknown or invalid command.
   class InvalidCommandError < CalculatorError
     attr_reader :command
 
@@ -23,6 +25,7 @@ module DC
     end
   end
 
+  # An exception representing an extension that has not been enabled.
   class UnsupportedExtensionError < InvalidCommandError
     attr_reader :command, :standard
 
@@ -35,6 +38,7 @@ module DC
     end
   end
 
+  # An exception occurring when square brackets are mismatched.
   class UnbalancedBracketsError < CalculatorError
     def initialize
       @name = :unbalanced
@@ -42,9 +46,11 @@ module DC
     end
   end
 
+  # An internal error.
   class InternalCalculatorError < CalculatorError
   end
 
+  # An error when attempting to run a shell command in secure mode.
   class InsecureCommandError < CalculatorError
   end
 
