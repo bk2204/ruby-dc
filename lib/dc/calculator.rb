@@ -264,7 +264,6 @@ module DC
       [[:P, :p, :n, :f], :printop],
       [[:|, :~], :mathop],
       [[:I, :O, :K, :i, :o, :k], :baseop],
-      [[:d, :c, :r, :R], :stackop],
       [[:z, :Z, :X], :fracop],
       [[:x], :parseop],
       [[:a, :v, :N], :miscop],
@@ -272,6 +271,13 @@ module DC
       [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
       [[:G, :'(', :'{'], :extcmpop],
       [[:';', :':'], :arrayop],
+      [:d, -> { push @stack[0] }],
+      [:c, -> { @stack.clear }],
+      [:r, lambda do
+        a, b = pop(2)
+        push b, a
+      end],
+      [:R, -> { pop }],
     ].freeze
 
     def do_parse(line)
@@ -382,20 +388,6 @@ module DC
       end
     end
 
-    def stackop(op)
-      case op
-      when :d
-        push @stack[0]
-      when :c
-        @stack.clear
-      when :r
-        a, b = pop(2)
-        push b, a
-      when :R
-        pop
-      end
-    end
-
     def fracop(op)
       case op
       when :z
@@ -427,16 +419,18 @@ module DC
     def setup_dispatch_table
       @dispatch = {}
       DISPATCH.each do |entries, func|
-        entries.each { |op| @dispatch[op] = func }
+        [*entries].each do |op|
+          @dispatch[op] = func.is_a?(Proc) ? func : method(func)
+        end
       end
     end
 
-    def dispatch(op, arg = nil)
-      func = method(@dispatch[op])
-      if func.arity == 2
-        func.call(op, arg)
+    def dispatch(op, *args)
+      func = @dispatch[op]
+      if func.is_a? Method
+        func.call(op, *args)
       else
-        func.call(op)
+        instance_exec(*args, &func)
       end
     end
 
