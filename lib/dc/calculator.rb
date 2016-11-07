@@ -264,12 +264,17 @@ module DC
       [[:P, :p, :n, :f], :printop],
       [[:|, :~], :mathop],
       [[:I, :O, :K, :i, :o, :k], :baseop],
-      [[:z, :Z, :X], :fracop],
       [[:a, :v, :N], :miscop],
       [[:L, :S, :l, :s], :regop],
       [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
       [[:G, :'(', :'{'], :extcmpop],
       [[:';', :':'], :arrayop],
+      [:z, -> { push int(@stack.length) }],
+      [:Z, -> { push int(pop.length) }],
+      [:X, lambda do
+        top = pop
+        push(int(top.is_a?(String) ? 0 : top.scale))
+      end],
       [:x, -> { do_parse(pop) if @stack[0].is_a? String }],
       [:d, -> { push @stack[0] }],
       [:c, -> { @stack.clear }],
@@ -385,18 +390,6 @@ module DC
       else
         ops = { I: @ibase, O: @obase, K: @scale.to_r }
         push int(ops[op])
-      end
-    end
-
-    def fracop(op)
-      case op
-      when :z
-        push int(@stack.length)
-      when :Z
-        push int(pop.length)
-      when :X
-        top = pop
-        push(int(top.is_a?(String) ? 0 : top.scale))
       end
     end
 
