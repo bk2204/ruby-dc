@@ -233,7 +233,9 @@ module DC
 
     def push(*args)
       args.each do |val|
-        raise InternalCalculatorError, 'Trying to push invalid value' if val.nil?
+        if val.nil?
+          raise InternalCalculatorError, 'Trying to push invalid value'
+        end
         if val.is_a? Fixnum
           raise InternalCalculatorError, 'Trying to push Fixnum'
         end
