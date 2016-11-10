@@ -267,10 +267,19 @@ module DC
       [[:|, :~], :mathop],
       [[:I, :O, :K, :i, :o, :k], :baseop],
       [[:a, :v, :N], :miscop],
-      [[:L, :S, :l, :s], :regop],
       [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
       [[:G, :'(', :'{'], :extcmpop],
       [[:';', :':'], :arrayop],
+      [:S, lambda do |reg|
+        @registers[reg].unshift pop
+        @arrays[reg].unshift []
+      end],
+      [:L, lambda do |reg|
+        push @registers[reg].shift
+        @arrays[reg].shift
+      end],
+      [:s, -> reg { @registers[reg][0] = pop }],
+      [:l, -> reg { push @registers[reg][0] }],
       [:z, -> { push int(@stack.length) }],
       [:Z, -> { push int(pop.length) }],
       [:X, lambda do
@@ -504,21 +513,6 @@ module DC
       op = syms[op]
       top, second = pop(2)
       push(int(top.send(op, second) ? 1 : 0))
-    end
-
-    def regop(op, reg)
-      case op
-      when :L
-        push @registers[reg].shift
-        @arrays[reg].shift
-      when :S
-        @registers[reg].unshift pop
-        @arrays[reg].unshift []
-      when :l
-        push @registers[reg][0]
-      when :s
-        @registers[reg][0] = pop
-      end
     end
 
     def binop(op)
