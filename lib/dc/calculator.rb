@@ -265,11 +265,14 @@ module DC
       [[:+, :-, :*, :/, :%, :^], :binop],
       [[:P, :p, :n, :f], :printop],
       [[:|, :~], :mathop],
-      [[:I, :O, :K, :i, :o, :k], :baseop],
+      [[:I, :O, :K], :baseop],
       [[:a, :v, :N], :miscop],
       [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
       [[:G, :'(', :'{'], :extcmpop],
       [[:';', :':'], :arrayop],
+      [:i, -> { base_setop(:ibase=) }],
+      [:o, -> { base_setop(:obase=) }],
+      [:k, -> { base_setop(:scale=) }],
       [:S, lambda do |reg|
         @registers[reg].unshift pop
         @arrays[reg].unshift []
@@ -394,14 +397,13 @@ module DC
       Numeric.new(x, 0, @scale)
     end
 
+    def base_setop(sym)
+      method(sym).call(pop.to_i)
+    end
+
     def baseop(op)
-      if [:i, :o, :k].include? op
-        methods = { i: :ibase=, o: :obase=, k: :scale= }
-        method(methods[op]).call(pop.to_i)
-      else
-        ops = { I: @ibase, O: @obase, K: @scale.to_r }
-        push int(ops[op])
-      end
+      ops = { I: @ibase, O: @obase, K: @scale.to_r }
+      push int(ops[op])
     end
 
     def miscop(op)
