@@ -281,8 +281,8 @@ module DC
         push @registers[reg].shift
         @arrays[reg].shift
       end],
-      [:s, -> reg { @registers[reg][0] = pop }],
-      [:l, -> reg { push @registers[reg][0] }],
+      [:s, -> (reg) { @registers[reg][0] = pop }],
+      [:l, -> (reg) { push @registers[reg][0] }],
       [:z, -> { push int(@stack.length) }],
       [:Z, -> { push int(pop.length) }],
       [:X, lambda do
