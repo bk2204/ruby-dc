@@ -86,6 +86,7 @@ module DC
     end
   end
 
+  # A rational number in a dc calculator.
   class Numeric
     include Comparable
 
@@ -185,6 +186,7 @@ module DC
     end
   end
 
+  # A calculator implementing the dc language.
   class Calculator
     attr_reader :stack, :registers, :input, :output
     attr_accessor :ibase, :obase

@@ -1,6 +1,7 @@
 require_relative 'calculator'
 
 module DC
+  # Implementations of common mathematical algorithms.
   module Math
     # Perform a modular exponentiation.
     #
