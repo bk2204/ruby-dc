@@ -208,7 +208,6 @@ module DC
         @extensions.add ext if options[ext] || options[:all]
       end
       @extensions.add :insecure if options[:insecure]
-      setup_dispatch_table
     end
 
     def scale
@@ -263,85 +262,85 @@ module DC
 
     protected
 
-    DISPATCH = [
-      [:';', lambda do |reg|
+    DISPATCH = {
+      :';' => lambda do |reg|
         @arrays[reg][0] ||= []
         push(@arrays[reg][0][pop] || int(0))
-      end],
-      [:':', lambda do |reg|
+      end,
+      :':' => lambda do |reg|
         @arrays[reg][0] ||= []
         index, value = pop(2)
         @arrays[reg][0][index] = value
-      end],
-      [:|, lambda do
+      end,
+      :| => lambda do
         mod = pop.to_r
         exp, base = pop(2).map(&:to_i)
         push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
-      end],
-      [:~, lambda do
+      end,
+      :~ => lambda do
         denom, num = pop(2)
         push num / denom
         push num % denom
-      end],
-      [:p, -> { @output.puts printable(@stack[0]) }],
-      [:P, lambda do
+      end,
+      :p => -> { @output.puts printable(@stack[0]) },
+      :P => lambda do
         val = pop
         val = num_to_bytes(val) if val.is_a? DC::Numeric
         @output.print val
-      end],
-      [:n, -> { @output.print printable(pop) }],
-      [:f, -> { @stack.each { |item| @output.puts printable(item) } }],
-      [:+, -> { binop(:+) }],
-      [:-, -> { binop(:-) }],
-      [:*, -> { binop(:*) }],
-      [:/, -> { binop(:/) }],
-      [:%, -> { binop(:%) }],
-      [:^, -> { binop(:**) }],
-      [:I, -> { push(int(@ibase)) }],
-      [:O, -> { push(int(@obase)) }],
-      [:K, -> { push(int(@scale.to_r)) }],
-      [:a, -> { stringify }],
-      [:v, lambda do
+      end,
+      :n => -> { @output.print printable(pop) },
+      :f => -> { @stack.each { |item| @output.puts printable(item) } },
+      :+ => -> { binop(:+) },
+      :- => -> { binop(:-) },
+      :* => -> { binop(:*) },
+      :/ => -> { binop(:/) },
+      :% => -> { binop(:%) },
+      :^ => -> { binop(:**) },
+      :I => -> { push(int(@ibase)) },
+      :O => -> { push(int(@obase)) },
+      :K => -> { push(int(@scale.to_r)) },
+      :a => -> { stringify },
+      :v => lambda do
         push(Numeric.new(DC::Math.root(pop, 2, @scale), @scale.to_i, @scale))
-      end],
-      [:N, -> { push(int(pop == 0 ? 1 : 0)) }],
-      [:!=,   -> (reg) { cmpop(:!=, reg) }],
-      [:'=',  -> (reg) { cmpop(:==, reg) }],
-      [:>,    -> (reg) { cmpop(:>, reg) }],
-      [:'!>', -> (reg) { cmpop(:<=, reg) }],
-      [:<,    -> (reg) { cmpop(:<, reg) }],
-      [:'!<', -> (reg) { cmpop(:>=, reg) }],
-      [:G,   -> { extcmpop(:==) }],
-      [:'(', -> { extcmpop(:<) }],
-      [:'{', -> { extcmpop(:<=) }],
-      [:i, -> { base_setop(:ibase=) }],
-      [:o, -> { base_setop(:obase=) }],
-      [:k, -> { base_setop(:scale=) }],
-      [:S, lambda do |reg|
+      end,
+      :N => -> { push(int(pop == 0 ? 1 : 0)) },
+      :!= =>   -> (reg) { cmpop(:!=, reg) },
+      :'=' =>  -> (reg) { cmpop(:==, reg) },
+      :> =>    -> (reg) { cmpop(:>, reg) },
+      :'!>' => -> (reg) { cmpop(:<=, reg) },
+      :< =>    -> (reg) { cmpop(:<, reg) },
+      :'!<' => -> (reg) { cmpop(:>=, reg) },
+      :G =>   -> { extcmpop(:==) },
+      :'(' => -> { extcmpop(:<) },
+      :'{' => -> { extcmpop(:<=) },
+      :i => -> { base_setop(:ibase=) },
+      :o => -> { base_setop(:obase=) },
+      :k => -> { base_setop(:scale=) },
+      :S => lambda do |reg|
         @registers[reg].unshift pop
         @arrays[reg].unshift []
-      end],
-      [:L, lambda do |reg|
+      end,
+      :L => lambda do |reg|
         push @registers[reg].shift
         @arrays[reg].shift
-      end],
-      [:s, -> (reg) { @registers[reg][0] = pop }],
-      [:l, -> (reg) { push @registers[reg][0] }],
-      [:z, -> { push int(@stack.length) }],
-      [:Z, -> { push int(pop.length) }],
-      [:X, lambda do
+      end,
+      :s => -> (reg) { @registers[reg][0] = pop },
+      :l => -> (reg) { push @registers[reg][0] },
+      :z => -> { push int(@stack.length) },
+      :Z => -> { push int(pop.length) },
+      :X => lambda do
         top = pop
         push(int(top.is_a?(String) ? 0 : top.scale))
-      end],
-      [:x, -> { do_parse(pop) if @stack[0].is_a? String }],
-      [:d, -> { push @stack[0] }],
-      [:c, -> { @stack.clear }],
-      [:r, lambda do
+      end,
+      :x => -> { do_parse(pop) if @stack[0].is_a? String },
+      :d => -> { push @stack[0] },
+      :c => -> { @stack.clear },
+      :r => lambda do
         a, b = pop(2)
         push b, a
-      end],
-      [:R, -> { pop }],
-    ].freeze
+      end,
+      :R => -> { pop },
+    }.freeze
 
     def do_parse(line)
       line = line.dup
@@ -437,17 +436,8 @@ module DC
       push int(ops[op])
     end
 
-    def setup_dispatch_table
-      @dispatch = {}
-      DISPATCH.each do |entries, func|
-        [*entries].each do |op|
-          @dispatch[op] = func.is_a?(Proc) ? func : method(func)
-        end
-      end
-    end
-
     def dispatch(op, *args)
-      func = @dispatch[op]
+      func = DISPATCH[op]
       if func.is_a? Method
         func.call(op, *args)
       else
