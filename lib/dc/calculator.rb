@@ -269,9 +269,16 @@ module DC
       [[:|, :~], :mathop],
       [[:I, :O, :K], :baseop],
       [[:a, :v, :N], :miscop],
-      [[:!=, :'=', :>, :'!>', :<, :'!<'], :cmpop],
-      [[:G, :'(', :'{'], :extcmpop],
       [[:';', :':'], :arrayop],
+      [:!=,   -> (reg) { cmpop(:!=, reg) }],
+      [:'=',  -> (reg) { cmpop(:==, reg) }],
+      [:>,    -> (reg) { cmpop(:>, reg) }],
+      [:'!>', -> (reg) { cmpop(:<=, reg) }],
+      [:<,    -> (reg) { cmpop(:<, reg) }],
+      [:'!<', -> (reg) { cmpop(:>=, reg) }],
+      [:G,   -> { extcmpop(:==) }],
+      [:'(', -> { extcmpop(:<) }],
+      [:'{', -> { extcmpop(:<=) }],
       [:i, -> { base_setop(:ibase=) }],
       [:o, -> { base_setop(:obase=) }],
       [:k, -> { base_setop(:scale=) }],
@@ -505,16 +512,12 @@ module DC
     end
 
     def cmpop(op, reg)
-      syms = { :'=' => :==, :'!>' => :<=, :'!<' => :>= }
-      op = syms[op] || op
       top, second = pop(2)
       return unless top.send(op, second)
       do_parse(@registers[reg][0])
     end
 
     def extcmpop(op)
-      syms = { :G => :==, :"(" => :<, :"{" => :<= }
-      op = syms[op]
       top, second = pop(2)
       push(int(top.send(op, second) ? 1 : 0))
     end
