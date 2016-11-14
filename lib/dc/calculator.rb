@@ -264,12 +264,47 @@ module DC
     protected
 
     DISPATCH = [
-      [[:+, :-, :*, :/, :%, :^], :binop],
-      [[:P, :p, :n, :f], :printop],
-      [[:|, :~], :mathop],
-      [[:I, :O, :K], :baseop],
-      [[:a, :v, :N], :miscop],
-      [[:';', :':'], :arrayop],
+      [:';', lambda do |reg|
+        @arrays[reg][0] ||= []
+        push(@arrays[reg][0][pop] || int(0))
+      end],
+      [:':', lambda do |reg|
+        @arrays[reg][0] ||= []
+        index, value = pop(2)
+        @arrays[reg][0][index] = value
+      end],
+      [:|, lambda do
+        mod = pop.to_r
+        exp, base = pop(2).map(&:to_i)
+        push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
+      end],
+      [:~, lambda do
+        denom, num = pop(2)
+        push num / denom
+        push num % denom
+      end],
+      [:p, -> { @output.puts printable(@stack[0]) }],
+      [:P, lambda do
+        val = pop
+        val = num_to_bytes(val) if val.is_a? DC::Numeric
+        @output.print val
+      end],
+      [:n, -> { @output.print printable(pop) }],
+      [:f, -> { @stack.each { |item| @output.puts printable(item) } }],
+      [:+, -> { binop(:+) }],
+      [:-, -> { binop(:-) }],
+      [:*, -> { binop(:*) }],
+      [:/, -> { binop(:/) }],
+      [:%, -> { binop(:%) }],
+      [:^, -> { binop(:**) }],
+      [:I, -> { push(int(@ibase)) }],
+      [:O, -> { push(int(@obase)) }],
+      [:K, -> { push(int(@scale.to_r)) }],
+      [:a, -> { stringify }],
+      [:v, lambda do
+        push(Numeric.new(DC::Math.root(pop, 2, @scale), @scale.to_i, @scale))
+      end],
+      [:N, -> { push(int(pop == 0 ? 1 : 0)) }],
       [:!=,   -> (reg) { cmpop(:!=, reg) }],
       [:'=',  -> (reg) { cmpop(:==, reg) }],
       [:>,    -> (reg) { cmpop(:>, reg) }],
@@ -389,19 +424,6 @@ module DC
       value
     end
 
-    def mathop(op)
-      case op
-      when :|
-        mod = pop.to_r
-        exp, base = pop(2).map(&:to_i)
-        push DC::Numeric.new(DC::Math.modexp(base, exp, mod), 0, @scale)
-      when :~
-        denom, num = pop(2)
-        push num / denom
-        push num % denom
-      end
-    end
-
     def int(x)
       Numeric.new(x, 0, @scale)
     end
@@ -413,18 +435,6 @@ module DC
     def baseop(op)
       ops = { I: @ibase, O: @obase, K: @scale.to_r }
       push int(ops[op])
-    end
-
-    def miscop(op)
-      case op
-      when :a
-        stringify
-      when :v
-        result = DC::Math.root(pop, 2, @scale)
-        push(Numeric.new(result, @scale.to_i, @scale))
-      when :N
-        push(int(pop == 0 ? 1 : 0))
-      end
     end
 
     def setup_dispatch_table
@@ -463,18 +473,6 @@ module DC
       s == "\x00" && extension?(:freebsd) && !extension?(:gnu) ? '' : s
     end
 
-    def arrayop(op, reg)
-      @arrays[reg][0] ||= []
-      index = pop
-      case op
-      when :':'
-        value = pop
-        @arrays[reg][0][index] = value
-      when :';'
-        push(@arrays[reg][0][index] || int(0))
-      end
-    end
-
     def stringify
       val = pop
       val = if val.is_a? String
@@ -496,21 +494,6 @@ module DC
       [val].pack('H*')
     end
 
-    def printop(op)
-      case op
-      when :p
-        @output.puts printable(@stack[0])
-      when :P
-        val = pop
-        val = num_to_bytes(val) if val.is_a? DC::Numeric
-        @output.print val
-      when :n
-        @output.print printable(pop)
-      when :f
-        @stack.each { |item| @output.puts printable(item) }
-      end
-    end
-
     def cmpop(op, reg)
       top, second = pop(2)
       return unless top.send(op, second)
@@ -523,8 +506,6 @@ module DC
     end
 
     def binop(op)
-      map = { :^ => :** }
-      op = map[op] || op
       top, second = pop(2)
       push(second.send(op, top))
     end
