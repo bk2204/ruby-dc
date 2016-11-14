@@ -319,7 +319,7 @@ module DC
           @stack_level += 1
           resp = dispatch($~[0].to_sym)
           @stack_level -= 1
-          return @break ? nil : resp if !resp.nil? && resp <= @stack_level
+          return @break ? nil : resp if resp && resp <= @stack_level
           @unwind = false
         elsif line.sub!(/\A([SsLl:;])(.)/, '')
           dispatch($~[1].to_sym, $~[2].ord)
