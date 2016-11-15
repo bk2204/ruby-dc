@@ -438,11 +438,7 @@ module DC
 
     def dispatch(op, *args)
       func = DISPATCH[op]
-      if func.is_a? Method
-        func.call(op, *args)
-      else
-        instance_exec(*args, &func)
-      end
+      instance_exec(*args, &func)
     end
 
     def dispatch_insecure(op, arg)
