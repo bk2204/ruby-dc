@@ -129,16 +129,15 @@ module DC
     # :truncate serves only to apply the current scale to the value; its
     # argument is ignored.
     def process_message(invocant, message, *args)
-      case
-      when [:+, :-, :*, :/].include?(message)
+      if [:+, :-, :*, :/].include?(message)
         process_binop(invocant, message, args[0])
-      when message == :to_r
+      elsif message == :to_r
         process(invocant)
-      when message == :to_i
+      elsif message == :to_i
         'K 0k ' << process(invocant) << ' 1/ rk'
-      when message == :-@
+      elsif message == :-@
         '0 ' << process(invocant) << ' -'
-      when invocant.nil? && message == :length
+      elsif invocant.nil? && message == :length
         # This is the bc length function, because that's what's required to
         # implement algorithms effectively.  The difference between that and Z
         # is that Z ignores leading zeros to the right of the radix point, while
@@ -148,21 +147,21 @@ module DC
         s << 'd XSa ZSb [la]Sc[lb]Sd lbla>c lbla!>d '
         s << ('a'..'d').map { |reg| "L#{reg}#{drop}" }.join(' ')
         s
-      when invocant.nil? && message.length == 1
+      elsif invocant.nil? && message.length == 1
         # dc function call
         process(args[0]) + "l#{message}x"
-      when message == :truncate
+      elsif message == :truncate
         process(invocant) + ' 1/'
-      when special_method?(invocant, message)
+      elsif special_method?(invocant, message)
         smessage = message.to_s
         if smessage.end_with? '='
           process(args[0]) + process_store(smessage.chop.to_sym)
         else
           process_load(message)
         end
-      when instantiation?(invocant, message)
+      elsif instantiation?(invocant, message)
         ''
-      when function_call?(invocant, message)
+      elsif function_call?(invocant, message)
         # dc function call (math library)
         process(args[0]) + "l#{message}x"
       else
