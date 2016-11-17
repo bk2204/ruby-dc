@@ -253,7 +253,7 @@ module DC
     end
 
     def parse(line)
-      do_parse(line.dup) ? true : false
+      do_parse(line) ? true : false
     end
 
     def secure?
