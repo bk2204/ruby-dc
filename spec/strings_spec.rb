@@ -119,9 +119,9 @@ describe DC::Calculator do
   end
 
   it 'should parse nested strings laid out over multiple calls to parse' do
-    @calc.parse('[[4 ')
-    @calc.parse('5 *]x]x')
-    @calc.parse('[[7 ')
+    @calc.parse("[[\n4 ")
+    @calc.parse("5 *]\nx]x")
+    @calc.parse("[\n[7 ")
     @calc.parse('3 +')
     @calc.parse(']x')
     @calc.parse(']x')
