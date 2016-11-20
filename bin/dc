@@ -16,7 +16,7 @@ def find_math_library
   raise "Can't find math library" if path.nil?
 end
 
-def parse_options(args) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+def parse_options(args)
   options = { scripts: [], mathlib: false }
   OptionParser.new do |opts|
     opts.on('-e', '--expression SCRIPT', 'Run the specified script') do |s|
