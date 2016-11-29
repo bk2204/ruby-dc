@@ -129,6 +129,19 @@ describe DC::Generator do
     generate_and_compare code
   end
 
+  it 'should be able to handle while loops' do
+    code = <<-EOM
+    i = 0
+    n = 0
+    while i < 25
+      n += i + 1
+      i += 1
+    end
+    n
+    EOM
+    generate_and_compare code
+  end
+
   it 'should be able to handle if and break statements' do
     code = <<-EOM
     n = 0

@@ -70,6 +70,8 @@ module DC
         process_class(*node.children)
       when :if
         process_conditional(*node.children)
+      when :while
+        process_while(*node.children)
       when :break
         '2Q'
       else
@@ -320,6 +322,10 @@ module DC
 
     def process_conditional(cmp, iftrue, iffalse)
       process_branch(process_comparison(cmp), '', process(iftrue), iffalse)
+    end
+
+    def process_while(cmp, body)
+      process_branch(process_comparison(cmp), '', process(body, true), '', true)
     end
 
     # This handles the implementation of branches, both loops and conditionals.
