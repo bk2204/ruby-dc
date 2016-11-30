@@ -295,9 +295,15 @@ module DC
       if args.children.length > 1
         raise NotImplementedError, 'multiple arguments to block not supported'
       end
-      arg = args.children[0].children[0]
+      if args.children.empty?
+        setup = inc = ''
+        # Always true.
+        test = '1 1='
+      else
+        arg = args.children[0].children[0]
+        setup, inc, test = process_condition(condition, arg)
+      end
       code_dc = process(code, true)
-      setup, inc, test = process_condition(condition, arg)
       process_branch(test, setup, code_dc + inc, '', true)
     end
 
