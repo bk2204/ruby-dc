@@ -154,6 +154,8 @@ module DC
         process(args[0]) + "l#{message}x"
       elsif message == :truncate
         process(invocant) + ' 1/'
+      elsif message == :puts
+        ''
       elsif special_method?(invocant, message)
         smessage = message.to_s
         if smessage.end_with? '='
