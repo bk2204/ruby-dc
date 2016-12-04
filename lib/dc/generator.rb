@@ -1,9 +1,17 @@
-require 'parser/current'
 require 'set'
 
 require 'dc/exception'
 
 module DC
+  # Shut up the parser gem.
+  begin
+    oldv = $VERBOSE
+    $VERBOSE = nil
+    require 'parser/current'
+  ensure
+    $VERBOSE = oldv
+  end
+
   class GeneratorError < DC::Exception
   end
 
