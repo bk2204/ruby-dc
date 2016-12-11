@@ -346,53 +346,59 @@ module DC
       line = line.dup
       line.force_encoding('BINARY')
       until line.empty? || @unwind
-        if @string
-          line = parse_string(line)
-        elsif line.sub!(/\A(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
-          push(number($~[2], $~[1]))
-        elsif line.sub!(/\A(_)?(\.([\dA-F]+))/, '')
-          push(number($~[2], $~[1]))
-        elsif line.sub!(/\A\s+/, '')
-        elsif line.sub!(/\A#[^\n]+/, '')
-        elsif line.sub!(%r{\A[-+*/%^|~dpPzZXfiIoOkKvc]}, '')
-          dispatch($~[0].to_sym)
-        elsif line.sub!(/\Ax/, '')
-          @stack_level += 1
-          resp = dispatch($~[0].to_sym)
-          @stack_level -= 1
-          return @break ? nil : resp if resp && resp <= @stack_level
-          @unwind = false
-        elsif line.sub!(/\A([SsLl:;])(.)/, '')
-          dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/\A(!?[<>=])(.)/, '')
-          dispatch($~[1].to_sym, $~[2].ord)
-        elsif line.sub!(/\A([nra])/, '')
-          dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
-        elsif line.sub!(/\A([NRG({])/, '')
-          dispatch_extension($~[0].to_sym, [:freebsd])
-        elsif line.sub!(/\A\?/, '')
-          do_parse(@input.gets)
-        elsif line.sub!(/\A(!)([^\n]+)/, '')
-          dispatch_insecure($~[1].to_sym, $~[2])
-        elsif line.start_with? '['
-          line = parse_string(line)
-        elsif line.start_with? ']'
-          raise UnbalancedBracketsError
-        elsif line[0] == 'q'
-          return if @stack_level == 0
-          @unwind = true
-          return @stack_level - 1
-        elsif line[0] == 'Q'
-          level = pop.to_i
-          @break = false
-          @unwind = true
-          return 1 if level > @stack_level
-          return @stack_level - level + 1
-        else
-          raise InvalidCommandError, line[0].to_sym
-        end
+        ret = do_parse_one(line)
+        return ret unless ret == :next
       end
       @stack_level
+    end
+
+    def do_parse_one(line)
+      if @string
+        line.replace(parse_string(line))
+      elsif line.sub!(/\A(_)?([\dA-F]+(?:\.([\dA-F]+))?)/, '')
+        push(number($~[2], $~[1]))
+      elsif line.sub!(/\A(_)?(\.([\dA-F]+))/, '')
+        push(number($~[2], $~[1]))
+      elsif line.sub!(/\A\s+/, '')
+      elsif line.sub!(/\A#[^\n]+/, '')
+      elsif line.sub!(%r{\A[-+*/%^|~dpPzZXfiIoOkKvc]}, '')
+        dispatch($~[0].to_sym)
+      elsif line.sub!(/\Ax/, '')
+        @stack_level += 1
+        resp = dispatch($~[0].to_sym)
+        @stack_level -= 1
+        return @break ? nil : resp if resp && resp <= @stack_level
+        @unwind = false
+      elsif line.sub!(/\A([SsLl:;])(.)/, '')
+        dispatch($~[1].to_sym, $~[2].ord)
+      elsif line.sub!(/\A(!?[<>=])(.)/, '')
+        dispatch($~[1].to_sym, $~[2].ord)
+      elsif line.sub!(/\A([nra])/, '')
+        dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
+      elsif line.sub!(/\A([NRG({])/, '')
+        dispatch_extension($~[0].to_sym, [:freebsd])
+      elsif line.sub!(/\A\?/, '')
+        do_parse(@input.gets)
+      elsif line.sub!(/\A(!)([^\n]+)/, '')
+        dispatch_insecure($~[1].to_sym, $~[2])
+      elsif line.start_with? '['
+        line.replace(parse_string(line))
+      elsif line.start_with? ']'
+        raise UnbalancedBracketsError
+      elsif line[0] == 'q'
+        return if @stack_level == 0
+        @unwind = true
+        return @stack_level - 1
+      elsif line[0] == 'Q'
+        level = pop.to_i
+        @break = false
+        @unwind = true
+        return 1 if level > @stack_level
+        return @stack_level - level + 1
+      else
+        raise InvalidCommandError, line[0].to_sym
+      end
+      :next
     end
 
     def number(s, negative = false)
