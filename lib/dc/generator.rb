@@ -2,6 +2,7 @@ require 'set'
 
 require 'dc/exception'
 
+# A desk calculator.
 module DC
   # Shut up the parser gem.
   begin
