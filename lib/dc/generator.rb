@@ -22,6 +22,18 @@ module DC
   class InvalidNameError < GeneratorError
   end
 
+  class GeneratorStackFrameError < GeneratorError
+  end
+
+  class GeneratorStackFrame
+    def initialize(stack)
+      stack.push(self.object_id)
+      ObjectSpace.define_finalizer self, -> (id) do
+        raise GeneratorStackFrameError, "frame mismatch" if id != stack.pop
+      end
+    end
+  end
+
   # A class to generate dc code from Ruby.
   #
   # This class is intentionally designed to be very stupid.  It will never learn
@@ -35,12 +47,14 @@ module DC
       @code_reg = 0
       @registers = {}
       @code_registers = {}
+      @frames = []
       # These are variables used in Ruby for which no code will be emitted.
       # Generally, this includes instantiations of the math library class.
       @stubs = Set.new
     end
 
     def emit(s)
+      _frame = GeneratorStackFrame.new(@frames)
       prologue + process(Parser::CurrentRuby.parse(s)) + epilogue
     end
 
@@ -83,6 +97,8 @@ module DC
         process_while(*node.children)
       when :break
         '2Q'
+      when :return
+        process(*node.children) << "#{@frames.length * 2}Q"
       else
         raise UnimplementedNodeError,
               "Unknown node type #{node.type} (#{node.inspect})"
@@ -350,6 +366,7 @@ module DC
     # the condition holds.  Conditionals can also have a false branch, but this
     # is not yet implemented.
     def process_branch(cmp, setup, iftrue, _iffalse, isloop = false)
+      _frame = isloop ? GeneratorStackFrame.new(@frames) : nil
       code_reg = next_code_register
       cmp << code_register(code_reg)
       [

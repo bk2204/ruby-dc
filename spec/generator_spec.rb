@@ -182,6 +182,22 @@ describe DC::Generator do
     generate_and_compare code
   end
 
+  it 'should be able to handle return statements' do
+    code = <<-EOM
+    def f(x)
+      n = 0
+      i = 1
+      loop do
+        n += i
+        i += 1
+        return i if n > x
+      end
+    end
+    f(10)
+    EOM
+    generate_and_compare code
+  end
+
   it 'should be able to handle methods in the math library' do
     code = <<-EOM
     module DC
