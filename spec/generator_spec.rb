@@ -78,6 +78,10 @@ describe DC::Generator do
     generate_and_compare 'def e(x); x + 1; end; e(2)'
   end
 
+  it 'should call multiple functions correctly' do
+    generate_and_compare 'def e(x); y = x + 1; y; end; e(2) + e(3)'
+  end
+
   it 'should raise when function names are too long' do
     expect do
       generate_and_compare 'def foo(x); y = x + 1; y; end; foo(2)'
@@ -194,6 +198,27 @@ describe DC::Generator do
       end
     end
     f(10)
+    EOM
+    generate_and_compare code
+  end
+
+  it 'should be able to handle multiple functions with return statements' do
+    code = <<-EOM
+    def f(x)
+      n = 0
+      i = 1
+      loop do
+        n += i
+        i += 1
+        return i if n > x
+      end
+    end
+    def g(x)
+      n = 5
+      return x + 1 if n > x
+      return 4
+    end
+    f(10) + g(0) + g(10)
     EOM
     generate_and_compare code
   end

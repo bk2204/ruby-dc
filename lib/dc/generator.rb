@@ -98,7 +98,7 @@ module DC
       when :break
         '2Q'
       when :return
-        process(*node.children) << "#{@frames.length * 2}Q"
+        process(*node.children) << " #{@frames.length * 2}Q"
       else
         raise UnimplementedNodeError,
               "Unknown node type #{node.type} (#{node.inspect})"
