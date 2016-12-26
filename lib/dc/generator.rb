@@ -337,6 +337,11 @@ module DC
       process_branch(test, setup, code_dc + inc, '', true)
     end
 
+    # We need the ability to be able to pop any stacks we've allocated for code
+    # whether or not they've been used.  However, the only way to know if
+    # they've been used is to run the code.  To ensure we always clean up
+    # properly, we preallocate any stacks we use by pushing an empty macro on
+    # them, and then unconditionally pop those stacks in the epilogue.
     def preallocate_registers(range)
       range.map { |r| "[]S#{code_register(r)}" }.join(' ')
     end
