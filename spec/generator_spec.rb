@@ -13,12 +13,14 @@ describe DC::Generator do
     input = StringIO.new('', 'r')
     calc = DC::Calculator.new(input, output, all: true)
     calc.parse(s)
+    puts "Messages: \n#{calc.output.string}" if ENV['DEBUG']
     calc
   end
 
   def generate_and_run(s)
-    dc = DC::Generator.new(true).emit(s)
-    puts dc if ENV['DEBUG']
+    debug = ENV['DEBUG']
+    dc = DC::Generator.new(true, debug: debug).emit(s)
+    puts "\nCode is: \n#{dc}\n" if debug
     run(dc)
   end
 

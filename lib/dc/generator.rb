@@ -42,12 +42,13 @@ module DC
   # to write and test implementations of the math library, and hopefully to aid
   # others in developing additional useful functions.
   class Generator
-    def initialize(toplevel = false)
+    def initialize(toplevel = false, options = {})
       @toplevel = toplevel
       @code_reg = 0
       @registers = {}
       @code_registers = {}
       @frames = []
+      @options = options
       # These are variables used in Ruby for which no code will be emitted.
       # Generally, this includes instantiations of the math library class.
       @stubs = Set.new
@@ -252,11 +253,13 @@ module DC
       if args.children.length > 1
         raise NotImplementedError, 'multiple arguments not supported'
       end
-      gen = DC::Generator.new
+      gen = DC::Generator.new(debug: @options[:debug])
       result = '['
       result << gen.prologue
       result << gen.process_store(args.children[0].children[0])
+      result << debug("start #{name}")
       result << gen.process(code)
+      result << debug("end #{name}")
       result << gen.epilogue
       result << "]S#{name}"
     end
@@ -370,11 +373,18 @@ module DC
       code_reg = next_code_register
       cmp << code_register(code_reg)
       [
-        setup, '[', iftrue, (isloop ? cmp : ''), ']',
+        setup,
+        '[', debug("macro #{code_reg}"), iftrue,
+        (isloop ? debug("cmp #{code_reg}") << cmp : ''), ']',
         process_code_store(code_reg),
         preallocate_registers((code_reg + 1)..@code_reg),
         (isloop ? '[' << cmp << ']x' : cmp)
       ].join
+    end
+
+    def debug(text)
+      return '' unless @options[:debug]
+      "\n[#{text}]p #{drop}\n"
     end
 
     def process_module(_name, block)
