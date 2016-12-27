@@ -25,11 +25,16 @@ module DC
   class GeneratorStackFrameError < GeneratorError
   end
 
+  # A stack frame for the generator.
+  #
+  # This class creates a frame in the frames variable for each macro that is
+  # called, so that the macro level can be popped appropriately when a return or
+  # break occurs.
   class GeneratorStackFrame
     def initialize(stack)
-      stack.push(self.object_id)
-      ObjectSpace.define_finalizer self, -> (id) do
-        raise GeneratorStackFrameError, "frame mismatch" if id != stack.pop
+      stack.push(object_id)
+      ObjectSpace.define_finalizer self, lambda do |id|
+        raise GeneratorStackFrameError, 'frame mismatch' if id != stack.pop
       end
     end
   end
