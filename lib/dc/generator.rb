@@ -33,9 +33,10 @@ module DC
   class GeneratorStackFrame
     def initialize(stack)
       stack.push(object_id)
-      ObjectSpace.define_finalizer self, lambda do |id|
+      f = lambda do |id|
         raise GeneratorStackFrameError, 'frame mismatch' if id != stack.pop
       end
+      ObjectSpace.define_finalizer self, f
     end
   end
 
