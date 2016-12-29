@@ -229,7 +229,10 @@ module DC
       return 'k' if var == :scale
       return 'i' if var == :ibase
       @last_store = var
-      " #{register(var)}:#{data_register}"
+      [
+        debug_store(var),
+        " #{register(var)}:#{data_register}",
+      ].join
     end
 
     def code_register?(var)
@@ -262,8 +265,8 @@ module DC
       gen = DC::Generator.new(debug: @options[:debug])
       result = '['
       result << gen.prologue
-      result << gen.process_store(args.children[0].children[0])
       result << debug("start #{name}")
+      result << gen.process_store(args.children[0].children[0])
       result << gen.process(code)
       result << debug("end #{name}")
       result << gen.epilogue
@@ -396,6 +399,11 @@ module DC
     def debug(text)
       return '' unless @options[:debug]
       "\n[#{text}]p #{drop}\n"
+    end
+
+    def debug_store(var)
+      return '' unless @options[:debug]
+      "\n[Storing ]n dn [ in #{var}\n]n\n"
     end
 
     def process_module(_name, block)
