@@ -262,13 +262,13 @@ module DC
       if args.children.length > 1
         raise NotImplementedError, 'multiple arguments not supported'
       end
-      gen = DC::Generator.new(debug: @options[:debug])
+      gen = DC::Generator.new(false, debug: @options[:debug])
       result = '['
       result << gen.prologue
-      result << debug("start #{name}")
+      result << gen.debug("start #{name}")
       result << gen.process_store(args.children[0].children[0])
       result << gen.process(code)
-      result << debug("end #{name}")
+      result << gen.debug("end #{name}")
       result << gen.epilogue
       result << "]S#{name}"
     end
