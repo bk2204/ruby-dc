@@ -46,6 +46,12 @@ describe DC::Generator do
     end
   end
 
+  it 'should generate proper results for modulus' do
+    (-10..10).each do |x|
+      generate_and_compare "#{x} % 3"
+    end
+  end
+
   it 'should generate proper results for assignment operators' do
     (-2..2).each do |x|
       generate_and_compare "x = #{x}; x"

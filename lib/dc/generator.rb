@@ -163,7 +163,7 @@ module DC
     # :truncate serves only to apply the current scale to the value; its
     # argument is ignored.
     def process_message(invocant, message, *args)
-      if [:+, :-, :*, :/].include?(message)
+      if [:+, :-, :*, :/, :%].include?(message)
         process_binop(invocant, message, args[0])
       elsif message == :to_r
         process(invocant)
