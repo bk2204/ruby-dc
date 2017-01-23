@@ -365,4 +365,19 @@ describe DC::Generator do
       expect(calc.stack).to eq [expected]
     end
   end
+
+  it 'should generate expected results for if-else conditions' do
+    pending
+    code = <<-EOM
+      def f(x)
+        if (x % 2) == 0
+          0
+        else
+          1
+        end
+      end
+      f(3)
+    EOM
+    generate_and_compare code
+  end
 end
