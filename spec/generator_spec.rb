@@ -1,12 +1,5 @@
 require_relative 'spec_helper'
 
-# A dummy node for tests.
-class FakeNode
-  def type
-    :nonexistent
-  end
-end
-
 describe DC::Generator do
   def run(s)
     output = StringIO.new('', 'w+')
@@ -98,8 +91,13 @@ describe DC::Generator do
 
   it 'should raise when processing an unknown node' do
     dc = DC::Generator.new(true)
+    fakenode_klass = Class.new do
+      def type
+        :nonexistent
+      end
+    end
     expect do
-      dc.send(:process, FakeNode.new)
+      dc.send(:process, fakenode_klass.new)
     end.to raise_exception(DC::UnimplementedNodeError, /unknown node type/i)
   end
 
