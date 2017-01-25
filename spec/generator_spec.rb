@@ -358,7 +358,7 @@ describe DC::Generator do
       '0.00062' => 5,
     }
     values.each do |value, expected|
-      dc = DC::Generator.new.emit("s = #{value}; length(s)")
+      dc = DC::Generator.new(true).emit("s = #{value}; length(s)")
       calc = run(dc)
       expect(calc.stack).to eq [expected]
     end
