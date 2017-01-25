@@ -359,6 +359,7 @@ describe DC::Generator do
     }
     values.each do |value, expected|
       dc = DC::Generator.new(true).emit("s = #{value}; length(s)")
+      puts "\nCode is: \n#{dc}\n" if ENV['DEBUG']
       calc = run(dc)
       expect(calc.stack).to eq [expected]
     end
