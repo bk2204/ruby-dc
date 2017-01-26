@@ -416,7 +416,7 @@ module DC
 
     def prologue
       reg = data_register
-      @toplevel ? '' : "0S#{reg} I0:#{reg} Ai"
+      @toplevel ? '' : "0S#{reg} I0:#{reg} Ai [[trap]r "
     end
 
     def epilogue
@@ -425,7 +425,7 @@ module DC
       @code_registers.values.each do |r|
         s << "L#{r}#{drop} "
       end
-      s << "0;#{reg}i L#{reg}#{drop}" unless @toplevel
+      s << "]x 0;#{reg}i L#{reg}#{drop} rZ4-+" unless @toplevel
       s
     end
 
