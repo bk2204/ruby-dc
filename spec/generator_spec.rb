@@ -12,7 +12,8 @@ describe DC::Generator do
 
   def generate_and_run(s)
     debug = ENV['DEBUG']
-    dc = DC::Generator.new(true, debug: debug).emit(s)
+    dc = DC::Generator.new(true, debug: debug,
+                           ignored_functions: [:wrap]).emit(s)
     puts "\nCode is: \n#{dc}\n" if debug
     run(dc)
   end
@@ -263,6 +264,26 @@ describe DC::Generator do
 
           def f(x)
             scale = 2
+            x * 2
+          end
+        end
+      end
+    end
+    DC::Math::Library.new.f(3.5)
+    EOM
+    generate_and_compare code
+  end
+
+  it 'should ignore ignored functions in the math library' do
+    code = <<-EOM
+    module DC
+      module Math
+        class Library
+          def wrap
+            s * 2
+          end
+
+          def f(x)
             x * 2
           end
         end
