@@ -164,7 +164,6 @@ module DC
     # :truncate serves only to apply the current scale to the value; its
     # argument is ignored.
     def process_message(invocant, message, *args)
-      puts "msg: #{message.inspect}; invocant #{invocant.inspect} #{args.inspect}"
       if [:+, :-, :*, :/, :%].include?(message)
         process_binop(invocant, message, args[0])
       elsif message == :to_r
@@ -259,7 +258,6 @@ module DC
     def process_def(name, args, code)
       return if /\A(?:initialize|length|(?:ibase|scale)=?)\z/ =~ name
       return if @ignored_functions.include? name
-      puts "ignored #{@ignored_functions.inspect}: name #{name.inspect}"
       if name.length > 1
         raise InvalidNameError, "name must be a single character, not #{name}"
       end
