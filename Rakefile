@@ -13,7 +13,8 @@ task :build do
 
   begin
     Dir.mkdir 'build'
-  rescue Errno::EEXIST
+  rescue Errno::EEXIST # rubocop:disable Lint/HandleExceptions
+    # It's fine if the directory already exists.
   end
 
   f = File.new('build/dc.library', 'w')
