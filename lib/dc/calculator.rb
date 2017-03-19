@@ -237,8 +237,8 @@ module DC
         if val.nil?
           raise InternalCalculatorError, 'Trying to push invalid value'
         end
-        if val.is_a? Fixnum
-          raise InternalCalculatorError, 'Trying to push Fixnum'
+        if val.is_a? Integer
+          raise InternalCalculatorError, 'Trying to push Integer'
         end
       end
       @stack.unshift(*args)
