@@ -13,7 +13,7 @@ describe DC::Generator do
   def generate_and_run(s)
     debug = ENV['DEBUG']
     dc = DC::Generator.new(true, debug: debug,
-                           ignored_functions: [:wrap]).emit(s)
+                                 ignored_functions: [:wrap]).emit(s)
     puts "\nCode is: \n#{dc}\n" if debug
     run(dc)
   end

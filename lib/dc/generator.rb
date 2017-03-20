@@ -265,7 +265,7 @@ module DC
         raise NotImplementedError, 'multiple arguments not supported'
       end
       gen = DC::Generator.new(false, debug: @options[:debug],
-                              ignored_functions: @ignored_functions)
+                                     ignored_functions: @ignored_functions)
       result = '['
       result << gen.prologue
       result << gen.debug("start #{name}")
