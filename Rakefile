@@ -21,5 +21,5 @@ task :build do
   f.puts DC::Generator.new(true).emit(File.read('lib/dc/math/library.rb'))
 end
 
-task :all => [:spec, :build]
-task :default => :all
+task all: [:spec, :build]
+task default: :all
