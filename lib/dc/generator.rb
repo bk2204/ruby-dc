@@ -244,8 +244,8 @@ module DC
       "l#{code_register(var)}"
     end
 
-    def process_code_store(var, preallocate = false)
-      (code_register?(var) || preallocate ? 's' : 'S') + code_register(var)
+    def process_code_store(var)
+      (code_register?(var) ? 's' : 'S') + code_register(var)
     end
 
     def process_op_assign(lvasgn, op, val)
