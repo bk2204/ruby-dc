@@ -437,11 +437,6 @@ module DC
       method(sym).call(pop.to_i)
     end
 
-    def baseop(op)
-      ops = { I: @ibase, O: @obase, K: @scale.to_r }
-      push int(ops[op])
-    end
-
     def dispatch(op, *args)
       func = DISPATCH[op]
       instance_exec(*args, &func)
