@@ -34,6 +34,12 @@ describe DC::Generator do
     end
   end
 
+  it 'should generate proper results for division' do
+    (-10..10).each do |x|
+      generate_and_compare "(#{x}.to_r / 3).to_i"
+    end
+  end
+
   it 'should generate proper results for negation' do
     (-2..2).each do |x|
       generate_and_compare "-#{x}"
