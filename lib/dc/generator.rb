@@ -374,7 +374,8 @@ module DC
     end
 
     def process_conditional(cmp, iftrue, iffalse)
-      process_branch(process_comparison(cmp), '', process(iftrue), iffalse)
+      process_branch(process_comparison(cmp), '', process(iftrue, true),
+                     iffalse)
     end
 
     def process_while(cmp, body)

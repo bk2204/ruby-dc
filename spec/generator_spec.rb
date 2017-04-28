@@ -171,6 +171,33 @@ describe DC::Generator do
     generate_and_compare code
   end
 
+  it 'should be able to handle if statements with code' do
+    code = <<-EOM
+    scale = 10
+    n = 25
+    (-2..2).each do |i|
+      v = i
+
+      w = 0
+      if v < 0
+        v = -v
+        w = 5
+      end
+      x = (v * v * v).to_r
+      result = 0
+      if w == 5
+        result = 1 / x
+      end
+      if w == 0
+        result = x / 1
+      end
+      n += result
+    end
+    n.truncate(10)
+    EOM
+    generate_and_compare code
+  end
+
   it 'should be able to handle while loops with breaks' do
     code = <<-EOM
     i = 0
