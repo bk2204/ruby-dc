@@ -174,6 +174,8 @@ module DC
         'K 0k ' << process(invocant) << ' 1/ rk'
       elsif message == :-@
         '0 ' << process(invocant) << ' -'
+      elsif message == :sqrt
+        process(args[0]) << ' v'
       elsif invocant.nil? && message == :length
         # This is the bc length function, because that's what's required to
         # implement algorithms effectively.  The difference between that and Z

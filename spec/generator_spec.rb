@@ -77,6 +77,13 @@ describe DC::Generator do
     end
   end
 
+  it 'should generate proper results for Math.sqrt and integral values' do
+    (0..10).each do |x|
+      x **= 2
+      generate_and_compare "x = #{x}; Math.sqrt(x)"
+    end
+  end
+
   it 'should treat to_r as a no-op' do
     generate_and_compare 'x = 1.to_r; x'
     generate_and_compare 'x = 1; y = x.to_r'
