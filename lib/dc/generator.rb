@@ -166,6 +166,8 @@ module DC
     def process_message(invocant, message, *args)
       if [:+, :-, :*, :/, :%].include?(message)
         process_binop(invocant, message, args[0])
+      elsif message == :**
+        process_binop(invocant, '^', args[0])
       elsif message == :to_r
         process(invocant)
       elsif message == :to_i

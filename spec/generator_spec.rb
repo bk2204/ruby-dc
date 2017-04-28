@@ -40,6 +40,15 @@ describe DC::Generator do
     end
   end
 
+  it 'should generate proper results for integral exponentiation' do
+    (-10..10).each do |x|
+      (-5..5).each do |y|
+        next if x == 0 && y < 0
+        generate_and_compare "#{x} ** #{y}"
+      end
+    end
+  end
+
   it 'should generate proper results for negation' do
     (-2..2).each do |x|
       generate_and_compare "-#{x}"
