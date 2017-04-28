@@ -44,22 +44,57 @@ module DC
 
       # The exponential function, e^x.
       def e(x)
+        x = x.to_r
+        r = ibase
+        ibase = 10
+        t = scale.to_r
+        scale = 0
+        scale = ((0.435 * x) / 1).to_i if x > 0
+        scale += (t + length(scale + t) + 1).to_i
         s = scale
-        ib = ibase
+
         result = 1
-        accum = 1.to_r
-        # Rough heuristic.
-        iters = ((s + 10) * 6).to_i
-        self.scale = 0.5 * x + (iters / 10) + 10
-        iters.times do |i|
-          n = i + 1
-          accum *= x
-          accum /= n
-          result += accum
+        w = 0
+        if x < 0
+          x = -x
+          w = 1
         end
-        self.scale = s
-        self.ibase = ib
-        result.to_r.truncate(s)
+        y = 0
+        while x > 2
+          x = (x / 2).truncate(s)
+          y += 1
+        end
+
+        a = 1.to_r
+        b = 1.to_r
+        c = b
+        d = 1.to_r
+        e = 1.to_r
+        loop do
+          b *= x
+          c = c * a + b
+          d *= a
+          g = (c / d).truncate(s)
+          if g == e
+            g = (g / 1).truncate(s)
+            while y != 0
+              g *= g
+              y -= 1
+            end
+            self.scale = t
+            ibase = r
+            if w == 1
+              result = 1 / g
+            end
+            if w == 0
+              result = g / 1
+            end
+            break
+          end
+          e = g
+          a += 1
+        end
+        result.to_r.truncate(t.to_i)
       end
 
       # The natural logarithm function, ln x.
