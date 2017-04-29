@@ -186,6 +186,8 @@ module DC
         s << 'd XSa ZSb [la]Sc[lb]Sd lbla>c lbla!>d '
         s << ('a'..'d').map { |reg| "L#{reg}#{drop}" }.join(' ')
         s
+      elsif invocant.nil? && message == :scale && args[0]
+        process(args[0]) + 'X'
       elsif invocant.nil? && message.length == 1
         # dc function call
         process(args[0]) + "l#{message}x"

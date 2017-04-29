@@ -13,7 +13,8 @@ module DC
       # Get the scale of the calculator.
       #
       # In dc, calls to this function invoke the k operator.
-      def scale
+      def scale(x = nil)
+        return x.scale if x
         @calc.scale.to_i
       end
 

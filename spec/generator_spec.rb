@@ -435,6 +435,24 @@ describe DC::Generator do
     end
   end
 
+  it 'should generate expected results for the scale function' do
+    values = {
+      '1' => 0,
+      '0.1' => 1,
+      '0.22' => 2,
+      '99' => 0,
+      '100' => 0,
+      '0.0006' => 4,
+      '0.00062' => 5,
+    }
+    values.each do |value, expected|
+      dc = DC::Generator.new(true).emit("s = #{value}; scale(s)")
+      puts "\nCode is: \n#{dc}\n" if ENV['DEBUG']
+      calc = run(dc)
+      expect(calc.stack).to eq [expected]
+    end
+  end
+
   it 'should generate expected results for if-else conditions' do
     pending
     code = <<-EOM
