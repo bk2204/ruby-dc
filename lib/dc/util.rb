@@ -41,5 +41,9 @@ module DC
     def self.length(x, scale)
       stringify(x, scale).sub(/^-?0\.0*/, '.').gsub(/[.-]/, '').length
     end
+
+    def self.scale(x, scale)
+      stringify(x, scale).sub(/^[^.]*\./, '').length
+    end
   end
 end
