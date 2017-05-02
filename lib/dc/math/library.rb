@@ -84,12 +84,8 @@ module DC
             end
             self.scale = t
             ibase = r
-            if w == 1
-              result = 1 / g
-            end
-            if w == 0
-              result = g / 1
-            end
+            result = 1 / g if w == 1
+            result = g / 1 if w == 0
             break
           end
           e = g
