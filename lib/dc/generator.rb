@@ -261,6 +261,10 @@ module DC
       result << process_store(reg)
     end
 
+    def code_register_range
+      0..@code_reg
+    end
+
     def process_def(name, args, code)
       return if /\A(?:initialize|length|(?:ibase|scale)=?)\z/ =~ name
       return if @ignored_functions.include? name
@@ -272,11 +276,13 @@ module DC
       end
       gen = DC::Generator.new(false, debug: @options[:debug],
                                      ignored_functions: @ignored_functions)
+      code = gen.process(code)
       result = '['
       result << gen.prologue
       result << gen.debug("start #{name}")
       result << gen.process_store(args.children[0].children[0])
-      result << gen.process(code)
+      result << gen.preallocate_registers(gen.code_register_range)
+      result << code
       result << gen.debug("end #{name}")
       result << gen.epilogue
       result << "]S#{name}"
@@ -401,7 +407,6 @@ module DC
         '[', debug("macro #{code_reg}"), iftrue,
         (isloop ? debug("cmp #{code_reg}") << cmp : ''), ']',
         process_code_store(code_reg),
-        preallocate_registers((code_reg + 1)..@code_reg),
         (isloop ? '[' << cmp << ']x' : cmp)
       ].join
     end

@@ -389,6 +389,32 @@ describe DC::Generator do
     generate_and_compare code
   end
 
+  it 'should handle preallocation properly' do
+    code = <<-EOM
+    module DC
+      module Math
+        class Library
+          def ibase
+            10
+          end
+
+          def f(x)
+            while x < 2
+              self.scale = 2
+              self.scale = 1 if x < 1
+            end
+            a = ibase
+            a + x * 2
+          end
+        end
+      end
+    end
+    l = DC::Math::Library.new
+    l.f(2)
+    EOM
+    generate_and_compare code
+  end
+
   it 'should generate i calls for setting ibase' do
     code = <<-EOM
     module DC
