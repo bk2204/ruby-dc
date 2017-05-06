@@ -14,7 +14,7 @@ module DC
       #
       # In dc, calls to this function invoke the k operator.
       def scale(x = nil)
-        return DC::Util.scale(x) if x
+        return DC::Util.scale(x, @calc.scale.to_i) if x
         @calc.scale.to_i
       end
 
