@@ -96,25 +96,62 @@ module DC
 
       # The natural logarithm function, ln x.
       def l(x)
-        s = scale
-        ib = ibase
-        # Rough heuristic.
-        iters = ((s + 20) * 10).to_i
-        self.scale = s * 4
         x = x.to_r
-        accum = 1.to_r
-        y = (x - 1) / (x + 1)
-        y2 = y * y
-        (0..iters).reverse_each do |i|
-          n = i * 2 + 1
-          f = 1 / n.to_r
-          r = accum * y2
-          accum = (r + f).to_r.truncate(scale)
+        if x <= 0
+          return 0
         end
-        result = accum * 2 * y
-        self.scale = s
-        self.ibase = ib
-        result.to_r.truncate(s)
+
+        t = scale
+
+        f = 1
+        s = length(x)
+
+        self.scale = 0
+        a = ((2.31 * s) / 1).to_i
+        s = (t + length(a) + 2).to_i
+
+        while x > 2
+          self.scale = 0
+          self.scale = (length(x) + 1).to_i
+          self.scale = s if scale < s
+          x = ::Math.sqrt(x).to_r
+          f *= 2
+        end
+        while x < 0.5
+          self.scale = 0
+          self.scale = length(x) / 2 + 1
+          self.scale = s if scale < s
+          x = ::Math.sqrt(x).to_r
+          f *= 2
+        end
+
+        self.scale = 0
+        self.scale = t + length(f) + length(1.05 * (t + length(f))) + 1
+        u = (x - 1).to_r / (x + 1)
+        s = u * u
+        self.scale = t + 2
+        b = 2 * f
+        c = b.to_r
+        d = 1.to_r
+        e = 1.to_r
+
+        result = 1
+        a = 3
+        loop do
+          b *= s
+          c = c * a + d * b
+          d *= a
+          g = (c / d).truncate(t + 2)
+          if g == e
+            result = u * c / d
+            self.scale = t
+            break
+          end
+          e = g
+          a += 2
+        end
+
+        result.to_r.truncate(t.to_i)
       end
     end
   end
