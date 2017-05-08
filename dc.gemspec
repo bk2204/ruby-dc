@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rspec', '~> 3.0')
   s.add_development_dependency('rubocop', '~> 0.42.0')
 
-  s.files  = %w(LICENSE Rakefile README.adoc doc/daniel.adoc)
+  s.files  = %w(LICENSE Rakefile README.adoc)
   s.files += Dir.glob('bin/*')
   s.files += Dir.glob('lib/**/*.rb')
 end
