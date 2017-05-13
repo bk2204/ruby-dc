@@ -27,7 +27,7 @@ describe DC::Generator do
   it 'should generate proper results for small integer arithmetic' do
     (-2..2).each do |x|
       (-2..2).each do |y|
-        [:+, :-, :*].each do |op|
+        %i[+ - *].each do |op|
           generate_and_compare "#{x} #{op} #{y}"
         end
       end
@@ -70,7 +70,7 @@ describe DC::Generator do
   it 'should generate proper results for assignment operators' do
     (-2..2).each do |x|
       (-2..2).each do |y|
-        [:+, :-, :*].each do |op|
+        %i[+ - *].each do |op|
           generate_and_compare "x = #{x}; x #{op}= #{y}"
         end
       end
