@@ -246,10 +246,6 @@ module DC
       @code_registers.include? var
     end
 
-    def process_code_load(var)
-      "l#{code_register(var)}"
-    end
-
     def process_code_store(var)
       (code_register?(var) ? 's' : 'S') + code_register(var)
     end
