@@ -304,12 +304,12 @@ module DC
         push(Numeric.new(DC::Math.root(pop, 2, @scale), @scale.to_i, @scale))
       end,
       :N => -> { push(int(pop == 0 ? 1 : 0)) },
-      :!= =>   -> (reg) { cmpop(:!=, reg) },
-      :'=' =>  -> (reg) { cmpop(:==, reg) },
-      :> =>    -> (reg) { cmpop(:>, reg) },
-      :'!>' => -> (reg) { cmpop(:<=, reg) },
-      :< =>    -> (reg) { cmpop(:<, reg) },
-      :'!<' => -> (reg) { cmpop(:>=, reg) },
+      :!= =>   ->(reg) { cmpop(:!=, reg) },
+      :'=' =>  ->(reg) { cmpop(:==, reg) },
+      :> =>    ->(reg) { cmpop(:>, reg) },
+      :'!>' => ->(reg) { cmpop(:<=, reg) },
+      :< =>    ->(reg) { cmpop(:<, reg) },
+      :'!<' => ->(reg) { cmpop(:>=, reg) },
       :G =>   -> { extcmpop(:==) },
       :'(' => -> { extcmpop(:<) },
       :'{' => -> { extcmpop(:<=) },
@@ -324,8 +324,8 @@ module DC
         push @registers[reg].shift
         @arrays[reg].shift
       end,
-      :s => -> (reg) { @registers[reg][0] = pop },
-      :l => -> (reg) { push @registers[reg][0] },
+      :s => ->(reg) { @registers[reg][0] = pop },
+      :l => ->(reg) { push @registers[reg][0] },
       :z => -> { push int(@stack.length) },
       :Z => -> { push int(pop.length) },
       :X => lambda do
