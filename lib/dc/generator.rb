@@ -153,7 +153,7 @@ module DC
     end
 
     def special_method?(_invocant, message)
-      [:ibase, :scale, :ibase=, :scale=].include?(message)
+      %i[ibase scale ibase= scale=].include?(message)
     end
 
     # Process a message sent to a variable.
@@ -164,7 +164,7 @@ module DC
     # :truncate serves only to apply the current scale to the value; its
     # argument is ignored.
     def process_message(invocant, message, *args)
-      if [:+, :-, :*, :/, :%].include?(message)
+      if %i[+ - * / %].include?(message)
         process_binop(invocant, message, args[0])
       elsif message == :**
         process_binop(invocant, '^', args[0])
@@ -213,7 +213,7 @@ module DC
     end
 
     def assignment?(node)
-      [:lvasgn, :op_asgn].include? node.type
+      %i[lvasgn op_asgn].include? node.type
     end
 
     def mark_stub(var)
