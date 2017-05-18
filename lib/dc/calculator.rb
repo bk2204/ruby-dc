@@ -204,7 +204,7 @@ module DC
       @extensions = Set.new
       @stack_level = 0
       @break = true
-      [:gnu, :freebsd].each do |ext|
+      %i[gnu freebsd].each do |ext|
         @extensions.add ext if options[ext] || options[:all]
       end
       @extensions.add :insecure if options[:insecure]
