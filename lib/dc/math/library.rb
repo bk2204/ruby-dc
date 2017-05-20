@@ -97,9 +97,7 @@ module DC
       # The natural logarithm function, ln x.
       def l(x)
         x = x.to_r
-        if x <= 0
-          return 0
-        end
+        return 0 if x <= 0
 
         t = scale
 
