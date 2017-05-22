@@ -22,7 +22,7 @@ describe DC::Calculator do
   end
 
   it 'should swap the top two values with r with extensions enabled' do
-    [:gnu, :freebsd].each do |ext|
+    %i[gnu freebsd].each do |ext|
       c = calc(ext => true)
       c.parse('1 2 3r')
       expect(c.stack).to eq [2, 3, 1]
@@ -83,7 +83,7 @@ describe DC::Calculator do
   end
 
   it 'should pop and print the top of stack with n (number)' do
-    [:gnu, :freebsd].each do |ext|
+    %i[gnu freebsd].each do |ext|
       c = calc(ext => true)
       c.parse('1n')
       expect(@output.string).to eq '1'
@@ -92,7 +92,7 @@ describe DC::Calculator do
   end
 
   it 'should pop and print the top of stack with n (string)' do
-    [:gnu, :freebsd].each do |ext|
+    %i[gnu freebsd].each do |ext|
       c = calc(ext => true)
       c.parse('[foo]n')
       expect(@output.string).to eq 'foo'
@@ -101,7 +101,7 @@ describe DC::Calculator do
   end
 
   it 'should print fractions properly with n' do
-    [:gnu, :freebsd, :all].each do |ext|
+    %i[gnu freebsd all].each do |ext|
       c = calc(ext => true)
       c.parse('1.64n')
       expect(@output.string).to eq '1.64'
@@ -114,7 +114,7 @@ describe DC::Calculator do
   end
 
   it 'should pop top of stack with R' do
-    [:freebsd, :all].each do |ext|
+    %i[freebsd all].each do |ext|
       c = calc(ext => true)
       c.parse('1 2 3R')
       expect(c.stack).to eq [2, 1]

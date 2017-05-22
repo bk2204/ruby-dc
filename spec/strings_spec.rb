@@ -55,7 +55,7 @@ describe DC::Calculator do
   it 'should compute (n % 256).chr for a (number, GNU)' do
     # GNU overrides FreeBSD in this case, because the behavior is more
     # consistent.
-    [:gnu, :all].each do |ext|
+    %i[gnu all].each do |ext|
       (0..1000).each do |n|
         c = calc(ext => true)
         c.parse("#{n}a")
@@ -65,7 +65,7 @@ describe DC::Calculator do
   end
 
   it 'should compute (n % 256).chr for a (number, FreeBSD)' do
-    [:freebsd].each do |ext|
+    %i[freebsd].each do |ext|
       (0..1000).each do |n|
         c = calc(ext => true)
         c.parse("#{n}a")
@@ -78,7 +78,7 @@ describe DC::Calculator do
   it 'should take the first character for a (string)' do
     # GNU overrides FreeBSD in this case, because the behavior is more
     # consistent.
-    [:gnu, :freebsd, :all].each do |ext|
+    %i[gnu freebsd all].each do |ext|
       (1..255).each do |n|
         char = n.chr
         next if '[]'.include? char
@@ -92,7 +92,7 @@ describe DC::Calculator do
   it 'should do nothing with an empty string for a (string)' do
     # GNU overrides FreeBSD in this case, because the behavior is more
     # consistent.
-    [:gnu, :freebsd, :all].each do |ext|
+    %i[gnu freebsd all].each do |ext|
       c = calc(ext => true)
       c.parse('[]a')
       expect(c.stack).to eq ['']

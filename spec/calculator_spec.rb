@@ -12,6 +12,6 @@ describe DC::Calculator do
 
   it 'should report the extensions in sorted order' do
     c = DC::Calculator.new(StringIO.new, StringIO.new, gnu: true, freebsd: true)
-    expect(c.extensions).to eq [:freebsd, :gnu]
+    expect(c.extensions).to eq %i[freebsd gnu]
   end
 end
