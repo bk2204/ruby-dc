@@ -171,7 +171,7 @@ module DC
       elsif message == :to_r
         process(invocant)
       elsif message == :to_i
-        'K 0k ' << process(invocant) << ' 1/ rk'
+        'K 0k ' << process(invocant) << ' 1/ SaSbLaLbk'
       elsif message == :-@
         '0 ' << process(invocant) << ' -'
       elsif message == :sqrt
@@ -427,7 +427,7 @@ module DC
 
     def prologue
       reg = data_register
-      @toplevel ? '' : "0S#{reg} I0:#{reg} Ai [[trap]r "
+      @toplevel ? '' : "0S#{reg} I0:#{reg} Ai [[trap]SaSbLaLb "
     end
 
     def epilogue
@@ -436,7 +436,7 @@ module DC
       @code_registers.values.each do |r|
         s << "L#{r}#{drop} "
       end
-      s << "]x 0;#{reg}i L#{reg}#{drop} rZ4-+" unless @toplevel
+      s << "]x 0;#{reg}i L#{reg}#{drop} SaSbLaLbZ4-+" unless @toplevel
       s
     end
 

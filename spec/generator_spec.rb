@@ -4,7 +4,8 @@ describe DC::Generator do
   def run(s)
     output = StringIO.new('', 'w+')
     input = StringIO.new('', 'r')
-    calc = DC::Calculator.new(input, output, all: true)
+    options = ENV['DEBUG'] ? { all: true } : {}
+    calc = DC::Calculator.new(input, output, options)
     calc.parse(s)
     puts "Messages: \n#{calc.output.string}" if ENV['DEBUG']
     calc
