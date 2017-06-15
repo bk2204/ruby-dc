@@ -319,23 +319,24 @@ module DC
       [setup, inc, test]
     end
 
+    def process_each(invocant, arg, pair, sym, cmp)
+      range = invocant.children[0]
+      if invocant.type != :begin || range.type != :irange
+        raise NotImplementedError, 'bad invocant for iterable'
+      end
+      process_for_loop(range.children[pair[0]], range.children[pair[1]], sym,
+                       cmp, arg)
+    end
+
     def process_condition(condition, arg)
       invocant, message = *condition.children
       case message
       when :times
         process_for_loop(0, invocant, :+, :>, arg)
       when :reverse_each
-        range = invocant.children[0]
-        if invocant.type != :begin || range.type != :irange
-          raise NotImplementedError, 'bad invocant for reverse_each'
-        end
-        process_for_loop(range.children[1], range.children[0], :-, '!>', arg)
+        process_each(invocant, arg, [1, 0], :-, '!>')
       when :each
-        range = invocant.children[0]
-        if invocant.type != :begin || range.type != :irange
-          raise NotImplementedError, 'bad invocant for reverse_each'
-        end
-        process_for_loop(range.children[0], range.children[1], :+, '!<', arg)
+        process_each(invocant, arg, [0, 1], :+, '!<')
       else
         raise NotImplementedError, "unknown message #{message} in condition"
       end
