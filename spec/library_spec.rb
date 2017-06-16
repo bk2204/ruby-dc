@@ -148,7 +148,7 @@ describe DC::Generator do
 
   it 'should not leave anything in registers after execution' do
     mathlib = generate(slurp)
-    set = Set.new(%w(e l))
+    set = Set.new(%w[e l])
     set.each do |f|
       calc = run(mathlib + "1l#{f}x")
       calc.registers.each do |i, reg|

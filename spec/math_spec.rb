@@ -53,7 +53,7 @@ describe DC::Math do
   end
 
   it 'should compute some expected values accurately' do
-    values = %w(
+    values = %w[
       1.41421356237309504880
       1.73205080756887729352
       2.00000000000000000000
@@ -93,7 +93,7 @@ describe DC::Math do
       6.16441400296897645025
       6.24499799839839820584
       6.32455532033675866399
-    )
+    ]
     values.each_with_index do |val, i|
       expect(DC::Math.root(i + 2, 2, 20)).to eq Rational(val)
     end

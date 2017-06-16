@@ -23,7 +23,7 @@ describe DC::Calculator do
 
   it 'should parse adjacent strings separately' do
     @calc.parse('[hello][goodbye]')
-    expect(@calc.stack).to eq %w(goodbye hello)
+    expect(@calc.stack).to eq %w[goodbye hello]
   end
 
   it 'should parse strings with brackets in them' do

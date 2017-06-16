@@ -20,12 +20,12 @@ describe DC::Calculator do
   end
 
   it 'should produce the SHA-1 round constants correctly' do
-    values = %w(
+    values = %w[
       5A827999
       6ED9EBA1
       8F1BBCDC
       CA62C1D6
-    )
+    ]
     values.zip([2, 3, 5, 10]).each do |(val, x)|
       c = calc
       c.parse("32k 16o #{x}v 0k 2 30^* 1/p")
@@ -34,7 +34,7 @@ describe DC::Calculator do
   end
 
   it 'should produce the SHA-256 initial values correctly' do
-    values = %w(
+    values = %w[
       6A09E667
       BB67AE85
       3C6EF372
@@ -43,7 +43,7 @@ describe DC::Calculator do
       9B05688C
       1F83D9AB
       5BE0CD19
-    )
+    ]
     values.zip((2..19).select { |x| prime?(x) }).each do |(val, p)|
       c = calc
       c.parse("32k 16o #{p}v d 0k 1/- 2 32^* 1/p")
@@ -52,7 +52,7 @@ describe DC::Calculator do
   end
 
   it 'should produce the SHA-512 initial values correctly' do
-    values = %w(
+    values = %w[
       6A09E667F3BCC908
       BB67AE8584CAA73B
       3C6EF372FE94F82B
@@ -61,7 +61,7 @@ describe DC::Calculator do
       9B05688C2B3E6C1F
       1F83D9ABFB41BD6B
       5BE0CD19137E2179
-    )
+    ]
     values.zip((2..19).select { |x| prime?(x) }).each do |(val, p)|
       c = calc
       # Use scale 20 because 2^64 is approximately equal to 10^19.2.  Ensure
