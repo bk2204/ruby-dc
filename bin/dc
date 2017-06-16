@@ -53,4 +53,4 @@ def script(args)
   0
 end
 
-exit(script(ARGV)) if __FILE__ == $PROGRAM_NAME
+exit(script(ARGV)) if $PROGRAM_NAME == __FILE__
