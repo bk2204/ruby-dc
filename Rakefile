@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'rake'
 require 'rspec/core/rake_task'
 
