@@ -374,7 +374,7 @@ module DC
       elsif line.sub!(/\A(!?[<>=])(.)/, '')
         dispatch($~[1].to_sym, $~[2].ord)
       elsif line.sub!(/\A([nra])/, '')
-        dispatch_extension($~[0].to_sym, [:gnu, :freebsd])
+        dispatch_extension($~[0].to_sym, %i[gnu freebsd])
       elsif line.sub!(/\A([NRG({])/, '')
         dispatch_extension($~[0].to_sym, [:freebsd])
       elsif line.sub!(/\A\?/, '')
