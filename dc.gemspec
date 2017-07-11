@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency('rake', '~> 10.0')
   s.add_development_dependency('rspec', '~> 3.0')
-  s.add_development_dependency('rubocop', '~> 0.42.0')
+  s.add_development_dependency('rubocop', '~> 0.49.1')
 
   s.files  = %w[LICENSE Rakefile README.adoc]
   s.files += Dir.glob('bin/*')
