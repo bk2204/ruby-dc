@@ -57,7 +57,7 @@ describe DC::Generator do
     code = "s = Stub.new; s.scale = #{scale}; #{s}"
     calc = generate_and_run(code)
     ruby = eval(slurp + code) # rubocop:disable Lint/Eval
-    range = 1 / (10.to_r ** (scale - 1))
+    range = 1 / (10.to_r**(scale - 1))
     expect(calc.stack[0]).to be_within(range).of(ruby)
   end
 
