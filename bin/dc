@@ -31,7 +31,8 @@ def parse_options(args)
       require 'dc/generator'
 
       path = find_math_library
-      options[:scripts] << DC::Generator.new(true).emit(File.new(path).read)
+      data = File.read(path)
+      options[:scripts] << DC::CodeGenerator::Generator.new(true).emit(data)
       options[:mathlib] = true
     end
   end.parse!(args)

@@ -1,6 +1,6 @@
 require_relative 'spec_helper'
 
-describe DC::Generator do
+describe DC::CodeGenerator::Generator do
   def run(s)
     output = StringIO.new('', 'w+')
     input = StringIO.new('', 'r')
@@ -13,8 +13,8 @@ describe DC::Generator do
 
   def generate_and_run(s)
     debug = ENV['DEBUG']
-    dc = DC::Generator.new(true, debug: debug,
-                                 ignored_functions: [:wrap]).emit(s)
+    dc = DC::CodeGenerator::Generator.new(true, debug: debug, ignored_functions:
+                                          [:wrap]).emit(s)
     puts "\nCode is: \n#{dc}\n" if debug
     run(dc)
   end
@@ -114,7 +114,7 @@ describe DC::Generator do
   end
 
   it 'should raise when processing an unknown node' do
-    dc = DC::Generator.new(true)
+    dc = DC::CodeGenerator::Generator.new(true)
     fakenode_klass = Class.new do
       def type
         :nonexistent
@@ -364,7 +364,7 @@ describe DC::Generator do
     l.f(3.5)
     EOM
     generate_and_compare code
-    dc = DC::Generator.new.emit(code)
+    dc = DC::CodeGenerator::Generator.new.emit(code)
     expect(dc).to match(/\[.*?2\s*k.*?\]Sf/m)
   end
 
@@ -440,7 +440,7 @@ describe DC::Generator do
     l.f(5)
     EOM
     generate_and_compare code
-    dc = DC::Generator.new.emit(code)
+    dc = DC::CodeGenerator::Generator.new.emit(code)
     expect(dc).to match(/\[.*?10\s*i.*?\]Sf/m)
   end
 
@@ -455,7 +455,8 @@ describe DC::Generator do
       '0.00062' => 5,
     }
     values.each do |value, expected|
-      dc = DC::Generator.new(true).emit("s = #{value}; length(s)")
+      dc = DC::CodeGenerator::Generator.new(true).emit("s = #{value};
+                                                       length(s)")
       puts "\nCode is: \n#{dc}\n" if ENV['DEBUG']
       calc = run(dc)
       expect(calc.stack).to eq [expected]
@@ -473,7 +474,7 @@ describe DC::Generator do
       '0.00062' => 5,
     }
     values.each do |value, expected|
-      dc = DC::Generator.new(true).emit("s = #{value}; scale(s)")
+      dc = DC::CodeGenerator::Generator.new(true).emit("s = #{value}; scale(s)")
       puts "\nCode is: \n#{dc}\n" if ENV['DEBUG']
       calc = run(dc)
       expect(calc.stack).to eq [expected]

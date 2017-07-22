@@ -23,9 +23,9 @@ class Stub < BasicObject
   end
 end
 
-describe DC::Generator do
+describe DC::CodeGenerator::Generator do
   def generate(s)
-    DC::Generator.new(true).emit(s)
+    DC::CodeGenerator::Generator.new(true).emit(s)
   end
 
   def run(s)
