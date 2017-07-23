@@ -229,7 +229,7 @@ module DC
         return '' if stub? var
         return 'K' if var == :scale
         return 'I' if var == :ibase
-        " #{register(var)};#{data_register}"
+        " #{register([:named, var])};#{data_register}"
       end
 
       def process_store(var)
@@ -239,7 +239,7 @@ module DC
         @last_store = var
         [
           debug_store(var),
-          " #{register(var)}:#{data_register}",
+          " #{register([:named, var])}:#{data_register}",
         ].join
       end
 
@@ -295,7 +295,7 @@ module DC
         '@'
       end
 
-      # var is a Symbol for variables and an Integer for code.  These are not
+      # var is an Array for variables and an Integer for code.  These are not
       # actually registers, but index values for the array specified with
       # data_register.  Single-digit index values are reserved for the prologue
       # and epilogue.
