@@ -243,6 +243,14 @@ module DC
         ].join
       end
 
+      def process_temporary_load(var)
+        " #{register([:temporary, var])};#{data_register}"
+      end
+
+      def process_temporary_store(var)
+        " #{register([:temporary, var])}:#{data_register}"
+      end
+
       def code_register?(var)
         @code_registers.include? var
       end
