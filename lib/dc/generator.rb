@@ -41,6 +41,61 @@ module DC
       end
     end
 
+    # A node created by the generator.
+    class Node
+      def initialize(factory, tnode)
+        @factory = factory
+        @parsed = tnode
+      end
+
+      protected
+
+      def process(node)
+        @factory.process(node)
+      end
+    end
+
+    # A node representing a binary arithmetic operation.
+    class BinaryOperationNode < Node
+      def initialize(factory, tnode)
+        super(factory, tnode)
+        @first, @op, @second = tnode.children[0..2]
+        @op = :^ if @op == :**
+      end
+
+      def to_s
+        first = @first ? process(@first) : ''
+        second = process(@second)
+        [first, second, @op].join(' ')
+      end
+    end
+
+    # A node representing raw dc code.
+    class TextNode < Node
+      def initialize(gen, text)
+        @generator = gen
+        @text = text
+      end
+
+      def to_s
+        @text
+      end
+    end
+
+    # A factory for nodes.
+    class NodeFactory
+      def initialize(gen)
+        @generator = gen
+      end
+
+      def process(node)
+        if node.type == :send && %i[+ - * / % **].include?(node.children[1])
+          return BinaryOperationNode.new(self, node)
+        end
+        TextNode.new(@generator, @generator.send(:process, node))
+      end
+    end
+
     # A class to generate dc code from Ruby.
     #
     # This class is intentionally designed to be very stupid.  It will never
@@ -60,6 +115,7 @@ module DC
         # These are variables used in Ruby for which no code will be emitted.
         # Generally, this includes instantiations of the math library class.
         @stubs = Set.new
+        @factory = NodeFactory.new(self)
       end
 
       def emit(s)
@@ -80,7 +136,7 @@ module DC
           end
           result
         when :send
-          process_message(*node.children)
+          process_message(node, *node.children)
         when :lvasgn
           process_lvasgn(*node.children)
         when :op_asgn
@@ -164,11 +220,9 @@ module DC
       # single-character function calls are converted to a call to the macro of
       # the same name.  :truncate serves only to apply the current scale to the
       # value; its argument is ignored.
-      def process_message(invocant, message, *args)
-        if %i[+ - * / %].include?(message)
-          process_binop(invocant, message, args[0])
-        elsif message == :**
-          process_binop(invocant, '^', args[0])
+      def process_message(node, invocant, message, *args)
+        if %i[+ - * / % **].include?(message)
+          @factory.process(node).to_s
         elsif message == :to_r
           process(invocant)
         elsif message == :to_i
