@@ -57,16 +57,22 @@ module DC
 
     # A node representing a binary arithmetic operation.
     class BinaryOperationNode < Node
+      attr_reader :op
+
       def initialize(factory, tnode)
         super(factory, tnode)
         @first, @op, @second = tnode.children[0..2]
         @op = :^ if @op == :**
+        @first = @first ? process(@first) : nil
+        @second = process(@second)
+      end
+
+      def children
+        [@first, @second]
       end
 
       def to_s
-        first = @first ? process(@first) : ''
-        second = process(@second)
-        [first, second, @op].join(' ')
+        [@first, @second, @op].join(' ')
       end
     end
 
