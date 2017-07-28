@@ -76,6 +76,17 @@ module DC
       end
     end
 
+    # A node representing no operation.
+    class EmptyNode < Node
+      def children
+        []
+      end
+
+      def to_s
+        ''
+      end
+    end
+
     # A node representing raw dc code.
     class TextNode < Node
       def initialize(gen, text)
@@ -95,10 +106,23 @@ module DC
       end
 
       def process(node)
-        if node.type == :send && %i[+ - * / % **].include?(node.children[1])
-          return BinaryOperationNode.new(self, node)
+        if node.type == :send
+          return process_message(node)
         end
-        TextNode.new(@generator, @generator.send(:process, node))
+        TextNode.new(self, @generator.send(:process, node))
+      end
+
+      protected
+
+      def process_message(node)
+        message = node.children[1]
+        if %i[+ - * / % **].include?(message)
+          BinaryOperationNode.new(self, node)
+        elsif %i[puts print].include?(message)
+          EmptyNode.new(self, node)
+        else
+          TextNode.new(self, @generator.send(:process, node))
+        end
       end
     end
 
