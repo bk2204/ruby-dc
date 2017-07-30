@@ -99,6 +99,25 @@ module DC
       end
     end
 
+    # A node representing a function call.
+    class FunctionCallNode < Node
+      attr_reader :function
+
+      def initialize(factory, tnode)
+        super(factory, tnode)
+        @arg = factory.process(tnode.children[2])
+        @message = tnode.children[1]
+      end
+
+      def children
+        [@arg]
+      end
+
+      def to_s
+        "#{@arg} l#{@message}x"
+      end
+    end
+
     # A factory for nodes.
     class NodeFactory
       def initialize(gen)
@@ -120,6 +139,8 @@ module DC
           BinaryOperationNode.new(self, node)
         elsif %i[puts print].include?(message)
           EmptyNode.new(self, node)
+        elsif message.length == 1
+          FunctionCallNode.new(self, node)
         else
           TextNode.new(self, @generator.send(:process, node))
         end
@@ -275,7 +296,7 @@ module DC
           process(args[0]) + 'X'
         elsif invocant.nil? && message.length == 1
           # dc function call
-          process(args[0]) + "l#{message}x"
+          @factory.process(node).to_s
         elsif message == :truncate
           process(invocant) + ' 1/'
         elsif message == :puts
@@ -291,7 +312,7 @@ module DC
           ''
         elsif function_call?(invocant, message)
           # dc function call (math library)
-          process(args[0]) + "l#{message}x"
+          @factory.process(node).to_s
         else
           raise UnimplementedNodeError, "Unknown message #{message}"
         end
