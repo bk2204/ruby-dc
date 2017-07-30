@@ -141,6 +141,8 @@ module DC
           EmptyNode.new(self, node)
         elsif message.length == 1
           FunctionCallNode.new(self, node)
+        elsif message == :to_r
+          process(node.children[0])
         else
           TextNode.new(self, @generator.send(:process, node))
         end
@@ -272,10 +274,8 @@ module DC
       # the same name.  :truncate serves only to apply the current scale to the
       # value; its argument is ignored.
       def process_message(node, invocant, message, *args)
-        if %i[+ - * / % **].include?(message)
+        if %i[+ - * / % ** to_r].include?(message)
           @factory.process(node).to_s
-        elsif message == :to_r
-          process(invocant)
         elsif message == :to_i
           'K 0k ' << process(invocant) << ' 1/ SaSbLaLbk'
         elsif message == :-@
