@@ -299,8 +299,6 @@ module DC
           @factory.process(node).to_s
         elsif message == :truncate
           process(invocant) + ' 1/'
-        elsif message == :puts
-          ''
         elsif special_method?(invocant, message)
           smessage = message.to_s
           if smessage.end_with? '='
