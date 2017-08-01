@@ -118,6 +118,30 @@ module DC
       end
     end
 
+    # A node representing a number.
+    class NumericNode < Node
+      def children
+        [@parsed.children[0]]
+      end
+
+      def to_i
+        @parsed.children[0].to_i
+      end
+
+      def to_f
+        @parsed.children[0].to_f
+      end
+
+      def to_r
+        @parsed.children[0].to_r
+      end
+
+      def to_s
+        val = @parsed.children[0]
+        val < 0 ? "_#{val.abs}" : val.to_s
+      end
+    end
+
     # A factory for nodes.
     class NodeFactory
       def initialize(gen)
@@ -126,9 +150,12 @@ module DC
 
       def process(node)
         if node.type == :send
-          return process_message(node)
+          process_message(node)
+        elsif %i[int float].include?(node.type)
+          NumericNode.new(self, node)
+        else
+          TextNode.new(self, @generator.send(:process, node))
         end
-        TextNode.new(self, @generator.send(:process, node))
       end
 
       protected
@@ -197,8 +224,7 @@ module DC
         when :lvar
           process_load(node.children[0])
         when :int, :float
-          val = node.children[0]
-          val < 0 ? "_#{val.abs}" : val.to_s
+          @factory.process(node).to_s
         when :def
           process_def(*node.children)
         when :defs
