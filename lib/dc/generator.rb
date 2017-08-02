@@ -149,9 +149,10 @@ module DC
       end
 
       def process(node)
-        if node.type == :send
+        case node.type
+        when :send
           process_message(node)
-        elsif %i[int float].include?(node.type)
+        when :int, :float
           NumericNode.new(self, node)
         else
           TextNode.new(self, @generator.send(:process, node))
