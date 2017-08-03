@@ -142,6 +142,33 @@ module DC
       end
     end
 
+    # A node representing a deliberately truncated value.
+    class TruncationNode < Node
+      def initialize(factory, tnode)
+        super(factory, tnode)
+        @child = process(tnode.children[0])
+        @integral = tnode.children[1] == :to_i
+      end
+
+      def to_s
+        [
+          prologue,
+          "#{@child} 1/",
+          epilogue,
+        ].join
+      end
+
+      protected
+
+      def prologue
+        @integral ? 'K 0k' : ''
+      end
+
+      def epilogue
+        @integral ? 'SaSbLaLbk' : ''
+      end
+    end
+
     # A factory for nodes.
     class NodeFactory
       def initialize(gen)
@@ -167,6 +194,8 @@ module DC
           BinaryOperationNode.new(self, node)
         elsif %i[puts print].include?(message)
           EmptyNode.new(self, node)
+        elsif %i[to_i truncate].include?(message)
+          TruncationNode.new(self, node)
         elsif message.length == 1
           FunctionCallNode.new(self, node)
         elsif message == :to_r
@@ -301,10 +330,8 @@ module DC
       # the same name.  :truncate serves only to apply the current scale to the
       # value; its argument is ignored.
       def process_message(node, invocant, message, *args)
-        if %i[+ - * / % ** to_r].include?(message)
+        if %i[+ - * / % ** to_r to_i truncate].include?(message)
           @factory.process(node).to_s
-        elsif message == :to_i
-          'K 0k ' << process(invocant) << ' 1/ SaSbLaLbk'
         elsif message == :-@
           '0 ' << process(invocant) << ' -'
         elsif message == :sqrt
@@ -324,8 +351,6 @@ module DC
         elsif invocant.nil? && message.length == 1
           # dc function call
           @factory.process(node).to_s
-        elsif message == :truncate
-          process(invocant) + ' 1/'
         elsif special_method?(invocant, message)
           smessage = message.to_s
           if smessage.end_with? '='
