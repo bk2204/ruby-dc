@@ -76,6 +76,26 @@ module DC
       end
     end
 
+    # A node representing a unary arithmetic operation.
+    class UnaryOperationNode < Node
+      attr_reader :op
+
+      def initialize(factory, tnode)
+        super(factory, tnode)
+        @first, op = tnode.children[0..1]
+        @op = op.to_s[0]
+        @first = @first ? process(@first) : nil
+      end
+
+      def children
+        [@first]
+      end
+
+      def to_s
+        "0 #{@first} #{@op}"
+      end
+    end
+
     # A node representing no operation.
     class EmptyNode < Node
       def children
@@ -192,6 +212,8 @@ module DC
         message = node.children[1]
         if %i[+ - * / % **].include?(message)
           BinaryOperationNode.new(self, node)
+        elsif %i[+@ -@].include?(message)
+          UnaryOperationNode.new(self, node)
         elsif %i[puts print].include?(message)
           EmptyNode.new(self, node)
         elsif %i[to_i truncate].include?(message)
@@ -330,10 +352,8 @@ module DC
       # the same name.  :truncate serves only to apply the current scale to the
       # value; its argument is ignored.
       def process_message(node, invocant, message, *args)
-        if %i[+ - * / % ** to_r to_i truncate].include?(message)
+        if %i[+ - * / % ** +@ -@ to_r to_i truncate].include?(message)
           @factory.process(node).to_s
-        elsif message == :-@
-          '0 ' << process(invocant) << ' -'
         elsif message == :sqrt
           process(args[0]) << ' v'
         elsif invocant.nil? && message == :length
